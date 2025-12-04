@@ -91,17 +91,17 @@ Key patterns from Tobias's implementation:
    nv.opts.show3Dcrosshair = true;
    ```
 
-### recommended approach: hybrid fastapi + gradio
+### implementation approach: gradio + direct base64 injection
 
-For our demo, we use a **hybrid approach**:
+For our demo, we use:
 - **Gradio** for case selection dropdown and "Run Segmentation" button
-- **FastAPI endpoints** for serving NIfTI data as base64
+- **Direct Base64 data URLs** injected into HTML (no separate API endpoints)
 - **NiiVue via `gr.HTML`** for interactive 3D visualization
 
 This gives us:
 - Gradio's nice UI components for inputs
-- Proven NiiVue rendering from Tobias's implementation
-- No iframe complexity
+- Proven NiiVue rendering pattern from Tobias's implementation
+- No iframe complexity, no proxy issues in HF Spaces
 
 ### concrete implementation
 
@@ -168,44 +168,6 @@ def create_niivue_viewer_html(
     </script>
     """
 ```
-
-### fallback: matplotlib 2d slices
-
-For environments where WebGL fails, provide matplotlib fallback:
-
-```python
-import matplotlib.pyplot as plt
-import nibabel as nib
-
-def render_slices_fallback(nifti_path: Path, mask_path: Path | None = None) -> Figure:
-    """Render 3-panel slice view with optional mask overlay."""
-    img = nib.load(nifti_path)
-    data = img.get_fdata()
-
-    fig, axes = plt.subplots(1, 3, figsize=(15, 5))
-
-    # Middle slices
-    ax_slice = data.shape[2] // 2
-    cor_slice = data.shape[1] // 2
-    sag_slice = data.shape[0] // 2
-
-    axes[0].imshow(data[:, :, ax_slice].T, cmap='gray', origin='lower')
-    axes[0].set_title('Axial')
-    axes[1].imshow(data[:, cor_slice, :].T, cmap='gray', origin='lower')
-    axes[1].set_title('Coronal')
-    axes[2].imshow(data[sag_slice, :, :].T, cmap='gray', origin='lower')
-    axes[2].set_title('Sagittal')
-
-    if mask_path:
-        mask = nib.load(mask_path).get_fdata()
-        # Overlay in red with alpha
-        for ax, sl in zip(axes, [mask[:,:,ax_slice].T, mask[:,cor_slice,:].T, mask[sag_slice,:,:].T]):
-            ax.imshow(sl, cmap='Reds', alpha=0.5, origin='lower')
-
-    return fig
-```
-
-**Recommendation**: Use NiiVue as primary (proven working), matplotlib as fallback.
 
 ## interfaces and types
 
@@ -369,7 +331,8 @@ def create_niivue_html(
     template = f"""
     <div id="gl" style="width:100%; height:{height}px;"></div>
     <script type="module">
-        import {{ Niivue }} from 'https://niivue.github.io/niivue/features/niivue.esm.js';
+        const niivueModule = await import('https://unpkg.com/@niivue/niivue@0.57.0/dist/index.js');
+        const Niivue = niivueModule.Niivue;
         const nv = new Niivue({{ show3Dcrosshair: true }});
         nv.attachToCanvas(document.getElementById('gl'));
         const volumes = [{{ url: '{volume_url}' }}];
@@ -802,9 +765,7 @@ if __name__ == "__main__":
 
 ```toml
 # Add to pyproject.toml dependencies
-"matplotlib>=3.8.0",
-"fastapi>=0.115.0",  # For API endpoints if using hybrid approach
-"uvicorn[standard]>=0.32.0",  # For local development
+"matplotlib>=3.8.0",  # For static slice rendering in viewer.py
 ```
 
 ## reference implementation

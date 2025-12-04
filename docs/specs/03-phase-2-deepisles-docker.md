@@ -795,23 +795,6 @@ def build_docker_command(
     return cmd
 ```
 
-Alternative: Fix permissions after Docker completes (less clean but works):
-
-```python
-def fix_docker_output_permissions(output_dir: Path) -> None:
-    """Fix permissions on Docker-created files."""
-    import subprocess
-    # Only needed if running as non-root and files are root-owned
-    try:
-        subprocess.run(
-            ["sudo", "chown", "-R", f"{os.getuid()}:{os.getgid()}", str(output_dir)],
-            check=True,
-            capture_output=True,
-        )
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        pass  # sudo not available or not needed
-```
-
 ### critical: gpu availability check
 
 **Reviewer feedback (valid)**: We check for Docker daemon but not NVIDIA Container Runtime. A user might have Docker but lack GPU passthrough setup.
