@@ -123,9 +123,14 @@ def _materialize_nifti(source: Path | str | bytes | Any, dest: Path) -> None:
         shutil.copy2(source, dest)
     elif isinstance(source, str):
         if source.startswith(("http://", "https://")):
-            # TODO: Implement download logic or use requests
-            # For now, we assume we don't hit this in offline tests
-            raise NotImplementedError("URL download not yet implemented")
+            import requests
+
+            # Download the file
+            response = requests.get(source, stream=True, timeout=30)
+            response.raise_for_status()
+            with dest.open("wb") as f:
+                for chunk in response.iter_content(chunk_size=8192):
+                    f.write(chunk)
         else:
             # Assume local path string
             src_path = Path(source)

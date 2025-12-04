@@ -33,6 +33,9 @@ dependencies = [
 
     # UI (Gradio 5.x)
     "gradio>=5.0.0",
+
+    # Networking
+    "requests>=2.0.0",
 ]
 
 [dependency-groups]
