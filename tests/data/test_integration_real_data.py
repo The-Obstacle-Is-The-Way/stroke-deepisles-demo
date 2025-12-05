@@ -8,10 +8,10 @@ import pytest
 
 from stroke_deepisles_demo.data.loader import load_isles_dataset
 
-REAL_DATA_PATH = Path("data/scratch/isles24_extracted")
+REAL_DATA_PATH = Path("data/isles24")
 
 
-@pytest.mark.skipif(not REAL_DATA_PATH.exists(), reason="Real data not found in data/scratch")
+@pytest.mark.skipif(not REAL_DATA_PATH.exists(), reason="Real data not found in data/isles24")
 def test_load_real_data_count() -> None:
     """Verify that we can load the expected number of cases from real data."""
     dataset = load_isles_dataset(source=REAL_DATA_PATH)
@@ -28,7 +28,7 @@ def test_load_real_data_count() -> None:
     assert case["ground_truth"].exists()
 
 
-@pytest.mark.skipif(not REAL_DATA_PATH.exists(), reason="Real data not found in data/scratch")
+@pytest.mark.skipif(not REAL_DATA_PATH.exists(), reason="Real data not found in data/isles24")
 def test_real_data_subject_ids() -> None:
     """Verify subject ID formatting on real data."""
     dataset = load_isles_dataset(source=REAL_DATA_PATH)

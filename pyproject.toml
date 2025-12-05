@@ -33,6 +33,7 @@ dependencies = [
 
     # UI (Gradio 5.x)
     "gradio>=5.0.0",
+    "matplotlib>=3.8.0",
 
     # Networking
     "requests>=2.0.0",
