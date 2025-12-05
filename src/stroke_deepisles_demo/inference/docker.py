@@ -12,10 +12,13 @@ from stroke_deepisles_demo.core.exceptions import (
     DockerGPUNotAvailableError,
     DockerNotAvailableError,
 )
+from stroke_deepisles_demo.core.logging import get_logger
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
     from pathlib import Path
+
+logger = get_logger(__name__)
 
 
 @dataclass(frozen=True)
@@ -123,15 +126,18 @@ def pull_image_if_missing(image: str, *, timeout: float = 600) -> bool:
         check=False,
     )
     if result.returncode == 0:
+        logger.debug("Docker image %s already present", image)
         return False  # Image already present
 
     # Pull the image
+    logger.info("Pulling Docker image %s (this may take a while)", image)
     subprocess.run(
         ["docker", "pull", image],
         capture_output=True,
         timeout=timeout,
         check=True,
     )
+    logger.info("Successfully pulled Docker image %s", image)
     return True
 
 
@@ -241,6 +247,7 @@ def run_container(
     )
 
     start_time = time.time()
+    logger.debug("Running container: %s", " ".join(cmd))
     result = subprocess.run(
         cmd,
         capture_output=True,
@@ -249,6 +256,13 @@ def run_container(
         check=False,
     )
     elapsed = time.time() - start_time
+
+    if result.returncode != 0:
+        logger.error(
+            "Container execution failed (code %d). stderr: %s", result.returncode, result.stderr
+        )
+    else:
+        logger.info("Container execution completed in %.2fs", elapsed)
 
     return DockerRunResult(
         exit_code=result.returncode,

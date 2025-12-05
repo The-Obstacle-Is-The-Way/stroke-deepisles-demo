@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-import logging
 from typing import Any
 
 import gradio as gr
-from matplotlib.figure import Figure  # noqa: TC002 - needed at runtime for Gradio
+from matplotlib.figure import Figure  # noqa: TC002
 
+from stroke_deepisles_demo.core.logging import get_logger
 from stroke_deepisles_demo.pipeline import run_pipeline_on_case
 from stroke_deepisles_demo.ui.components import (
     create_case_selector,
@@ -20,7 +20,7 @@ from stroke_deepisles_demo.ui.viewer import (
     render_slice_comparison,
 )
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 def run_segmentation(
