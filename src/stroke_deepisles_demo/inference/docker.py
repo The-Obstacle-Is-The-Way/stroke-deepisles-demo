@@ -168,13 +168,21 @@ def build_docker_command(
     if gpu:
         cmd.extend(["--gpus", "all"])
 
-    # Match host user to avoid permission issues (Linux only)
-    if match_user and sys.platform != "darwin":
+    # Match host user to avoid permission issues (Linux only).
+    # Guard against platforms (e.g. Windows, macOS) where os.getuid()/getgid()
+    # are absent or not meaningful.
+    if match_user:
         import os
 
-        uid = os.getuid()
-        gid = os.getgid()
-        cmd.extend(["--user", f"{uid}:{gid}"])
+        if (
+            os.name == "posix"
+            and sys.platform != "darwin"
+            and hasattr(os, "getuid")
+            and hasattr(os, "getgid")
+        ):
+            uid = os.getuid()
+            gid = os.getgid()
+            cmd.extend(["--user", f"{uid}:{gid}"])
 
     if volumes:
         for host_path, container_path in volumes.items():
