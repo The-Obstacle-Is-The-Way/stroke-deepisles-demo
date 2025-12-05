@@ -53,5 +53,7 @@ def get_logger(name: str) -> logging.Logger:
     Returns:
         Configured logger instance
     """
-    # Using the package name as prefix
+    # Avoid double-prefixing when __name__ already includes package name
+    if name.startswith("stroke_deepisles_demo."):
+        return logging.getLogger(name)
     return logging.getLogger(f"stroke_deepisles_demo.{name}")

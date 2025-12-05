@@ -52,7 +52,7 @@ uv sync
     ```bash
     uv run python -m stroke_deepisles_demo.ui.app
     ```
-    Open http://localhost:7860 in your browser.
+    Open [http://localhost:7860](http://localhost:7860) in your browser.
 
 3.  **Run via CLI**:
     ```bash

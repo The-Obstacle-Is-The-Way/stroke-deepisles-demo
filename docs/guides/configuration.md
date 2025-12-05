@@ -15,6 +15,7 @@ All settings can be configured via environment variables.
 | `STROKE_DEMO_DEEPISLES_FAST_MODE` | `true` | Use single-model mode |
 | `STROKE_DEMO_DEEPISLES_TIMEOUT_SECONDS` | `1800` | Inference timeout |
 | `STROKE_DEMO_DEEPISLES_USE_GPU` | `true` | Use GPU acceleration |
+| `STROKE_DEMO_TEMP_DIR` | `None` | Scratch directory for intermediate files |
 | `STROKE_DEMO_RESULTS_DIR` | `./results` | Directory for output files |
 | `STROKE_DEMO_GRADIO_SERVER_NAME` | `0.0.0.0` | Gradio server host |
 | `STROKE_DEMO_GRADIO_SERVER_PORT` | `7860` | Gradio server port |
@@ -33,14 +34,14 @@ STROKE_DEMO_RESULTS_DIR=/data/results
 ## Programmatic Configuration
 
 ```python
-from stroke_deepisles_demo.core.config import settings, reload_settings
+from stroke_deepisles_demo.core.config import get_settings, reload_settings
 import os
 
 # Check current settings
-print(settings.log_level)
+print(get_settings().log_level)
 
 # Override via environment
 os.environ["STROKE_DEMO_LOG_LEVEL"] = "DEBUG"
 reload_settings()
-print(settings.log_level)  # DEBUG
+print(get_settings().log_level)  # DEBUG
 ```

@@ -247,7 +247,19 @@ def run_container(
     )
 
     start_time = time.time()
-    logger.debug("Running container: %s", " ".join(cmd))
+    # Redact environment variable values to avoid leaking secrets in logs
+    redacted_cmd: list[str] = []
+    skip_next = False
+    for arg in cmd:
+        if skip_next:
+            redacted_cmd.append("***")
+            skip_next = False
+        elif arg == "-e":
+            redacted_cmd.append(arg)
+            skip_next = True
+        else:
+            redacted_cmd.append(arg)
+    logger.debug("Running container: %s", " ".join(redacted_cmd))
     result = subprocess.run(
         cmd,
         capture_output=True,
