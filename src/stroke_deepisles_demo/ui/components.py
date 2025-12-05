@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
-import logging
-
 import gradio as gr
 
+from stroke_deepisles_demo.core.logging import get_logger
 from stroke_deepisles_demo.data import list_case_ids
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 def create_case_selector() -> gr.Dropdown:

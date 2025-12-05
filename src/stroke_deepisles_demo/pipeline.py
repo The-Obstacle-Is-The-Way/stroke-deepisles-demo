@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import logging
 import shutil
 import statistics
 import tempfile
@@ -12,6 +11,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from stroke_deepisles_demo import metrics
+from stroke_deepisles_demo.core.logging import get_logger
 from stroke_deepisles_demo.data import load_isles_dataset, stage_case_for_deepisles
 from stroke_deepisles_demo.inference import run_deepisles_on_folder
 
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
     from stroke_deepisles_demo.core.types import CaseFiles
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 @dataclass(frozen=True)

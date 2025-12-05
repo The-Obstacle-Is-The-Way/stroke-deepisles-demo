@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from stroke_deepisles_demo.core.exceptions import DeepISLESError, MissingInputError
+from stroke_deepisles_demo.core.logging import get_logger
 from stroke_deepisles_demo.inference.docker import (
     DockerRunResult,
     ensure_gpu_available_if_requested,
@@ -15,6 +16,8 @@ from stroke_deepisles_demo.inference.docker import (
 
 if TYPE_CHECKING:
     from pathlib import Path
+
+logger = get_logger(__name__)
 
 # Constants
 DEEPISLES_IMAGE = "isleschallenge/deepisles"
