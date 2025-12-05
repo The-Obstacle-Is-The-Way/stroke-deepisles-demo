@@ -276,14 +276,18 @@ class TestRunPipelineOnBatch:
             assert call_kwargs.get("compute_dice") is False
 
 
+REAL_DATA_PATH = Path("data/isles24")
+
+
 @pytest.mark.integration
 class TestPipelineIntegration:
     """Integration tests for full pipeline."""
 
     @pytest.mark.slow
+    @pytest.mark.skipif(not REAL_DATA_PATH.exists(), reason="Real data not found in data/isles24")
     def test_run_on_real_case(self, temp_dir: Path) -> None:
         """Run pipeline on actual ISLES24-MR-Lite case."""
-        # Requires: network, Docker, DeepISLES image
+        # Requires: real ISLES24 data, Docker, DeepISLES image
         # Run with: pytest -m "integration and slow"
 
         from stroke_deepisles_demo.inference.docker import check_docker_available
