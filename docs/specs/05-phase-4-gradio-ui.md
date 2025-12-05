@@ -423,8 +423,8 @@ def create_settings_accordion() -> dict[str, gr.components.Component]:
     with gr.Accordion("Advanced Settings", open=False):
         fast_mode = gr.Checkbox(
             value=True,
-            label="Fast Mode",
-            info="Use single model (faster, slightly less accurate)",
+            label="Fast Mode (SEALS)",
+            info="Run SEALS only (ISLES'22 winner, requires DWI+ADC). Disable for full ensemble (requires FLAIR).",
         )
         show_ground_truth = gr.Checkbox(
             value=True,

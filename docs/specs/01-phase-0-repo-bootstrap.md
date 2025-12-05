@@ -233,7 +233,7 @@ class Settings(BaseSettings):
 
     # DeepISLES
     deepisles_docker_image: str = "isleschallenge/deepisles"
-    deepisles_fast_mode: bool = True
+    deepisles_fast_mode: bool = True  # SEALS-only (ISLES'22 winner, no FLAIR needed)
 
     # Paths
     temp_dir: str | None = None

@@ -103,7 +103,7 @@ def run_pipeline_on_case(
         case_id: Case identifier (string) or index (int)
         dataset_id: HF dataset ID (default from settings)
         output_dir: Directory for results (default: temp dir)
-        fast: Use single-model mode (faster)
+        fast: Use SEALS-only mode (ISLES'22 winner, DWI+ADC only, no FLAIR needed)
         gpu: Use GPU acceleration
         compute_dice: Compute Dice score if ground truth available
         cleanup_staging: Remove staging directory after inference

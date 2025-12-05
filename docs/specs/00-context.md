@@ -95,9 +95,37 @@ data/scratch/isles24_extracted/
 - **Paper**: Nature Communications 2025 - "DeepISLES: A clinically validated ischemic stroke segmentation model"
 - **GitHub**: [ezequieldlrosa/DeepIsles](https://github.com/ezequieldlrosa/DeepIsles)
 - **Docker**: `isleschallenge/deepisles`
-- **Inputs**: DWI + ADC (required), FLAIR (optional)
+- **Inputs**: DWI + ADC (required), FLAIR (required for ensemble, optional for fast mode)
 - **Output**: 3D binary lesion mask (NIfTI)
-- **Mode**: We use `fast=True` (single model) not the full 3-model ensemble
+- **Mode**: `fast=True` runs **SEALS only** (the ISLES'22 challenge winner)
+
+#### Why we use `fast=True` (SEALS-only mode)
+
+DeepISLES is an ensemble of 3 models from the ISLES'22 challenge:
+
+| Model | Based On | Inputs Required | Notes |
+|-------|----------|-----------------|-------|
+| **SEALS** | nnUNet | DWI + ADC | 🏆 **ISLES'22 Winner** - runs in `--fast` mode |
+| NVAUTO | MONAI Auto3dseg | DWI + ADC + FLAIR | Requires FLAIR |
+| SWAN | FACTORIZER | DWI + ADC + FLAIR | Requires FLAIR |
+
+**Key insight**: ISLES24-MR-Lite contains only DWI + ADC (no FLAIR). Therefore:
+- `--fast True` → Runs SEALS only → **Perfect match** for our dataset
+- `--fast False` → Would try to run all 3 models → NVAUTO/SWAN would fail without FLAIR
+
+This is **not a downgrade**. SEALS won the ISLES'22 challenge and is state-of-the-art for stroke lesion segmentation using DWI+ADC alone.
+
+#### Scientific validity: External validation with zero data leakage
+
+| Dataset | Year | Used For |
+|---------|------|----------|
+| **ISLES 2022** | 2022 | SEALS training data (250 cases) |
+| **ISLES 2024** | 2024 | Our test data (149 cases from MR-Lite) |
+
+- Different patient cohorts (2 years apart, different hospitals)
+- SEALS has **never seen** ISLES24 patients
+- We have ground truth masks → can validate predictions
+- This constitutes a legitimate **external validation study**
 
 ### 3. visualization: NiiVue
 

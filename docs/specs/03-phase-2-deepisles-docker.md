@@ -55,10 +55,27 @@ docker run --rm \
 **Expected input files:**
 - `dwi.nii.gz` (required) - Diffusion-weighted imaging
 - `adc.nii.gz` (required) - Apparent diffusion coefficient
-- `flair.nii.gz` (optional) - FLAIR sequence
+- `flair.nii.gz` (optional) - Required for full ensemble, not needed for fast mode
 
 **Output:**
 - `results/` directory containing the lesion mask
+
+### Why `--fast True` (SEALS-only mode)
+
+DeepISLES contains 3 models from the ISLES'22 challenge:
+
+| Model | Inputs | Notes |
+|-------|--------|-------|
+| **SEALS** (nnUNet) | DWI + ADC | 🏆 ISLES'22 Winner - runs with `--fast True` |
+| NVAUTO (MONAI) | DWI + ADC + FLAIR | Requires FLAIR |
+| SWAN (FACTORIZER) | DWI + ADC + FLAIR | Requires FLAIR |
+
+**We default to `fast=True` because:**
+1. ISLES24-MR-Lite only has DWI + ADC (no FLAIR)
+2. SEALS alone is the challenge-winning algorithm
+3. Running the full ensemble without FLAIR would fail for 2/3 models
+
+This is not a compromise—SEALS is state-of-the-art for DWI+ADC stroke segmentation.
 
 ## interfaces and types
 
