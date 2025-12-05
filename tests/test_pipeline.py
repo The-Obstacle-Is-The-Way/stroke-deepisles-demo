@@ -281,7 +281,7 @@ class TestPipelineIntegration:
     """Integration tests for full pipeline."""
 
     @pytest.mark.slow
-    def test_run_on_real_case(self) -> None:
+    def test_run_on_real_case(self, temp_dir: Path) -> None:
         """Run pipeline on actual ISLES24-MR-Lite case."""
         # Requires: network, Docker, DeepISLES image
         # Run with: pytest -m "integration and slow"
@@ -296,7 +296,7 @@ class TestPipelineIntegration:
             fast=True,
             gpu=False,
             compute_dice=True,
-            output_dir=Path("/tmp/pipeline_test_output"),  # Use specific dir
+            output_dir=temp_dir / "pipeline_test_output",
         )
 
         assert result.prediction_mask.exists()
