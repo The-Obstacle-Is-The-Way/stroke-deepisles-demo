@@ -23,10 +23,9 @@ scripts/discovery/
 ### data & artifacts
 All downloaded samples, temporary outputs, and schema reports reside in:
 ```
-data/scratch/
-├── .gitkeep             # Tracked
-├── schema_report.txt    # Generated report
-└── samples/             # Raw data samples (IGNORED)
+data/
+├── isles24/             # Extracted ISLES24 data (IGNORED)
+└── discovery/           # Schema reports, samples (IGNORED)
 ```
 
 ## discovery workflow
@@ -44,11 +43,11 @@ Write a focused script in `scripts/discovery/` that:
 ### 2. execution
 Run the script from the project root:
 ```bash
-uv run scripts/discovery/inspect_hf_dataset.py > data/scratch/schema_report.txt
+uv run scripts/discovery/inspect_hf_dataset.py > data/discovery/schema_report.txt
 ```
 
 ### 3. verification
-Manually review `data/scratch/schema_report.txt`.
+Manually review `data/discovery/schema_report.txt`.
 - **Check**: Do column names match `CaseAdapter` expectations?
 - **Check**: Are file paths strings or objects?
 - **Check**: Are required fields (DWI, ADC) actually present?
@@ -62,6 +61,6 @@ If the report contradicts the code/specs:
 ## git configuration
 Ensure `.gitignore` includes:
 ```gitignore
-data/scratch/*
-!data/scratch/.gitkeep
+data/isles24/
+data/discovery/
 ```

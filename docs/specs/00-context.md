@@ -40,9 +40,9 @@ This showcases that:
 
 **The original ISLES24-MR-Lite dataset is NOT properly uploaded to HuggingFace.**
 
-It's just raw ZIP files dumped on HF, not a proper Dataset with parquet/Arrow format. This means `load_dataset()` fails. See `data/scratch/isles24_schema_report.txt` for full details.
+It's just raw ZIP files dumped on HF, not a proper Dataset with parquet/Arrow format. This means `load_dataset()` fails. See `data/discovery/isles24_schema_report.txt` for full details.
 
-**Workaround**: We extracted the ZIPs locally to `data/scratch/isles24_extracted/` (git-ignored) and will implement a file-based loader first. Later, we'll re-upload properly and verify full HF consumption.
+**Workaround**: We extracted the ZIPs locally to `data/isles24/` (git-ignored) and will implement a file-based loader first. Later, we'll re-upload properly and verify full HF consumption.
 
 ## why we need tobias's datasets fork
 
@@ -75,20 +75,20 @@ We pin to this branch until upstream merges the PRs.
 ### 1. data source: ISLES24-MR-Lite
 
 - **HF Dataset**: [YongchengYAO/ISLES24-MR-Lite](https://huggingface.co/datasets/YongchengYAO/ISLES24-MR-Lite) (**BROKEN** - raw ZIPs, not proper dataset)
-- **Local extracted**: `data/scratch/isles24_extracted/` (git-ignored)
+- **Local extracted**: `data/isles24/` (git-ignored)
 - **Content**: 149 acute stroke MRI cases with DWI, ADC, and manual infarct masks
 - **Origin**: Subset of ISLES 2024 challenge data
 - **Why suitable**: DeepISLES was trained on ISLES 2022, so ISLES24 is an **external** test set (no data leakage)
 
 **File structure** (after extraction):
 ```
-data/scratch/isles24_extracted/
+data/isles24/
 ├── Images-DWI/sub-stroke{XXXX}_ses-02_dwi.nii.gz        # 149 files
 ├── Images-ADC/sub-stroke{XXXX}_ses-02_adc.nii.gz        # 149 files
 └── Masks/sub-stroke{XXXX}_ses-02_lesion-msk.nii.gz      # 149 files
 ```
 
-**Schema reference**: `data/scratch/isles24_schema_report.txt`
+**Schema reference**: `data/discovery/isles24_schema_report.txt`
 
 ### 2. model: DeepISLES
 

@@ -7,7 +7,7 @@ to document its exact schema before building adapters.
 
 Per: docs/specs/data-discovery.md
 
-Output: data/scratch/isles24_schema_report.txt
+Output: data/discovery/isles24_schema_report.txt
 """
 
 from __future__ import annotations
@@ -20,7 +20,7 @@ from typing import Any
 
 # Constants
 DATASET_ID = "YongchengYAO/ISLES24-MR-Lite"
-OUTPUT_DIR = Path(__file__).parent.parent.parent / "data" / "scratch"
+OUTPUT_DIR = Path(__file__).parent.parent.parent / "data" / "discovery"
 REPORT_FILE = OUTPUT_DIR / "isles24_schema_report.txt"
 
 

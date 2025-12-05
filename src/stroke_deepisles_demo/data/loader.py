@@ -21,7 +21,7 @@ class DatasetInfo:
 
 
 def load_isles_dataset(
-    source: str | Path = "data/scratch/isles24_extracted",
+    source: str | Path = "data/isles24",
     *,
     local_mode: bool = True,  # Default to local for now
 ) -> LocalDataset:

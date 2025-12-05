@@ -14,7 +14,7 @@ Implement a data loading layer that provides typed access to ISLES24 neuroimagin
 | Columns: `dwi`, `adc`, `mask`, `participant_id` | No columns - just raw ZIP files |
 | Parquet/Arrow format | Three ZIP archives dumped on HF |
 
-**Evidence**: `data/scratch/isles24_schema_report.txt`
+**Evidence**: `data/discovery/isles24_schema_report.txt`
 
 This means the demo must be built in phases:
 1. **Phase 1A**: Local file loader (works NOW with extracted data)
@@ -29,7 +29,7 @@ This means the demo must be built in phases:
 ### data location
 
 ```
-data/scratch/isles24_extracted/     # Git-ignored
+data/isles24/                       # Git-ignored
 ├── Images-DWI/                     # 149 files
 │   └── sub-stroke{XXXX}_ses-02_dwi.nii.gz
 ├── Images-ADC/                     # 149 files
@@ -87,7 +87,7 @@ class DatasetInfo:
 
 
 def load_isles_dataset(
-    source: str | Path = "data/scratch/isles24_extracted",
+    source: str | Path = "data/isles24",
     *,
     local_mode: bool = True,  # Default to local for now
 ) -> LocalDataset:
@@ -288,7 +288,7 @@ def test_get_case_returns_case_files(synthetic_isles_dir):
 ### done criteria (phase 1a)
 
 - [ ] `uv run pytest tests/data/ -v` passes
-- [ ] Can load all 149 cases from `data/scratch/isles24_extracted/`
+- [ ] Can load all 149 cases from `data/isles24/`
 - [ ] `list_case_ids()` returns 149 subject IDs
 - [ ] `get_case("sub-stroke0005")` returns valid CaseFiles
 - [ ] Type checking passes: `uv run mypy src/stroke_deepisles_demo/data/`
