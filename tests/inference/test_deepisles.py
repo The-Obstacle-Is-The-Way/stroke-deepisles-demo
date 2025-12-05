@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from pathlib import Path
+from typing import TYPE_CHECKING
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -15,6 +15,9 @@ from stroke_deepisles_demo.inference.deepisles import (
     validate_input_folder,
 )
 from stroke_deepisles_demo.inference.docker import check_docker_available
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 class TestValidateInputFolder:
@@ -161,7 +164,7 @@ class TestRunDeepIslesOnFolder:
 class TestDeepIslesIntegration:
     """Integration tests requiring real Docker and DeepISLES image."""
 
-    def test_real_inference(self, synthetic_case_files: object) -> None:
+    def test_real_inference(self, synthetic_case_files: object, temp_dir: Path) -> None:
         """Run actual DeepISLES inference on synthetic data."""
         if not check_docker_available():
             pytest.skip("Docker not available")
@@ -171,7 +174,7 @@ class TestDeepIslesIntegration:
         # Stage the synthetic files
         staged = stage_case_for_deepisles(
             synthetic_case_files,  # type: ignore
-            Path("/tmp/deepisles_test"),
+            temp_dir / "deepisles_test",
         )
 
         try:
