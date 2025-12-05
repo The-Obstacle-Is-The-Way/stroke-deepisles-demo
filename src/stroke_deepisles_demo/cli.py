@@ -27,20 +27,9 @@ def main(argv: list[str] | None = None) -> int:
     run_parser.add_argument("--case", type=str, help="Case ID (e.g., sub-stroke0001)")
     run_parser.add_argument("--index", type=int, help="Case index (alternative to --case)")
     run_parser.add_argument("--output", type=Path, default=None, help="Output directory")
-    run_parser.add_argument("--fast", action="store_true", default=True, help="Use fast mode")
-    # Note: we default to fast=True in pipeline, but CLI arg should control it.
-    # Argparse store_true defaults to False if not present, unless we set default=True?
-    # Usually for flags: --fast enables it. If we want it enabled by default, we use --no-fast.
-    # But DeepISLES uses --fast True.
-    # Let's stick to the spec: --fast flag enables it.
-    # Wait, spec says: "fast: bool = True" default in pipeline.
-    # CLI should probably default to True as well?
-    # Let's change CLI to have --no-fast.
-
     run_parser.add_argument(
-        "--no-fast", action="store_false", dest="fast", help="Disable fast mode"
+        "--no-fast", action="store_false", dest="fast", help="Disable fast mode (SEALS-only)"
     )
-    # And default fast to True
     run_parser.set_defaults(fast=True)
 
     run_parser.add_argument("--no-gpu", action="store_true", help="Disable GPU")

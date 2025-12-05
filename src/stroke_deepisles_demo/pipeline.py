@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-import contextlib
+import logging
 import shutil
 import statistics
 import tempfile
@@ -19,6 +19,8 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
 
     from stroke_deepisles_demo.core.types import CaseFiles
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -125,8 +127,10 @@ def run_pipeline_on_case(
     ground_truth = case_files.get("ground_truth")
 
     if compute_dice and ground_truth and ground_truth.exists():
-        with contextlib.suppress(Exception):
+        try:
             dice_score = metrics.compute_dice(inference_result.prediction_path, ground_truth)
+        except Exception as e:
+            logger.warning("Failed to compute Dice score for %s: %s", resolved_case_id, e)
 
     # 5. Cleanup (Optional)
     if cleanup_staging:
@@ -143,6 +147,39 @@ def run_pipeline_on_case(
         dice_score=dice_score,
         elapsed_seconds=elapsed,
     )
+
+
+def run_pipeline_on_batch(
+    case_ids: Sequence[str | int],
+    *,
+    max_workers: int = 1,
+    **kwargs: object,
+) -> list[PipelineResult]:
+    """
+    Run pipeline on multiple cases.
+
+    Note: Parallel execution requires multiple GPUs or sequential mode.
+    Currently only sequential execution is implemented (max_workers is ignored).
+
+    Args:
+        case_ids: List of case identifiers or indices
+        max_workers: Number of parallel workers (default 1 for sequential).
+                     Currently ignored - reserved for future parallel support.
+        **kwargs: Passed to run_pipeline_on_case
+
+    Returns:
+        List of PipelineResult, one per case
+    """
+    # Currently only sequential execution is supported.
+    # max_workers is accepted for API compatibility but ignored.
+    _ = max_workers
+
+    results: list[PipelineResult] = []
+    for case_id in case_ids:
+        result = run_pipeline_on_case(case_id, **kwargs)  # type: ignore[arg-type]
+        results.append(result)
+
+    return results
 
 
 def get_pipeline_summary(results: Sequence[PipelineResult]) -> PipelineSummary:

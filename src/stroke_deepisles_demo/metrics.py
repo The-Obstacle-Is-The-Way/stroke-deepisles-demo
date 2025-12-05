@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from numpy.typing import NDArray
 
 
-def load_nifti_as_array(path: Path) -> tuple[NDArray[np.float64], tuple[float, ...]]:
+def load_nifti_as_array(path: Path) -> tuple[NDArray[np.float64], tuple[float, float, float]]:
     """
     Load NIfTI file and return data array with voxel dimensions.
 
@@ -26,9 +26,15 @@ def load_nifti_as_array(path: Path) -> tuple[NDArray[np.float64], tuple[float, .
     img = nib.load(path)  # type: ignore[attr-defined]
     data = img.get_fdata().astype(np.float64)  # type: ignore[attr-defined]
     zooms = img.header.get_zooms()  # type: ignore[attr-defined]
-    # zooms can be 3D or 4D, we want spatial dims usually. Assuming 3D/4D volume.
-    # DeepISLES output is 3D usually.
-    return data, tuple(float(z) for z in zooms[:3])
+    # zooms can be 3D or 4D, we want spatial dims. DeepISLES output is 3D.
+    # Extract exactly 3 spatial dimensions.
+    spatial_zooms = zooms[:3]
+    voxel_sizes: tuple[float, float, float] = (
+        float(spatial_zooms[0]),
+        float(spatial_zooms[1]),
+        float(spatial_zooms[2]),
+    )
+    return data, voxel_sizes
 
 
 def compute_dice(
@@ -98,7 +104,7 @@ def compute_volume_ml(
     if isinstance(mask, Path):
         data, loaded_zooms = load_nifti_as_array(mask)
         if voxel_size_mm is None:
-            voxel_size_mm = loaded_zooms  # type: ignore
+            voxel_size_mm = loaded_zooms
     else:
         data = mask
         if voxel_size_mm is None:

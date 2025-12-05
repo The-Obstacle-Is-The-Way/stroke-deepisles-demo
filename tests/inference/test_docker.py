@@ -123,10 +123,12 @@ class TestBuildDockerCommand:
 
     def test_match_user_on_linux(self) -> None:
         """Adds --user flag on Linux when match_user=True."""
+        # Use create=True to allow mocking os.getuid/getgid on platforms where they don't exist
         with (
+            patch("os.name", "posix"),
             patch("sys.platform", "linux"),
-            patch("os.getuid", return_value=1000),
-            patch("os.getgid", return_value=1000),
+            patch("os.getuid", return_value=1000, create=True),
+            patch("os.getgid", return_value=1000, create=True),
         ):
             cmd = build_docker_command("myimage", match_user=True)
             assert "--user" in cmd
@@ -189,10 +191,11 @@ class TestDockerIntegration:
         """Docker is actually available on this system."""
         # This test only runs with -m integration
         # We skip if docker check fails, rather than failing the test
-        if not check_docker_available():
+        available = check_docker_available()
+        if not available:
             pytest.skip("Docker not available")
 
-        assert check_docker_available() is True
+        assert available is True
 
     def test_can_run_hello_world(self) -> None:
         """Can run docker hello-world container."""

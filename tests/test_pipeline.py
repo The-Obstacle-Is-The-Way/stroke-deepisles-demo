@@ -12,6 +12,7 @@ from stroke_deepisles_demo.core.types import CaseFiles
 from stroke_deepisles_demo.pipeline import (
     PipelineResult,
     get_pipeline_summary,
+    run_pipeline_on_batch,
     run_pipeline_on_case,
 )
 
@@ -218,6 +219,61 @@ class TestGetPipelineSummary:
         assert summary.num_cases == 2
         assert summary.num_successful == 2
         assert summary.num_failed == 0
+
+
+class TestRunPipelineOnBatch:
+    """Tests for run_pipeline_on_batch."""
+
+    def test_runs_multiple_cases(self) -> None:
+        """Runs pipeline on multiple cases sequentially."""
+        with patch("stroke_deepisles_demo.pipeline.run_pipeline_on_case") as mock_run:
+            mock_run.side_effect = [
+                PipelineResult(
+                    case_id="sub-001",
+                    input_files=MagicMock(),
+                    staged_dir=MagicMock(),
+                    prediction_mask=MagicMock(),
+                    ground_truth=None,
+                    dice_score=0.8,
+                    elapsed_seconds=10.0,
+                ),
+                PipelineResult(
+                    case_id="sub-002",
+                    input_files=MagicMock(),
+                    staged_dir=MagicMock(),
+                    prediction_mask=MagicMock(),
+                    ground_truth=None,
+                    dice_score=0.9,
+                    elapsed_seconds=12.0,
+                ),
+            ]
+
+            results = run_pipeline_on_batch(["sub-001", "sub-002"], fast=True, gpu=False)
+
+            assert len(results) == 2
+            assert results[0].case_id == "sub-001"
+            assert results[1].case_id == "sub-002"
+            assert mock_run.call_count == 2
+
+    def test_passes_kwargs_to_each_call(self) -> None:
+        """Passes kwargs to each run_pipeline_on_case call."""
+        with patch("stroke_deepisles_demo.pipeline.run_pipeline_on_case") as mock_run:
+            mock_run.return_value = PipelineResult(
+                case_id="sub-001",
+                input_files=MagicMock(),
+                staged_dir=MagicMock(),
+                prediction_mask=MagicMock(),
+                ground_truth=None,
+                dice_score=0.8,
+                elapsed_seconds=10.0,
+            )
+
+            run_pipeline_on_batch(["sub-001"], fast=False, gpu=True, compute_dice=False)
+
+            call_kwargs = mock_run.call_args.kwargs
+            assert call_kwargs.get("fast") is False
+            assert call_kwargs.get("gpu") is True
+            assert call_kwargs.get("compute_dice") is False
 
 
 @pytest.mark.integration
