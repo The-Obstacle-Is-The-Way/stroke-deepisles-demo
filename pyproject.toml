@@ -38,6 +38,9 @@ dependencies = [
     "requests>=2.0.0",
 ]
 
+[project.scripts]
+stroke-demo = "stroke_deepisles_demo.cli:main"
+
 [dependency-groups]
 dev = [
     "pytest>=8.0.0",
