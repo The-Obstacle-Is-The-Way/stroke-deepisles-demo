@@ -118,6 +118,7 @@ addopts = [
     "-v",
     "--tb=short",
     "--strict-markers",
+    "-m", "not integration",  # Skip integration tests by default
 ]
 markers = [
     "integration: marks tests requiring external resources (Docker, network)",

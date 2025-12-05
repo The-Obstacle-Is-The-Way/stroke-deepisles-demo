@@ -205,3 +205,7 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Data Discovery (per docs/specs/data-discovery.md)
+data/scratch/*
+!data/scratch/.gitkeep

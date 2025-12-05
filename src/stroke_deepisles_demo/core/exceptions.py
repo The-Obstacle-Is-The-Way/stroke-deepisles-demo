@@ -21,3 +21,7 @@ class DeepISLESError(StrokeDemoError):
 
 class MissingInputError(StrokeDemoError):
     """Required input files are missing."""
+
+
+class DockerGPUNotAvailableError(StrokeDemoError):
+    """GPU requested but NVIDIA Container Runtime not available."""

@@ -13,7 +13,7 @@ import pytest
 from stroke_deepisles_demo.core.types import CaseFiles
 
 if TYPE_CHECKING:
-    from collections.abc import Generator, Iterator
+    from collections.abc import Generator
 
 
 @pytest.fixture
@@ -62,30 +62,46 @@ def synthetic_case_files(temp_dir: Path) -> CaseFiles:
 
 
 @pytest.fixture
-def mock_hf_dataset(synthetic_case_files: CaseFiles) -> object:
-    """Create a mock HF Dataset-like object."""
+def synthetic_isles_dir(temp_dir: Path) -> Path:
+    """
+    Create synthetic ISLES24-like directory structure.
 
-    # Simple list-based mock that mimics dataset behavior
-    class MockDataset:
-        def __init__(self) -> None:
-            self.data = [
-                {
-                    "participant_id": "sub-001",
-                    "dwi": str(synthetic_case_files["dwi"]),
-                    "adc": str(synthetic_case_files["adc"]),
-                    "flair": None,
-                    "mask": str(synthetic_case_files.get("ground_truth")),
-                }
-            ]
-            self.features = {"dwi": None, "adc": None, "flair": None, "mask": None}
+    Structure:
+        temp_dir/
+        ├── Images-DWI/
+        │   ├── sub-stroke0001_ses-02_dwi.nii.gz
+        │   └── sub-stroke0002_ses-02_dwi.nii.gz
+        ├── Images-ADC/
+        │   ├── sub-stroke0001_ses-02_adc.nii.gz
+        │   └── sub-stroke0002_ses-02_adc.nii.gz
+        └── Masks/
+            ├── sub-stroke0001_ses-02_lesion-msk.nii.gz
+            └── sub-stroke0002_ses-02_lesion-msk.nii.gz
+    """
+    dwi_dir = temp_dir / "Images-DWI"
+    adc_dir = temp_dir / "Images-ADC"
+    mask_dir = temp_dir / "Masks"
 
-        def __len__(self) -> int:
-            return len(self.data)
+    dwi_dir.mkdir()
+    adc_dir.mkdir()
+    mask_dir.mkdir()
 
-        def __getitem__(self, idx: int) -> dict[str, str | None]:
-            return self.data[idx]
+    for subject_num in [1, 2]:
+        subject_id = f"sub-stroke{subject_num:04d}"
 
-        def __iter__(self) -> Iterator[dict[str, str | None]]:
-            return iter(self.data)
+        # Create DWI
+        dwi_data = np.random.rand(10, 10, 5).astype(np.float32)
+        dwi_img = nib.Nifti1Image(dwi_data, affine=np.eye(4))  # type: ignore
+        nib.save(dwi_img, dwi_dir / f"{subject_id}_ses-02_dwi.nii.gz")  # type: ignore
 
-    return MockDataset()
+        # Create ADC
+        adc_data = np.random.rand(10, 10, 5).astype(np.float32) * 2000
+        adc_img = nib.Nifti1Image(adc_data, affine=np.eye(4))  # type: ignore
+        nib.save(adc_img, adc_dir / f"{subject_id}_ses-02_adc.nii.gz")  # type: ignore
+
+        # Create Mask
+        mask_data = (np.random.rand(10, 10, 5) > 0.9).astype(np.uint8)
+        mask_img = nib.Nifti1Image(mask_data, affine=np.eye(4))  # type: ignore
+        nib.save(mask_img, mask_dir / f"{subject_id}_ses-02_lesion-msk.nii.gz")  # type: ignore
+
+    return temp_dir
