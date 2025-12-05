@@ -4,7 +4,7 @@ This folder contains local neuroimaging data for the stroke-deepisles-demo proje
 
 ## Structure
 
-```
+```text
 data/
 ├── README.md           # This file (tracked)
 ├── isles24/            # ISLES24 NIfTI files (gitignored)
@@ -26,7 +26,7 @@ data/
 ## File Naming Convention
 
 Files follow BIDS-like naming:
-```
+```text
 sub-stroke{XXXX}_ses-02_{modality}.nii.gz
 ```
 

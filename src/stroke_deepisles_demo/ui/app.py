@@ -6,7 +6,7 @@ import logging
 from typing import Any
 
 import gradio as gr
-from matplotlib.figure import Figure  # noqa: TC002
+from matplotlib.figure import Figure  # noqa: TC002 - needed at runtime for Gradio
 
 from stroke_deepisles_demo.pipeline import run_pipeline_on_case
 from stroke_deepisles_demo.ui.components import (

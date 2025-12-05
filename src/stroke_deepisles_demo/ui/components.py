@@ -2,9 +2,13 @@
 
 from __future__ import annotations
 
+import logging
+
 import gradio as gr
 
 from stroke_deepisles_demo.data import list_case_ids
+
+logger = logging.getLogger(__name__)
 
 
 def create_case_selector() -> gr.Dropdown:
@@ -17,6 +21,7 @@ def create_case_selector() -> gr.Dropdown:
     try:
         case_ids = list_case_ids()
     except Exception:
+        logger.warning("Failed to load case IDs, using fallback", exc_info=True)
         case_ids = ["Error loading cases"]
 
     return gr.Dropdown(

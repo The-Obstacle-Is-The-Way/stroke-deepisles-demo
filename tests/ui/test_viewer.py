@@ -5,12 +5,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import matplotlib
+
+# Non-interactive backend for tests - must be before pyplot import
+matplotlib.use("Agg")
+
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.figure import Figure
-
-# Non-interactive backend for tests
-matplotlib.use("Agg")
 
 from stroke_deepisles_demo.ui.viewer import (
     create_niivue_html,
