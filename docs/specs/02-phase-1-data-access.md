@@ -1,695 +1,415 @@
-# phase 1: data access / hf integration
+# phase 1: data access layer
 
 ## purpose
 
-Implement the data loading layer that consumes ISLES24-MR-Lite from HuggingFace Hub. At the end of this phase, we can load any case by ID and get local paths to DWI, ADC, and ground truth NIfTI files.
+Implement a data loading layer that provides typed access to ISLES24 neuroimaging cases. This phase is split into sub-phases due to a critical discovery: the upstream dataset is not properly formatted for HuggingFace consumption.
 
-## deliverables
+## critical discovery (2025-12-04)
 
-- [ ] `src/stroke_deepisles_demo/data/loader.py` - HF dataset loading
-- [ ] `src/stroke_deepisles_demo/data/adapter.py` - Case adapter for file access
-- [ ] `src/stroke_deepisles_demo/data/staging.py` - Stage files for DeepISLES
-- [ ] Unit tests with fixtures (no network required)
-- [ ] Integration test (marked, requires network)
+**`YongchengYAO/ISLES24-MR-Lite` is NOT a proper HuggingFace Dataset.**
 
-## vertical slice outcome
+| What we expected | What actually exists |
+|------------------|---------------------|
+| `load_dataset()` returns Dataset with columns | `load_dataset()` FAILS with "no data" |
+| Columns: `dwi`, `adc`, `mask`, `participant_id` | No columns - just raw ZIP files |
+| Parquet/Arrow format | Three ZIP archives dumped on HF |
 
-After this phase, you can run:
+**Evidence**: `data/scratch/isles24_schema_report.txt`
+
+This means the demo must be built in phases:
+1. **Phase 1A**: Local file loader (works NOW with extracted data)
+2. **Phase 1B**: Test Tobias's `Nifti()` feature on local files (proves loading works)
+3. **Phase 1C**: Upload properly to HuggingFace (future - proves production pipeline)
+4. **Phase 1D**: Consume via Tobias's fork (future - proves full round-trip)
+
+---
+
+## phase 1a: local file loader (CURRENT PRIORITY)
+
+### data location
+
+```
+data/scratch/isles24_extracted/     # Git-ignored
+├── Images-DWI/                     # 149 files
+│   └── sub-stroke{XXXX}_ses-02_dwi.nii.gz
+├── Images-ADC/                     # 149 files
+│   └── sub-stroke{XXXX}_ses-02_adc.nii.gz
+└── Masks/                          # 149 files
+    └── sub-stroke{XXXX}_ses-02_lesion-msk.nii.gz
+```
+
+### file naming convention (BIDS-like)
+
+| Component | Pattern | Example |
+|-----------|---------|---------|
+| Subject ID | `sub-stroke{XXXX}` | `sub-stroke0005` |
+| Session | `ses-02` | Always "02" in this dataset |
+| Modality | `dwi`, `adc`, `lesion-msk` | - |
+| Extension | `.nii.gz` | Compressed NIfTI |
+
+**Subject ID regex**: `sub-stroke(\d{4})_ses-02_.*\.nii\.gz`
+
+**Note**: Subject IDs have gaps (e.g., 0018 missing). Range is 0001-0189, total 149 cases.
+
+### deliverables
+
+- [ ] `src/stroke_deepisles_demo/data/loader.py` - Rewrite with local mode
+- [ ] `src/stroke_deepisles_demo/data/adapter.py` - Rewrite for file-based access
+- [ ] `src/stroke_deepisles_demo/data/staging.py` - Already correct, no changes
+- [ ] Unit tests with synthetic fixtures
+- [ ] Integration test with actual extracted data
+
+### interfaces
+
+#### `data/loader.py`
 
 ```python
-from stroke_deepisles_demo.data import get_case, list_case_ids
-
-# List available cases
-case_ids = list_case_ids()
-print(f"Found {len(case_ids)} cases")
-
-# Load a specific case
-case = get_case("sub-001")
-print(f"DWI: {case.dwi}")
-print(f"ADC: {case.adc}")
-print(f"Ground truth: {case.ground_truth}")
-```
-
-## module structure
-
-```
-src/stroke_deepisles_demo/data/
-├── __init__.py          # Public API exports
-├── loader.py            # HF Hub dataset loading
-├── adapter.py           # Case adapter (index → files)
-└── staging.py           # Stage files with DeepISLES naming
-```
-
-## interfaces and types
-
-### `data/loader.py`
-
-```python
-"""Load ISLES24-MR-Lite dataset from HuggingFace Hub."""
+"""Load ISLES24 data from local directory or HuggingFace Hub."""
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from datasets import Dataset
-
-
-def load_isles_dataset(
-    dataset_id: str = "YongchengYAO/ISLES24-MR-Lite",
-    *,
-    cache_dir: Path | None = None,
-    streaming: bool = False,
-) -> Dataset:
-    """
-    Load the ISLES24-MR-Lite dataset from HuggingFace Hub.
-
-    Args:
-        dataset_id: HuggingFace dataset identifier
-        cache_dir: Local cache directory (uses HF default if None)
-        streaming: If True, use streaming mode (lazy loading)
-
-    Returns:
-        HuggingFace Dataset object with BIDS/NIfTI support
-
-    Raises:
-        DataLoadError: If dataset cannot be loaded
-    """
-    ...
-
-
-def get_dataset_info(dataset_id: str = "YongchengYAO/ISLES24-MR-Lite") -> DatasetInfo:
-    """
-    Get metadata about the dataset without downloading.
-
-    Returns:
-        DatasetInfo with case count, available modalities, etc.
-    """
-    ...
+    from stroke_deepisles_demo.data.adapter import LocalDataset
 
 
 @dataclass
 class DatasetInfo:
-    """Metadata about the loaded dataset."""
+    """Metadata about the dataset."""
 
-    dataset_id: str
+    source: str  # "local" or HF dataset ID
     num_cases: int
-    modalities: list[str]  # e.g., ["dwi", "adc", "mask"]
+    modalities: list[str]
     has_ground_truth: bool
+
+
+def load_isles_dataset(
+    source: str | Path = "data/scratch/isles24_extracted",
+    *,
+    local_mode: bool = True,  # Default to local for now
+) -> LocalDataset:
+    """
+    Load ISLES24 dataset.
+
+    Args:
+        source: Local directory path or HuggingFace dataset ID
+        local_mode: If True, treat source as local directory
+
+    Returns:
+        Dataset-like object providing case access
+
+    Raises:
+        DataLoadError: If data cannot be loaded
+    """
+    if local_mode or isinstance(source, Path):
+        return _load_from_local_directory(Path(source))
+    # Future: return _load_from_huggingface(source)
+    raise NotImplementedError("HuggingFace mode not yet implemented")
+
+
+def _load_from_local_directory(data_dir: Path) -> LocalDataset:
+    """
+    Load cases from extracted local files.
+
+    Expects structure:
+        data_dir/
+        ├── Images-DWI/sub-stroke{XXXX}_ses-02_dwi.nii.gz
+        ├── Images-ADC/sub-stroke{XXXX}_ses-02_adc.nii.gz
+        └── Masks/sub-stroke{XXXX}_ses-02_lesion-msk.nii.gz
+    """
+    ...
 ```
 
-### `data/adapter.py`
+#### `data/adapter.py`
 
 ```python
-"""Adapt HF dataset rows to typed file references."""
+"""Provide typed access to ISLES24 cases."""
 
 from __future__ import annotations
 
+import re
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterator
 
 from stroke_deepisles_demo.core.types import CaseFiles
 
 
-class CaseAdapter:
-    """
-    Adapts HuggingFace dataset to provide typed access to case files.
+@dataclass
+class LocalDataset:
+    """File-based dataset for local ISLES24 data."""
 
-    This handles the mapping between HF dataset structure and our
-    internal CaseFiles type.
-    """
-
-    def __init__(self, dataset: Dataset) -> None:
-        """
-        Initialize adapter with a loaded dataset.
-
-        Args:
-            dataset: HuggingFace Dataset with NIfTI files
-        """
-        ...
+    data_dir: Path
+    cases: dict[str, CaseFiles]  # subject_id -> files
 
     def __len__(self) -> int:
-        """Return number of cases in the dataset."""
-        ...
+        return len(self.cases)
 
     def __iter__(self) -> Iterator[str]:
-        """Iterate over case IDs."""
-        ...
+        return iter(self.cases.keys())
 
     def list_case_ids(self) -> list[str]:
-        """
-        List all available case identifiers.
-
-        Returns:
-            List of case IDs (e.g., ["sub-001", "sub-002", ...])
-        """
-        ...
+        """Return sorted list of subject IDs."""
+        return sorted(self.cases.keys())
 
     def get_case(self, case_id: str | int) -> CaseFiles:
-        """
-        Get file paths for a specific case.
-
-        Args:
-            case_id: Either a string ID (e.g., "sub-001") or integer index
-
-        Returns:
-            CaseFiles with paths to DWI, ADC, and optionally ground truth
-
-        Raises:
-            KeyError: If case_id not found
-            DataLoadError: If files cannot be accessed
-        """
-        ...
-
-    def get_case_by_index(self, index: int) -> tuple[str, CaseFiles]:
-        """
-        Get case by numerical index.
-
-        Returns:
-            Tuple of (case_id, CaseFiles)
-        """
-        ...
-```
-
-### `data/staging.py`
-
-```python
-"""Stage NIfTI files with DeepISLES-expected naming."""
-
-from __future__ import annotations
-
-from pathlib import Path
-from typing import NamedTuple
-
-from stroke_deepisles_demo.core.types import CaseFiles
+        """Get files for a case by ID or index."""
+        if isinstance(case_id, int):
+            case_id = self.list_case_ids()[case_id]
+        return self.cases[case_id]
 
 
-class StagedCase(NamedTuple):
-    """Paths to staged files ready for DeepISLES."""
-
-    input_dir: Path      # Directory containing staged files
-    dwi_path: Path       # Path to dwi.nii.gz
-    adc_path: Path       # Path to adc.nii.gz
-    flair_path: Path | None  # Path to flair.nii.gz if available
+# Subject ID extraction
+SUBJECT_PATTERN = re.compile(r"sub-(stroke\d{4})_ses-\d+_.*\.nii\.gz")
 
 
-def stage_case_for_deepisles(
-    case_files: CaseFiles,
-    output_dir: Path,
-    *,
-    case_id: str | None = None,
-) -> StagedCase:
+def parse_subject_id(filename: str) -> str | None:
+    """Extract subject ID from BIDS filename."""
+    match = SUBJECT_PATTERN.match(filename)
+    return f"sub-{match.group(1)}" if match else None
+
+
+def build_local_dataset(data_dir: Path) -> LocalDataset:
     """
-    Stage case files with DeepISLES-expected naming convention.
+    Scan directory and build case mapping.
 
-    DeepISLES expects files named exactly:
-    - dwi.nii.gz
-    - adc.nii.gz
-    - flair.nii.gz (optional)
-
-    This function copies/symlinks the source files to a staging directory
-    with the correct names.
-
-    Args:
-        case_files: Source file paths from CaseAdapter
-        output_dir: Directory to stage files into
-        case_id: Optional case ID for logging/subdirectory
-
-    Returns:
-        StagedCase with paths to staged files
-
-    Raises:
-        MissingInputError: If required files (DWI, ADC) are missing
-        OSError: If file operations fail
+    Matches DWI + ADC + Mask files by subject ID.
     """
-    ...
+    dwi_dir = data_dir / "Images-DWI"
+    adc_dir = data_dir / "Images-ADC"
+    mask_dir = data_dir / "Masks"
 
+    cases: dict[str, CaseFiles] = {}
 
-def create_staging_directory(base_dir: Path | None = None) -> Path:
-    """
-    Create a temporary staging directory.
+    # Scan DWI files to get subject IDs
+    for dwi_file in dwi_dir.glob("*.nii.gz"):
+        subject_id = parse_subject_id(dwi_file.name)
+        if not subject_id:
+            continue
 
-    Args:
-        base_dir: Parent directory (uses system temp if None)
+        # Find matching ADC and Mask
+        adc_file = adc_dir / dwi_file.name.replace("_dwi.", "_adc.")
+        mask_file = mask_dir / dwi_file.name.replace("_dwi.", "_lesion-msk.")
 
-    Returns:
-        Path to created staging directory
-    """
-    ...
-```
+        if not adc_file.exists():
+            continue  # Skip incomplete cases
 
-### `data/__init__.py` (public API)
-
-```python
-"""Data loading and case management for stroke-deepisles-demo."""
-
-from stroke_deepisles_demo.data.adapter import CaseAdapter
-from stroke_deepisles_demo.data.loader import DatasetInfo, get_dataset_info, load_isles_dataset
-from stroke_deepisles_demo.data.staging import StagedCase, stage_case_for_deepisles
-
-__all__ = [
-    # Loader
-    "load_isles_dataset",
-    "get_dataset_info",
-    "DatasetInfo",
-    # Adapter
-    "CaseAdapter",
-    # Staging
-    "stage_case_for_deepisles",
-    "StagedCase",
-]
-
-
-# Convenience functions (combine loader + adapter)
-def get_case(case_id: str | int) -> CaseFiles:
-    """Load a single case by ID or index."""
-    ...
-
-
-def list_case_ids() -> list[str]:
-    """List all available case IDs."""
-    ...
-```
-
-## tdd plan
-
-### test file structure
-
-```
-tests/
-├── conftest.py              # Shared fixtures
-├── data/
-│   ├── __init__.py
-│   ├── test_loader.py       # Tests for HF loading
-│   ├── test_adapter.py      # Tests for case adapter
-│   └── test_staging.py      # Tests for file staging
-└── fixtures/
-    └── nifti/               # Minimal synthetic NIfTI files
-        ├── dwi.nii.gz
-        ├── adc.nii.gz
-        └── mask.nii.gz
-```
-
-### tests to write first (TDD order)
-
-#### 1. `tests/conftest.py` - Fixtures
-
-```python
-"""Shared test fixtures."""
-
-from __future__ import annotations
-
-import tempfile
-from pathlib import Path
-
-import nibabel as nib
-import numpy as np
-import pytest
-
-
-@pytest.fixture
-def temp_dir() -> Path:
-    """Create a temporary directory for test outputs."""
-    with tempfile.TemporaryDirectory() as td:
-        yield Path(td)
-
-
-@pytest.fixture
-def synthetic_nifti_3d(temp_dir: Path) -> Path:
-    """Create a minimal synthetic 3D NIfTI file."""
-    data = np.random.rand(10, 10, 10).astype(np.float32)
-    img = nib.Nifti1Image(data, affine=np.eye(4))
-    path = temp_dir / "synthetic.nii.gz"
-    nib.save(img, path)
-    return path
-
-
-@pytest.fixture
-def synthetic_case_files(temp_dir: Path) -> CaseFiles:
-    """Create a complete set of synthetic case files."""
-    # Create DWI
-    dwi_data = np.random.rand(64, 64, 30).astype(np.float32)
-    dwi_img = nib.Nifti1Image(dwi_data, affine=np.eye(4))
-    dwi_path = temp_dir / "dwi.nii.gz"
-    nib.save(dwi_img, dwi_path)
-
-    # Create ADC
-    adc_data = np.random.rand(64, 64, 30).astype(np.float32) * 2000
-    adc_img = nib.Nifti1Image(adc_data, affine=np.eye(4))
-    adc_path = temp_dir / "adc.nii.gz"
-    nib.save(adc_img, adc_path)
-
-    # Create mask
-    mask_data = (np.random.rand(64, 64, 30) > 0.9).astype(np.uint8)
-    mask_img = nib.Nifti1Image(mask_data, affine=np.eye(4))
-    mask_path = temp_dir / "mask.nii.gz"
-    nib.save(mask_img, mask_path)
-
-    return CaseFiles(
-        dwi=dwi_path,
-        adc=adc_path,
-        flair=None,
-        ground_truth=mask_path,
-    )
-
-
-@pytest.fixture
-def mock_hf_dataset(synthetic_case_files: CaseFiles):
-    """Create a mock HF Dataset-like object."""
-    # Returns a simple dict-based mock that mimics Dataset behavior
-    ...
-```
-
-#### 2. `tests/data/test_staging.py` - Start with staging (no network)
-
-```python
-"""Tests for data staging module."""
-
-from __future__ import annotations
-
-from pathlib import Path
-
-import pytest
-
-from stroke_deepisles_demo.core.exceptions import MissingInputError
-from stroke_deepisles_demo.core.types import CaseFiles
-from stroke_deepisles_demo.data.staging import (
-    StagedCase,
-    create_staging_directory,
-    stage_case_for_deepisles,
-)
-
-
-class TestCreateStagingDirectory:
-    """Tests for create_staging_directory."""
-
-    def test_creates_directory(self, temp_dir: Path) -> None:
-        """Staging directory is created and exists."""
-        staging = create_staging_directory(base_dir=temp_dir)
-        assert staging.exists()
-        assert staging.is_dir()
-
-    def test_uses_system_temp_when_no_base(self) -> None:
-        """Uses system temp directory when base_dir is None."""
-        staging = create_staging_directory(base_dir=None)
-        assert staging.exists()
-        # Cleanup
-        staging.rmdir()
-
-
-class TestStageCaseForDeepIsles:
-    """Tests for stage_case_for_deepisles."""
-
-    def test_stages_required_files(
-        self, synthetic_case_files: CaseFiles, temp_dir: Path
-    ) -> None:
-        """DWI and ADC are staged with correct names."""
-        staged = stage_case_for_deepisles(synthetic_case_files, temp_dir)
-
-        assert staged.dwi_path.name == "dwi.nii.gz"
-        assert staged.adc_path.name == "adc.nii.gz"
-        assert staged.dwi_path.exists()
-        assert staged.adc_path.exists()
-
-    def test_staged_files_are_readable(
-        self, synthetic_case_files: CaseFiles, temp_dir: Path
-    ) -> None:
-        """Staged files can be read as valid NIfTI."""
-        import nibabel as nib
-
-        staged = stage_case_for_deepisles(synthetic_case_files, temp_dir)
-
-        dwi = nib.load(staged.dwi_path)
-        assert dwi.shape == (64, 64, 30)
-
-    def test_raises_when_dwi_missing(self, temp_dir: Path) -> None:
-        """Raises MissingInputError when DWI is missing."""
-        case_files = CaseFiles(
-            dwi=temp_dir / "nonexistent.nii.gz",
-            adc=temp_dir / "adc.nii.gz",
-            flair=None,
-            ground_truth=None,
+        cases[subject_id] = CaseFiles(
+            dwi=dwi_file,
+            adc=adc_file,
+            ground_truth=mask_file if mask_file.exists() else None,
         )
 
-        with pytest.raises(MissingInputError, match="DWI"):
-            stage_case_for_deepisles(case_files, temp_dir)
-
-    def test_flair_is_optional(
-        self, synthetic_case_files: CaseFiles, temp_dir: Path
-    ) -> None:
-        """Staging succeeds when FLAIR is None."""
-        # synthetic_case_files has flair=None
-        staged = stage_case_for_deepisles(synthetic_case_files, temp_dir)
-
-        assert staged.flair_path is None
+    return LocalDataset(data_dir=data_dir, cases=cases)
 ```
 
-#### 3. `tests/data/test_adapter.py` - Case adapter with mocks
+### synthetic fixture structure
+
+Unit tests MUST use fixtures that replicate the **exact** directory structure. Add to `tests/conftest.py`:
 
 ```python
-"""Tests for case adapter module."""
+@pytest.fixture
+def synthetic_isles_dir(temp_dir: Path) -> Path:
+    """
+    Create synthetic ISLES24-like directory structure.
 
-from __future__ import annotations
+    Structure:
+        temp_dir/
+        ├── Images-DWI/
+        │   ├── sub-stroke0001_ses-02_dwi.nii.gz
+        │   └── sub-stroke0002_ses-02_dwi.nii.gz
+        ├── Images-ADC/
+        │   ├── sub-stroke0001_ses-02_adc.nii.gz
+        │   └── sub-stroke0002_ses-02_adc.nii.gz
+        └── Masks/
+            ├── sub-stroke0001_ses-02_lesion-msk.nii.gz
+            └── sub-stroke0002_ses-02_lesion-msk.nii.gz
+    """
+    dwi_dir = temp_dir / "Images-DWI"
+    adc_dir = temp_dir / "Images-ADC"
+    mask_dir = temp_dir / "Masks"
 
-import pytest
+    dwi_dir.mkdir()
+    adc_dir.mkdir()
+    mask_dir.mkdir()
 
-from stroke_deepisles_demo.core.types import CaseFiles
-from stroke_deepisles_demo.data.adapter import CaseAdapter
+    for subject_num in [1, 2]:
+        subject_id = f"sub-stroke{subject_num:04d}"
 
+        # Create DWI
+        dwi_data = np.random.rand(10, 10, 5).astype(np.float32)
+        dwi_img = nib.Nifti1Image(dwi_data, affine=np.eye(4))
+        nib.save(dwi_img, dwi_dir / f"{subject_id}_ses-02_dwi.nii.gz")
 
-class TestCaseAdapter:
-    """Tests for CaseAdapter."""
+        # Create ADC
+        adc_data = np.random.rand(10, 10, 5).astype(np.float32) * 2000
+        adc_img = nib.Nifti1Image(adc_data, affine=np.eye(4))
+        nib.save(adc_img, adc_dir / f"{subject_id}_ses-02_adc.nii.gz")
 
-    def test_list_case_ids_returns_strings(self, mock_hf_dataset) -> None:
-        """list_case_ids returns list of string identifiers."""
-        adapter = CaseAdapter(mock_hf_dataset)
-        case_ids = adapter.list_case_ids()
+        # Create Mask
+        mask_data = (np.random.rand(10, 10, 5) > 0.9).astype(np.uint8)
+        mask_img = nib.Nifti1Image(mask_data, affine=np.eye(4))
+        nib.save(mask_img, mask_dir / f"{subject_id}_ses-02_lesion-msk.nii.gz")
 
-        assert isinstance(case_ids, list)
-        assert all(isinstance(cid, str) for cid in case_ids)
-
-    def test_len_matches_dataset_size(self, mock_hf_dataset) -> None:
-        """len(adapter) equals number of cases in dataset."""
-        adapter = CaseAdapter(mock_hf_dataset)
-
-        assert len(adapter) == len(mock_hf_dataset)
-
-    def test_get_case_by_string_id(self, mock_hf_dataset) -> None:
-        """Can retrieve case by string identifier."""
-        adapter = CaseAdapter(mock_hf_dataset)
-        case_ids = adapter.list_case_ids()
-
-        case = adapter.get_case(case_ids[0])
-
-        assert isinstance(case, dict)  # CaseFiles is a TypedDict
-        assert "dwi" in case
-        assert "adc" in case
-
-    def test_get_case_by_index(self, mock_hf_dataset) -> None:
-        """Can retrieve case by integer index."""
-        adapter = CaseAdapter(mock_hf_dataset)
-
-        case_id, case = adapter.get_case_by_index(0)
-
-        assert isinstance(case_id, str)
-        assert case["dwi"] is not None
-
-    def test_get_case_invalid_id_raises(self, mock_hf_dataset) -> None:
-        """Raises KeyError for invalid case ID."""
-        adapter = CaseAdapter(mock_hf_dataset)
-
-        with pytest.raises(KeyError):
-            adapter.get_case("nonexistent-case-id")
-
-    def test_iteration(self, mock_hf_dataset) -> None:
-        """Can iterate over case IDs."""
-        adapter = CaseAdapter(mock_hf_dataset)
-
-        case_ids = list(adapter)
-
-        assert len(case_ids) == len(adapter)
+    return temp_dir
 ```
 
-#### 4. `tests/data/test_loader.py` - Loader with network mocks
+### tdd plan
 
 ```python
-"""Tests for data loader module."""
+# tests/data/test_loader.py
 
-from __future__ import annotations
+def test_load_from_local_returns_local_dataset(synthetic_isles_dir):
+    """Local mode returns LocalDataset."""
+    ...
 
-from unittest.mock import MagicMock, patch
+def test_load_from_local_finds_all_cases(synthetic_isles_dir):
+    """Finds all cases in synthetic structure."""
+    ...
 
-import pytest
+# tests/data/test_adapter.py
 
-from stroke_deepisles_demo.core.exceptions import DataLoadError
-from stroke_deepisles_demo.data.loader import (
-    DatasetInfo,
-    get_dataset_info,
-    load_isles_dataset,
-)
+def test_parse_subject_id_extracts_correctly():
+    """Extracts subject ID from BIDS filename."""
+    assert parse_subject_id("sub-stroke0005_ses-02_dwi.nii.gz") == "sub-stroke0005"
 
+def test_build_local_dataset_matches_files(synthetic_isles_dir):
+    """Matches DWI, ADC, Mask by subject ID."""
+    ...
 
-class TestLoadIslesDataset:
-    """Tests for load_isles_dataset."""
-
-    def test_calls_hf_load_dataset(self) -> None:
-        """Calls datasets.load_dataset with correct arguments."""
-        with patch("stroke_deepisles_demo.data.loader.load_dataset") as mock_load:
-            mock_load.return_value = MagicMock()
-
-            load_isles_dataset("test/dataset")
-
-            mock_load.assert_called_once()
-            call_args = mock_load.call_args
-            assert call_args.args[0] == "test/dataset"
-
-    def test_returns_dataset_object(self) -> None:
-        """Returns the loaded Dataset object."""
-        with patch("stroke_deepisles_demo.data.loader.load_dataset") as mock_load:
-            expected = MagicMock()
-            mock_load.return_value = expected
-
-            result = load_isles_dataset()
-
-            assert result is expected
-
-    def test_handles_load_error(self) -> None:
-        """Wraps HF errors in DataLoadError."""
-        with patch("stroke_deepisles_demo.data.loader.load_dataset") as mock_load:
-            mock_load.side_effect = Exception("Network error")
-
-            with pytest.raises(DataLoadError, match="Network error"):
-                load_isles_dataset()
-
-
-class TestGetDatasetInfo:
-    """Tests for get_dataset_info."""
-
-    def test_returns_datasetinfo(self) -> None:
-        """Returns DatasetInfo with expected fields."""
-        with patch("stroke_deepisles_demo.data.loader.load_dataset") as mock_load:
-            mock_ds = MagicMock()
-            mock_ds.__len__ = MagicMock(return_value=149)
-            mock_ds.features = {"dwi": ..., "adc": ..., "mask": ...}
-            mock_load.return_value = mock_ds
-
-            info = get_dataset_info()
-
-            assert isinstance(info, DatasetInfo)
-            assert info.num_cases == 149
-
-
-@pytest.mark.integration
-class TestLoadIslesDatasetIntegration:
-    """Integration tests that hit the real HuggingFace Hub."""
-
-    @pytest.mark.slow
-    def test_load_real_dataset(self) -> None:
-        """Actually loads ISLES24-MR-Lite from HF Hub."""
-        # This test requires network access
-        # Run with: pytest -m integration
-        dataset = load_isles_dataset(streaming=True)
-
-        # Just verify we got something
-        assert dataset is not None
+def test_get_case_returns_case_files(synthetic_isles_dir):
+    """get_case returns CaseFiles with correct paths."""
+    ...
 ```
 
-### what to mock
+### done criteria (phase 1a)
 
-- `datasets.load_dataset` - Mock for unit tests, real for integration tests
-- `huggingface_hub` calls - Mock for unit tests
-- File system operations - Use `temp_dir` fixture with real files
+- [ ] `uv run pytest tests/data/ -v` passes
+- [ ] Can load all 149 cases from `data/scratch/isles24_extracted/`
+- [ ] `list_case_ids()` returns 149 subject IDs
+- [ ] `get_case("sub-stroke0005")` returns valid CaseFiles
+- [ ] Type checking passes: `uv run mypy src/stroke_deepisles_demo/data/`
 
-### what to test for real
+---
 
-- NIfTI file creation/reading with nibabel
-- File staging (copy/symlink operations)
-- Integration test: actual HF Hub download (marked `@pytest.mark.integration`)
+## phase 1b: test tobias's nifti feature (NEXT)
 
-## "done" criteria
+### purpose
 
-Phase 1 is complete when:
+Verify that Tobias's `Nifti()` feature type from the datasets fork can correctly load/parse NIfTI files. This proves the **loading** part of the consumption pipeline works, even though the **download** part is broken.
 
-1. All unit tests pass: `uv run pytest tests/data/ -v`
-2. Can load synthetic test cases without network
-3. Can list case IDs from mock dataset
-4. Can stage files with correct DeepISLES naming
-5. Integration test passes (with network): `uv run pytest -m integration`
-6. Type checking passes: `uv run mypy src/stroke_deepisles_demo/data/`
-7. Code coverage for data module > 80%
-
-## implementation notes
-
-- ISLES24-MR-Lite structure needs investigation - check HF page for exact column names
-- Consider using `huggingface_hub.snapshot_download` if `datasets.load_dataset` has issues with NIfTI
-- Staging can use symlinks on Unix, copies on Windows
-- Cache the HF dataset locally to avoid repeated downloads
-
-### critical: streaming mode + docker materialization
-
-**Reviewer feedback (valid)**: When using `streaming=True`, the dataset returns URLs or lazy file objects, NOT local POSIX paths. Docker requires physical files on the host disk for volume mounting.
-
-**Solution**: The `stage_case_for_deepisles` function MUST handle materialization:
+### approach
 
 ```python
-def stage_case_for_deepisles(
-    case_files: CaseFiles,
-    output_dir: Path,
-    *,
-    case_id: str | None = None,
-) -> StagedCase:
-    """
-    Stage case files with DeepISLES-expected naming.
+# Test script to verify Nifti() feature works on local files
+from datasets import Features, Value
+from datasets.features import Nifti  # From Tobias's fork
 
-    IMPORTANT: This function handles both local paths and streaming data.
-    When files come from streaming mode, they must be downloaded/materialized
-    before Docker can mount them.
-    """
-    output_dir.mkdir(parents=True, exist_ok=True)
+# Create a simple dataset from local files
+features = Features({
+    "subject_id": Value("string"),
+    "dwi": Nifti(),
+    "adc": Nifti(),
+    "mask": Nifti(),
+})
 
-    # Handle DWI - may be Path, URL, or NIfTI object
-    dwi_staged = output_dir / "dwi.nii.gz"
-    _materialize_nifti(case_files["dwi"], dwi_staged)
-
-    # Handle ADC
-    adc_staged = output_dir / "adc.nii.gz"
-    _materialize_nifti(case_files["adc"], adc_staged)
-
-    # ... etc
-
-
-def _materialize_nifti(source: Path | str | bytes | NiftiImage, dest: Path) -> None:
-    """
-    Materialize a NIfTI file to a local path.
-
-    Handles:
-    - Local Path: copy or symlink
-    - URL string: download
-    - bytes: write directly
-    - NIfTI object: serialize with nibabel
-    """
-    if isinstance(source, Path) and source.exists():
-        # Local file - symlink if possible, copy otherwise
-        shutil.copy2(source, dest)
-    elif isinstance(source, str) and source.startswith(("http://", "https://")):
-        # URL - download
-        _download_file(source, dest)
-    elif isinstance(source, bytes):
-        # Raw bytes
-        dest.write_bytes(source)
-    elif hasattr(source, "to_bytes"):
-        # NIfTI object (nibabel or wrapper)
-        dest.write_bytes(source.to_bytes())
-    else:
-        raise MissingInputError(f"Cannot materialize source: {type(source)}")
+# Load a single case and verify Nifti() decodes correctly
 ```
 
-This ensures Docker always gets physical files regardless of how data was loaded.
+### done criteria (phase 1b)
 
-## dependencies to add
+- [ ] Tobias's `Nifti()` feature loads local `.nii.gz` files
+- [ ] Decoded NIfTI has correct shape/dtype
+- [ ] Can access voxel data via nibabel-like interface
 
-No new dependencies needed - all specified in Phase 0:
-- `datasets` (Tobias fork)
-- `nibabel`
-- `numpy`
+---
+
+## phase 1c: proper huggingface upload (FUTURE)
+
+### purpose
+
+Re-upload ISLES24 data to HuggingFace **properly** using the arc-aphasia-bids approach. This proves the **production** pipeline works.
+
+### approach
+
+1. Use BIDS loader from Tobias's fork
+2. Create proper parquet schema with columns:
+   - `subject`: string
+   - `session`: string
+   - `dwi`: Nifti()
+   - `adc`: Nifti()
+   - `mask`: Nifti()
+3. Upload to new HuggingFace repo (e.g., `The-Obstacle-Is-The-Way/ISLES24-BIDS`)
+
+### done criteria (phase 1c)
+
+- [ ] Dataset uploaded to HuggingFace with proper schema
+- [ ] HuggingFace dataset viewer shows data correctly
+- [ ] `load_dataset("new-repo-id")` returns Dataset with expected columns
+
+---
+
+## phase 1d: consumption verification (FUTURE)
+
+### purpose
+
+Verify the full round-trip: Download from HuggingFace using Tobias's fork.
+
+### approach
+
+```python
+from datasets import load_dataset
+
+# This should work after Phase 1C
+ds = load_dataset("The-Obstacle-Is-The-Way/ISLES24-BIDS")
+case = ds["train"][0]
+print(case["dwi"].shape)  # Should work!
+```
+
+### new adapter function
+
+When Phase 1D is implemented, `adapter.py` will need a new function alongside `build_local_dataset`:
+
+```python
+def adapt_hf_case(hf_row: dict) -> CaseFiles:
+    """
+    Adapt a HuggingFace Dataset row to CaseFiles.
+
+    Args:
+        hf_row: Row from load_dataset() with columns:
+            - dwi: Nifti feature (nibabel-like object)
+            - adc: Nifti feature
+            - mask: Nifti feature
+            - subject: str
+
+    Returns:
+        CaseFiles with materialized paths or nibabel objects
+    """
+    # Implementation depends on how Nifti() feature exposes data
+    # May need to write to temp files or pass nibabel objects directly
+    ...
+```
+
+This maintains the same `CaseFiles` contract for downstream phases regardless of data source.
+
+### done criteria (phase 1d)
+
+- [ ] `load_dataset()` works on properly uploaded dataset
+- [ ] `adapt_hf_case()` function converts HF rows to CaseFiles
+- [ ] Full demo runs with HuggingFace consumption (not just local files)
+- [ ] Documents the pitfall for future projects
+
+---
+
+## dependencies
+
+No new dependencies needed beyond Phase 0.
+
+## notes
+
+- The original `adapter.py` assumed HF Dataset with columns - COMPLETELY WRONG
+- The original `loader.py` called `load_dataset()` directly - FAILS on this dataset
+- `staging.py` is still correct - it just needs `CaseFiles` with paths

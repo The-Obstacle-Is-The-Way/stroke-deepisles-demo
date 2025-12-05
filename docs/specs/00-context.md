@@ -11,19 +11,38 @@ This document explains **why** we're building `stroke-deepisles-demo` and the ar
 We want to demonstrate an end-to-end neuroimaging inference pipeline:
 
 ```
-HuggingFace Hub (ISLES24-MR-Lite)
-        ↓
-    BIDS/NIfTI loader (datasets fork)
-        ↓
-    DeepISLES Docker (stroke segmentation)
-        ↓
-    NiiVue visualization (Gradio Space)
+CURRENT (Phase 1A):
+    Local NIfTI files (extracted from ISLES24-MR-Lite ZIPs)
+            ↓
+        File-based loader (parse BIDS filenames)
+            ↓
+        DeepISLES Docker (stroke segmentation)
+            ↓
+        NiiVue visualization (Gradio Space)
+
+FUTURE (Phase 1C-D):
+    HuggingFace Hub (properly uploaded dataset)
+            ↓
+        Tobias's datasets fork (BIDS loader + Nifti feature)
+            ↓
+        DeepISLES Docker (stroke segmentation)
+            ↓
+        NiiVue visualization (Gradio Space)
 ```
 
 This showcases that:
-1. Neuroimaging data can be consumed from HF Hub with proper BIDS/NIfTI support
-2. Clinical-grade models can run via Docker as black boxes
-3. Results can be visualized interactively in a browser
+1. Neuroimaging data can be loaded from local BIDS-named files (NOW)
+2. Neuroimaging data can be consumed from HF Hub with proper BIDS/NIfTI support (FUTURE)
+3. Clinical-grade models can run via Docker as black boxes
+4. Results can be visualized interactively in a browser
+
+## critical discovery (2025-12-04)
+
+**The original ISLES24-MR-Lite dataset is NOT properly uploaded to HuggingFace.**
+
+It's just raw ZIP files dumped on HF, not a proper Dataset with parquet/Arrow format. This means `load_dataset()` fails. See `data/scratch/isles24_schema_report.txt` for full details.
+
+**Workaround**: We extracted the ZIPs locally to `data/scratch/isles24_extracted/` (git-ignored) and will implement a file-based loader first. Later, we'll re-upload properly and verify full HF consumption.
 
 ## why we need tobias's datasets fork
 
@@ -55,10 +74,21 @@ We pin to this branch until upstream merges the PRs.
 
 ### 1. data source: ISLES24-MR-Lite
 
-- **HF Dataset**: [YongchengYAO/ISLES24-MR-Lite](https://huggingface.co/datasets/YongchengYAO/ISLES24-MR-Lite)
+- **HF Dataset**: [YongchengYAO/ISLES24-MR-Lite](https://huggingface.co/datasets/YongchengYAO/ISLES24-MR-Lite) (**BROKEN** - raw ZIPs, not proper dataset)
+- **Local extracted**: `data/scratch/isles24_extracted/` (git-ignored)
 - **Content**: 149 acute stroke MRI cases with DWI, ADC, and manual infarct masks
 - **Origin**: Subset of ISLES 2024 challenge data
 - **Why suitable**: DeepISLES was trained on ISLES 2022, so ISLES24 is an **external** test set (no data leakage)
+
+**File structure** (after extraction):
+```
+data/scratch/isles24_extracted/
+├── Images-DWI/sub-stroke{XXXX}_ses-02_dwi.nii.gz        # 149 files
+├── Images-ADC/sub-stroke{XXXX}_ses-02_adc.nii.gz        # 149 files
+└── Masks/sub-stroke{XXXX}_ses-02_lesion-msk.nii.gz      # 149 files
+```
+
+**Schema reference**: `data/scratch/isles24_schema_report.txt`
 
 ### 2. model: DeepISLES
 
