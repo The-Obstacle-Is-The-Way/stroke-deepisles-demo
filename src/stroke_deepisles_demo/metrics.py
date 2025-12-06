@@ -101,21 +101,19 @@ def compute_volume_ml(
     Returns:
         Volume in milliliters (mL)
     """
+    # Resolve data and voxel sizes
+    data: NDArray[np.float64]
+    voxel_dims: tuple[float, float, float]
+
     if isinstance(mask, Path):
         data, loaded_zooms = load_nifti_as_array(mask)
-        if voxel_size_mm is None:
-            voxel_size_mm = loaded_zooms
+        voxel_dims = voxel_size_mm if voxel_size_mm is not None else loaded_zooms
     else:
         data = mask
-        if voxel_size_mm is None:
-            # Default to 1mm isotropic if not provided for array
-            voxel_size_mm = (1.0, 1.0, 1.0)
-
-    # Ensure voxel_size_mm is not None for type checker
-    assert voxel_size_mm is not None
+        # Default to 1mm isotropic if not provided for array
+        voxel_dims = voxel_size_mm if voxel_size_mm is not None else (1.0, 1.0, 1.0)
 
     volume_voxels = np.sum(data > 0)
-    # Use math.prod for better type compatibility
-    voxel_vol_mm3 = math.prod(voxel_size_mm)
+    voxel_vol_mm3 = math.prod(voxel_dims)
 
     return float(volume_voxels * voxel_vol_mm3 / 1000.0)  # mm3 -> mL

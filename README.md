@@ -1,3 +1,27 @@
+---
+title: Stroke DeepISLES Demo
+emoji: "\U0001F9E0"
+colorFrom: blue
+colorTo: purple
+sdk: docker
+app_port: 7860
+suggested_hardware: t4-small
+pinned: false
+license: mit
+short_description: Ischemic stroke lesion segmentation using DeepISLES
+models:
+  - isleschallenge/deepisles
+datasets:
+  - YongchengYAO/ISLES24-MR-Lite
+tags:
+  - medical-imaging
+  - stroke
+  - segmentation
+  - neuroimaging
+  - niivue
+  - nnunet
+---
+
 # Stroke DeepISLES Demo
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)

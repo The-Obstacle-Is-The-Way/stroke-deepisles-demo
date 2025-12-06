@@ -129,8 +129,8 @@ def run_pipeline_on_case(
     if compute_dice and ground_truth and ground_truth.exists():
         try:
             dice_score = metrics.compute_dice(inference_result.prediction_path, ground_truth)
-        except Exception as e:
-            logger.warning("Failed to compute Dice score for %s: %s", resolved_case_id, e)
+        except Exception:
+            logger.warning("Failed to compute Dice score for %s", resolved_case_id, exc_info=True)
 
     # 5. Cleanup (Optional)
     if cleanup_staging:

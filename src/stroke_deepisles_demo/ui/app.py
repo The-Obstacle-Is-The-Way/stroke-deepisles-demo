@@ -113,13 +113,15 @@ def create_app() -> gr.Blocks:
     ) as demo:
         # Header
         gr.Markdown("""
-        # 🧠 Stroke Lesion Segmentation Demo
+        # Stroke Lesion Segmentation Demo
 
         This demo runs [DeepISLES](https://github.com/ezequieldlrosa/DeepIsles)
         stroke segmentation on cases from
         [ISLES24-MR-Lite](https://huggingface.co/datasets/YongchengYAO/ISLES24-MR-Lite).
 
-        **Note:** The pipeline runs inside a Docker container. First run might be slow (pulling image).
+        **Model:** SEALS (ISLES'22 winner) - Fast, accurate ischemic stroke lesion segmentation.
+
+        **Note:** First run may take a moment to load models and data.
         """)
 
         with gr.Row():
@@ -167,4 +169,16 @@ def get_demo() -> gr.Blocks:
 
 
 if __name__ == "__main__":
-    get_demo().launch(theme=gr.themes.Soft(), css="footer {visibility: hidden}")
+    from stroke_deepisles_demo.core.config import get_settings
+    from stroke_deepisles_demo.core.logging import setup_logging
+
+    settings = get_settings()
+    setup_logging(settings.log_level, format_style=settings.log_format)
+
+    get_demo().launch(
+        server_name=settings.gradio_server_name,
+        server_port=settings.gradio_server_port,
+        share=settings.gradio_share,
+        theme=gr.themes.Soft(),
+        css="footer {visibility: hidden}",
+    )
