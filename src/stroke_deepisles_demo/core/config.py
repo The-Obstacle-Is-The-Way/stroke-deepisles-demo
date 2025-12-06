@@ -38,32 +38,18 @@ def is_deepisles_direct_available() -> bool:
     Check if DeepISLES can be invoked directly (without Docker).
 
     Returns:
-        True if DeepISLES Python modules are importable
+        True if DEEPISLES_DIRECT_INVOCATION env var is set
 
-    This is True when running inside the DeepISLES Docker image
-    on HF Spaces, where we base our container on isleschallenge/deepisles.
+    This check is intentionally simple and side-effect free.
+    The env var is set by our Dockerfile when running on HF Spaces.
+    Actual module path setup happens in inference/direct.py when invoked.
+
+    Note:
+        We don't attempt import-based detection here because it would
+        require modifying sys.path, which is a side effect inappropriate
+        for a simple availability check.
     """
-    # Check env var first (set by our Dockerfile)
-    if os.environ.get("DEEPISLES_DIRECT_INVOCATION") == "1":
-        return True
-
-    # Try to import DeepISLES modules
-    try:
-        # The DeepISLES image has the source at /app or similar
-        # Try common paths
-        import sys
-
-        deepisles_paths = ["/app", "/DeepIsles", "/opt/deepisles"]
-        for path in deepisles_paths:
-            if Path(path).exists() and path not in sys.path:
-                sys.path.insert(0, path)
-
-        # Attempt import (only available in DeepISLES Docker image)
-        from src.isles22_ensemble import IslesEnsemble  # noqa: F401
-
-        return True
-    except ImportError:
-        return False
+    return os.environ.get("DEEPISLES_DIRECT_INVOCATION") == "1"
 
 
 class Settings(BaseSettings):

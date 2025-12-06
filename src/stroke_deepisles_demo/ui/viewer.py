@@ -12,6 +12,7 @@ See:
 from __future__ import annotations
 
 import base64
+import json
 import uuid
 from typing import TYPE_CHECKING
 
@@ -304,12 +305,16 @@ def create_niivue_html(
     canvas_id = f"niivue-canvas-{viewer_id}"
     container_id = f"niivue-container-{viewer_id}"
 
+    # Safely serialize URLs for JavaScript (prevents XSS)
+    volume_url_js = json.dumps(volume_url)
+
     # Build mask volume configuration if provided
     mask_js = ""
     if mask_url:
+        mask_url_js = json.dumps(mask_url)
         mask_js = f"""
                 volumes.push({{
-                    url: '{mask_url}',
+                    url: {mask_url_js},
                     colorMap: 'red',
                     opacity: 0.5
                 }});"""
@@ -352,7 +357,7 @@ def create_niivue_html(
 
                 // Prepare volumes
                 const volumes = [{{
-                    url: '{volume_url}',
+                    url: {volume_url_js},
                     name: 'input.nii.gz'
                 }}];{mask_js}
 

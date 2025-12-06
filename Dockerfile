@@ -5,6 +5,11 @@
 # IMPORTANT: During Docker build, GPU is NOT available.
 # All GPU operations happen at runtime only.
 
+# NOTE: isleschallenge/deepisles only publishes 'latest' tag on Docker Hub.
+# For reproducibility, consider using a SHA digest if available:
+#   FROM isleschallenge/deepisles@sha256:<digest>
+# Check https://hub.docker.com/r/isleschallenge/deepisles/tags for updates.
+# Current base: DeepISLES v1.1 (as of Dec 2025)
 FROM isleschallenge/deepisles:latest
 
 # Set environment variables for non-interactive installation

@@ -3,7 +3,8 @@
 # See: docs/specs/07-hf-spaces-deployment.md
 
 # Core - Tobias's fork with BIDS + NIfTI lazy loading
-git+https://github.com/CloseChoice/datasets.git@feat/bids-loader-streaming-upload-fix
+# Pinned to specific commit for reproducibility (Dec 2025)
+git+https://github.com/CloseChoice/datasets.git@c1c15aaa4f00f28f1916f3a896283494162eac49
 
 # HuggingFace
 huggingface-hub>=0.25.0

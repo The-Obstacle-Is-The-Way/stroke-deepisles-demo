@@ -38,12 +38,15 @@ DEEPISLES_SEARCH_PATHS = [
 
 @dataclass(frozen=True)
 class DirectInvocationResult:
-    """Result of direct DeepISLES invocation."""
+    """Result of direct DeepISLES invocation.
+
+    Note:
+        Unlike DockerRunResult, this doesn't include stdout/stderr because
+        direct invocation calls Python APIs directly, not subprocess.
+    """
 
     prediction_path: Path
     elapsed_seconds: float
-    stdout: str = ""
-    stderr: str = ""
 
 
 def _ensure_deepisles_importable() -> str:

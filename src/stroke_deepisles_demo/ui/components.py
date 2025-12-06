@@ -26,18 +26,14 @@ def create_case_selector() -> gr.Dropdown:
     except FileNotFoundError as e:
         # Data directory not found - fail loudly with helpful message
         logger.error("Data directory not found: %s", e)
-        raise RuntimeError(
-            "ISLES24 data not found. Please run: uv run stroke-demo download"
-        ) from e
+        raise RuntimeError("ISLES24 data not found. Please run: uv run stroke-demo download") from e
     except Exception as e:
         # Unexpected error - fail loudly, don't mask with fake dropdown option
         logger.exception("Failed to load case IDs")
         raise RuntimeError(f"Failed to load case IDs: {e}") from e
 
     if not case_ids:
-        raise RuntimeError(
-            "No cases found in dataset. Please verify data directory structure."
-        )
+        raise RuntimeError("No cases found in dataset. Please verify data directory structure.")
 
     return gr.Dropdown(
         choices=case_ids,

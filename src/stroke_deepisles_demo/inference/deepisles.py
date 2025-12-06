@@ -111,9 +111,7 @@ def find_prediction_mask(output_dir: Path) -> Path:
         # Exclude input files that might have been copied
         nifti_files = list(search_dir.glob("*.nii.gz"))
         nifti_files = [
-            f
-            for f in nifti_files
-            if not any(x in f.name.lower() for x in ["dwi", "adc", "flair"])
+            f for f in nifti_files if not any(x in f.name.lower() for x in ["dwi", "adc", "flair"])
         ]
         if nifti_files:
             return nifti_files[0]
@@ -271,8 +269,8 @@ def run_deepisles_on_folder(
         >>> print(result.prediction_path)
         /data/case001/results/prediction.nii.gz
     """
-    # Validate inputs
-    _dwi_path, _adc_path, flair_path = validate_input_folder(input_dir)
+    # Validate inputs (validation ensures dwi/adc exist; we only need flair_path)
+    _, _, flair_path = validate_input_folder(input_dir)
 
     # Set up output directory
     if output_dir is None:
