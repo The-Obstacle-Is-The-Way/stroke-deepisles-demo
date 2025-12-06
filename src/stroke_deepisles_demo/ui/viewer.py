@@ -1,8 +1,19 @@
-"""Neuroimaging visualization for Gradio."""
+"""Neuroimaging visualization for Gradio.
+
+This module provides visualization components for neuroimaging data:
+- NiiVue WebGL-based 3D viewer
+- Matplotlib-based 2D slice comparisons
+
+See:
+    - https://github.com/niivue/niivue (NiiVue v0.65.0)
+    - docs/specs/07-hf-spaces-deployment.md
+"""
 
 from __future__ import annotations
 
 import base64
+import json
+import uuid
 from typing import TYPE_CHECKING
 
 import matplotlib.pyplot as plt
@@ -14,6 +25,10 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from matplotlib.figure import Figure
+
+# NiiVue version - updated to latest stable (Dec 2025)
+NIIVUE_VERSION = "0.65.0"
+NIIVUE_CDN_URL = f"https://unpkg.com/@niivue/niivue@{NIIVUE_VERSION}/dist/index.js"
 
 
 def nifti_to_data_url(nifti_path: Path) -> str:
@@ -268,57 +283,103 @@ def create_niivue_html(
     """
     Create HTML/JS for NiiVue viewer.
 
+    This function generates an HTML snippet with embedded JavaScript for
+    NiiVue WebGL-based neuroimaging visualization. Each invocation creates
+    a unique canvas ID to avoid conflicts when multiple viewers are rendered.
+
     Args:
-        volume_url: URL to volume NIfTI file
-        mask_url: Optional URL to mask NIfTI file
+        volume_url: Data URL or URL to volume NIfTI file
+        mask_url: Optional data URL or URL to mask NIfTI file
         height: Viewer height in pixels
 
     Returns:
         HTML string with embedded NiiVue viewer
+
+    Note:
+        The JavaScript uses dynamic import() which works in modern browsers
+        and Gradio's HTML component. Each viewer gets a unique ID to support
+        multiple simultaneous viewers.
     """
+    # Generate unique ID for this viewer instance
+    viewer_id = uuid.uuid4().hex[:8]
+    canvas_id = f"niivue-canvas-{viewer_id}"
+    container_id = f"niivue-container-{viewer_id}"
+
+    # Safely serialize URLs for JavaScript (prevents XSS)
+    volume_url_js = json.dumps(volume_url)
+
+    # Build mask volume configuration if provided
     mask_js = ""
     if mask_url:
+        mask_url_js = json.dumps(mask_url)
         mask_js = f"""
-        volumes.push({{
-            url: '{mask_url}',
-            colorMap: 'red',
-            opacity: 0.5
-        }});
-        """
+                volumes.push({{
+                    url: {mask_url_js},
+                    colorMap: 'red',
+                    opacity: 0.5
+                }});"""
 
+    # JavaScript that initializes NiiVue
+    # Using an IIFE pattern that works better in Gradio's HTML component
     return f"""
-    <div style="width:100%; height:{height}px; background:#000; border-radius:8px; position: relative;">
-        <canvas id="niivue-canvas" style="width:100%; height:100%;"></canvas>
+    <div id="{container_id}" style="width:100%; height:{height}px; background:#000; border-radius:8px; position:relative;">
+        <canvas id="{canvas_id}" style="width:100%; height:100%;"></canvas>
     </div>
     <script type="module">
-        const niivueModule = await import('https://unpkg.com/@niivue/niivue@0.57.0/dist/index.js');
-        const Niivue = niivueModule.Niivue;
+        // NiiVue initialization for viewer {viewer_id}
+        (async function() {{
+            try {{
+                // Check if browser supports WebGL2
+                const testCanvas = document.createElement('canvas');
+                const gl = testCanvas.getContext('webgl2');
+                if (!gl) {{
+                    document.getElementById('{container_id}').innerHTML =
+                        '<div style="color:#fff;padding:20px;text-align:center;">' +
+                        'WebGL2 not supported. Please use a modern browser.</div>';
+                    return;
+                }}
 
-        const nv = new Niivue({{
-            logging: false,
-            show3Dcrosshair: true,
-            textHeight: 0.04,
-            backColor: [0, 0, 0, 1]
-        }});
+                // Dynamically import NiiVue
+                const niivueModule = await import('{NIIVUE_CDN_URL}');
+                const Niivue = niivueModule.Niivue;
 
-        await nv.attachTo('niivue-canvas');
+                // Initialize NiiVue with options
+                const nv = new Niivue({{
+                    logging: false,
+                    show3Dcrosshair: true,
+                    textHeight: 0.04,
+                    backColor: [0, 0, 0, 1],
+                    crosshairColor: [0.2, 0.8, 0.2, 1]
+                }});
 
-        const volumes = [{{
-            url: '{volume_url}',
-            name: 'input.nii.gz'
-        }}];
-        {mask_js}
+                // Attach to canvas
+                await nv.attachToCanvas(document.getElementById('{canvas_id}'));
 
-        await nv.loadVolumes(volumes);
+                // Prepare volumes
+                const volumes = [{{
+                    url: {volume_url_js},
+                    name: 'input.nii.gz'
+                }}];{mask_js}
 
-        // Multiplanar + 3D view
-        nv.setSliceType(nv.sliceTypeMultiplanar);
-        // Check if setMultiplanarLayout exists (added in newer versions, 0.57 has it)
-        if (nv.setMultiplanarLayout) {{
-            nv.setMultiplanarLayout(2);
-        }}
-        nv.opts.show3Dcrosshair = true;
-        nv.setRenderAzimuthElevation(120, 10);
-        nv.drawScene();
+                // Load volumes
+                await nv.loadVolumes(volumes);
+
+                // Configure view: multiplanar + 3D
+                nv.setSliceType(nv.sliceTypeMultiplanar);
+                if (typeof nv.setMultiplanarLayout === 'function') {{
+                    nv.setMultiplanarLayout(2);
+                }}
+                nv.opts.show3Dcrosshair = true;
+                nv.setRenderAzimuthElevation(120, 10);
+                nv.drawScene();
+
+                console.log('NiiVue viewer {viewer_id} initialized successfully');
+            }} catch (error) {{
+                console.error('NiiVue initialization error:', error);
+                document.getElementById('{container_id}').innerHTML =
+                    '<div style="color:#fff;padding:20px;text-align:center;">' +
+                    'Error loading viewer: ' + error.message + '</div>';
+            }}
+        }})();
     </script>
     """

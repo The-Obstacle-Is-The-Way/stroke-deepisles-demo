@@ -6,11 +6,15 @@ import re
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from stroke_deepisles_demo.core.logging import get_logger
+
 if TYPE_CHECKING:
     from collections.abc import Iterator
     from pathlib import Path
 
     from stroke_deepisles_demo.core.types import CaseFiles
+
+logger = get_logger(__name__)
 
 
 @dataclass
@@ -52,17 +56,21 @@ def build_local_dataset(data_dir: Path) -> LocalDataset:
     Scan directory and build case mapping.
 
     Matches DWI + ADC + Mask files by subject ID.
+    Logs warnings for incomplete cases that are skipped.
     """
     dwi_dir = data_dir / "Images-DWI"
     adc_dir = data_dir / "Images-ADC"
     mask_dir = data_dir / "Masks"
 
     cases: dict[str, CaseFiles] = {}
+    skipped_no_subject_id = 0
+    skipped_no_adc: list[str] = []
 
     # Scan DWI files to get subject IDs
     for dwi_file in dwi_dir.glob("*.nii.gz"):
         subject_id = parse_subject_id(dwi_file.name)
         if not subject_id:
+            skipped_no_subject_id += 1
             continue
 
         # Find matching ADC and Mask
@@ -70,7 +78,8 @@ def build_local_dataset(data_dir: Path) -> LocalDataset:
         mask_file = mask_dir / dwi_file.name.replace("_dwi.", "_lesion-msk.")
 
         if not adc_file.exists():
-            continue  # Skip incomplete cases
+            skipped_no_adc.append(subject_id)
+            continue
 
         case_files: CaseFiles = {
             "dwi": dwi_file,
@@ -81,4 +90,18 @@ def build_local_dataset(data_dir: Path) -> LocalDataset:
 
         cases[subject_id] = case_files
 
+    # Log skipped cases for debugging
+    if skipped_no_subject_id > 0:
+        logger.warning(
+            "Skipped %d DWI files: could not parse subject ID from filename",
+            skipped_no_subject_id,
+        )
+    if skipped_no_adc:
+        logger.warning(
+            "Skipped %d cases missing ADC file: %s",
+            len(skipped_no_adc),
+            ", ".join(skipped_no_adc[:5]) + ("..." if len(skipped_no_adc) > 5 else ""),
+        )
+
+    logger.info("Loaded %d cases from %s", len(cases), data_dir)
     return LocalDataset(data_dir=data_dir, cases=cases)

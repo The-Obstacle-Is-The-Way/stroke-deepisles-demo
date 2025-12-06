@@ -6,6 +6,10 @@ from stroke_deepisles_demo.inference.deepisles import (
     run_deepisles_on_folder,
     validate_input_folder,
 )
+from stroke_deepisles_demo.inference.direct import (
+    DirectInvocationResult,
+    run_deepisles_direct,
+)
 from stroke_deepisles_demo.inference.docker import (
     DockerRunResult,
     build_docker_command,
@@ -17,11 +21,13 @@ from stroke_deepisles_demo.inference.docker import (
 __all__ = [
     "DEEPISLES_IMAGE",
     "DeepISLESResult",
+    "DirectInvocationResult",
     "DockerRunResult",
     "build_docker_command",
     "check_docker_available",
     "ensure_docker_available",
     "run_container",
+    "run_deepisles_direct",
     "run_deepisles_on_folder",
     "validate_input_folder",
 ]
