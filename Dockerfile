@@ -22,14 +22,18 @@ WORKDIR /app
 # Copy requirements first for better layer caching
 COPY --chown=1000:1000 requirements.txt /app/requirements.txt
 
-# Install Python dependencies
-# Note: DeepISLES image already has PyTorch, nnUNet, etc.
-# We only need to add Gradio and our specific dependencies
+# Install Python dependencies (extras only - DeepISLES image has PyTorch, nnUNet, etc.)
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application source code
+# Copy application source code and package files
+COPY --chown=1000:1000 pyproject.toml /app/pyproject.toml
+COPY --chown=1000:1000 README.md /app/README.md
 COPY --chown=1000:1000 src/ /app/src/
 COPY --chown=1000:1000 app.py /app/app.py
+
+# Install the package itself (makes stroke_deepisles_demo importable)
+# Using --no-deps since requirements.txt already installed dependencies
+RUN pip install --no-cache-dir --no-deps -e .
 
 # Set environment variable to indicate we're running in HF Spaces
 # This allows the app to detect runtime environment and use direct invocation

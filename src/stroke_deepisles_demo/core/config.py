@@ -17,18 +17,20 @@ def is_running_in_hf_spaces() -> bool:
     Returns:
         True if running in HF Spaces, False otherwise
 
-    Detection methods:
-        1. HF_SPACES env var (set by our Dockerfile)
+    Detection methods (all env-var based for reliability):
+        1. HF_SPACES=1 env var (set by our Dockerfile)
         2. SPACE_ID env var (set by HF Spaces runtime)
-        3. /home/user directory structure (HF Spaces convention)
+
+    Note:
+        We intentionally avoid path-based detection (like checking for
+        /home/user or /app) because these paths exist on many Linux
+        systems and would cause false positives.
     """
-    # Check explicit env vars
+    # Check explicit env vars only - no path-based fallbacks
     if os.environ.get("HF_SPACES") == "1":
         return True
-    if os.environ.get("SPACE_ID"):
-        return True
-    # Check for HF Spaces directory structure
-    return Path("/home/user").exists() and Path("/app").exists()
+    # SPACE_ID is set by HF Spaces runtime
+    return bool(os.environ.get("SPACE_ID"))
 
 
 def is_deepisles_direct_available() -> bool:

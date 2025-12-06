@@ -76,7 +76,8 @@ def find_prediction_mask(output_dir: Path) -> Path:
     Find the prediction mask in DeepISLES output directory.
 
     DeepISLES outputs may have varying names depending on version.
-    This function finds the most likely prediction file.
+    This function searches both the results subdirectory and the
+    output directory itself.
 
     Args:
         output_dir: DeepISLES output directory
@@ -87,7 +88,9 @@ def find_prediction_mask(output_dir: Path) -> Path:
     Raises:
         DeepISLESError: If no prediction mask found
     """
+    # Check for results subdirectory (standard DeepISLES output structure)
     results_dir = output_dir / "results"
+    search_dirs = [results_dir, output_dir] if results_dir.exists() else [output_dir]
 
     # Check common output patterns
     possible_names = [
@@ -95,21 +98,28 @@ def find_prediction_mask(output_dir: Path) -> Path:
         "pred.nii.gz",
         "lesion_mask.nii.gz",
         "output.nii.gz",
+        "ensemble_prediction.nii.gz",
     ]
 
-    for name in possible_names:
-        pred_path = results_dir / name
-        if pred_path.exists():
-            return pred_path
+    for search_dir in search_dirs:
+        for name in possible_names:
+            pred_path = search_dir / name
+            if pred_path.exists():
+                return pred_path
 
-    # Fall back to finding any .nii.gz in results dir
-    if results_dir.exists():
-        nifti_files = list(results_dir.glob("*.nii.gz"))
+        # Fall back to finding any .nii.gz in the directory
+        # Exclude input files that might have been copied
+        nifti_files = list(search_dir.glob("*.nii.gz"))
+        nifti_files = [
+            f
+            for f in nifti_files
+            if not any(x in f.name.lower() for x in ["dwi", "adc", "flair"])
+        ]
         if nifti_files:
             return nifti_files[0]
 
     raise DeepISLESError(
-        f"No prediction mask found in {results_dir}. "
+        f"No prediction mask found in {output_dir}. "
         "Expected files like 'prediction.nii.gz' or similar."
     )
 

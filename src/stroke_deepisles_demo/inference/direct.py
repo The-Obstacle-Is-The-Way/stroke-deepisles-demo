@@ -23,6 +23,7 @@ from pathlib import Path
 
 from stroke_deepisles_demo.core.exceptions import DeepISLESError, MissingInputError
 from stroke_deepisles_demo.core.logging import get_logger
+from stroke_deepisles_demo.inference.deepisles import find_prediction_mask
 
 logger = get_logger(__name__)
 
@@ -190,8 +191,8 @@ def run_deepisles_direct(
     except Exception as e:
         raise DeepISLESError(f"DeepISLES inference failed: {e}") from e
 
-    # Find the prediction mask
-    prediction_path = _find_prediction_mask(output_dir)
+    # Find the prediction mask (using shared function from deepisles module)
+    prediction_path = find_prediction_mask(output_dir)
 
     elapsed = time.time() - start_time
     logger.info("DeepISLES direct invocation completed in %.2fs", elapsed)
@@ -199,53 +200,4 @@ def run_deepisles_direct(
     return DirectInvocationResult(
         prediction_path=prediction_path,
         elapsed_seconds=elapsed,
-    )
-
-
-def _find_prediction_mask(output_dir: Path) -> Path:
-    """
-    Find the prediction mask in the output directory.
-
-    Args:
-        output_dir: DeepISLES output directory
-
-    Returns:
-        Path to the prediction mask NIfTI file
-
-    Raises:
-        DeepISLESError: If no prediction mask found
-    """
-    # Check for results subdirectory
-    results_dir = output_dir / "results"
-    search_dirs = [results_dir, output_dir] if results_dir.exists() else [output_dir]
-
-    # Common output patterns from DeepISLES
-    possible_names = [
-        "prediction.nii.gz",
-        "pred.nii.gz",
-        "lesion_mask.nii.gz",
-        "output.nii.gz",
-        "ensemble_prediction.nii.gz",
-    ]
-
-    for search_dir in search_dirs:
-        for name in possible_names:
-            pred_path = search_dir / name
-            if pred_path.exists():
-                return pred_path
-
-        # Fall back to finding any .nii.gz in the directory
-        nifti_files = list(search_dir.glob("*.nii.gz"))
-        # Filter out input files
-        nifti_files = [
-            f
-            for f in nifti_files
-            if not any(x in f.name.lower() for x in ["dwi", "adc", "flair"])
-        ]
-        if nifti_files:
-            return nifti_files[0]
-
-    raise DeepISLESError(
-        f"No prediction mask found in {output_dir}. "
-        "Expected files like 'prediction.nii.gz' or similar."
     )

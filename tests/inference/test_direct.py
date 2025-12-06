@@ -10,10 +10,8 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 from stroke_deepisles_demo.core.exceptions import DeepISLESError, MissingInputError
-from stroke_deepisles_demo.inference.direct import (
-    _find_prediction_mask,
-    validate_input_files,
-)
+from stroke_deepisles_demo.inference.deepisles import find_prediction_mask
+from stroke_deepisles_demo.inference.direct import validate_input_files
 
 
 class TestValidateInputFiles:
@@ -72,7 +70,7 @@ class TestValidateInputFiles:
 
 
 class TestFindPredictionMask:
-    """Tests for _find_prediction_mask."""
+    """Tests for find_prediction_mask (shared function in deepisles module)."""
 
     def test_finds_prediction_in_results_dir(self, tmp_path: Path) -> None:
         """Finds prediction.nii.gz in results subdirectory."""
@@ -81,7 +79,7 @@ class TestFindPredictionMask:
         pred = results / "prediction.nii.gz"
         pred.touch()
 
-        found = _find_prediction_mask(tmp_path)
+        found = find_prediction_mask(tmp_path)
         assert found == pred
 
     def test_finds_alternative_names(self, tmp_path: Path) -> None:
@@ -91,7 +89,7 @@ class TestFindPredictionMask:
         pred = results / "lesion_mask.nii.gz"
         pred.touch()
 
-        found = _find_prediction_mask(tmp_path)
+        found = find_prediction_mask(tmp_path)
         assert found == pred
 
     def test_finds_in_output_dir_directly(self, tmp_path: Path) -> None:
@@ -99,7 +97,7 @@ class TestFindPredictionMask:
         pred = tmp_path / "prediction.nii.gz"
         pred.touch()
 
-        found = _find_prediction_mask(tmp_path)
+        found = find_prediction_mask(tmp_path)
         assert found == pred
 
     def test_finds_any_nifti(self, tmp_path: Path) -> None:
@@ -109,7 +107,7 @@ class TestFindPredictionMask:
         pred = results / "custom_output.nii.gz"
         pred.touch()
 
-        found = _find_prediction_mask(tmp_path)
+        found = find_prediction_mask(tmp_path)
         assert found == pred
 
     def test_excludes_input_files(self, tmp_path: Path) -> None:
@@ -119,12 +117,12 @@ class TestFindPredictionMask:
         (tmp_path / "adc.nii.gz").touch()
 
         with pytest.raises(DeepISLESError, match="No prediction mask found"):
-            _find_prediction_mask(tmp_path)
+            find_prediction_mask(tmp_path)
 
     def test_no_mask_found(self, tmp_path: Path) -> None:
         """Raises DeepISLESError when no prediction mask found."""
         with pytest.raises(DeepISLESError, match="No prediction mask found"):
-            _find_prediction_mask(tmp_path)
+            find_prediction_mask(tmp_path)
 
 
 class TestRunDeepISLESDirect:
