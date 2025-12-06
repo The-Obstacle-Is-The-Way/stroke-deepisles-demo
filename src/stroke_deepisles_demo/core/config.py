@@ -2,11 +2,66 @@
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import Literal
 
-from pydantic import Field, field_validator
+from pydantic import Field, computed_field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+def is_running_in_hf_spaces() -> bool:
+    """
+    Detect if running inside Hugging Face Spaces environment.
+
+    Returns:
+        True if running in HF Spaces, False otherwise
+
+    Detection methods:
+        1. HF_SPACES env var (set by our Dockerfile)
+        2. SPACE_ID env var (set by HF Spaces runtime)
+        3. /home/user directory structure (HF Spaces convention)
+    """
+    # Check explicit env vars
+    if os.environ.get("HF_SPACES") == "1":
+        return True
+    if os.environ.get("SPACE_ID"):
+        return True
+    # Check for HF Spaces directory structure
+    return Path("/home/user").exists() and Path("/app").exists()
+
+
+def is_deepisles_direct_available() -> bool:
+    """
+    Check if DeepISLES can be invoked directly (without Docker).
+
+    Returns:
+        True if DeepISLES Python modules are importable
+
+    This is True when running inside the DeepISLES Docker image
+    on HF Spaces, where we base our container on isleschallenge/deepisles.
+    """
+    # Check env var first (set by our Dockerfile)
+    if os.environ.get("DEEPISLES_DIRECT_INVOCATION") == "1":
+        return True
+
+    # Try to import DeepISLES modules
+    try:
+        # The DeepISLES image has the source at /app or similar
+        # Try common paths
+        import sys
+
+        deepisles_paths = ["/app", "/DeepIsles", "/opt/deepisles"]
+        for path in deepisles_paths:
+            if Path(path).exists() and path not in sys.path:
+                sys.path.insert(0, path)
+
+        # Attempt import (only available in DeepISLES Docker image)
+        from src.isles22_ensemble import IslesEnsemble  # noqa: F401
+
+        return True
+    except ImportError:
+        return False
 
 
 class Settings(BaseSettings):
@@ -42,6 +97,8 @@ class Settings(BaseSettings):
     deepisles_fast_mode: bool = True  # SEALS-only (ISLES'22 winner, no FLAIR needed)
     deepisles_timeout_seconds: int = 1800  # 30 minutes
     deepisles_use_gpu: bool = True
+    # Path to DeepISLES repo (for direct invocation mode)
+    deepisles_repo_path: Path | None = None
 
     # Paths
     temp_dir: Path | None = None
@@ -51,6 +108,24 @@ class Settings(BaseSettings):
     gradio_server_name: str = "0.0.0.0"
     gradio_server_port: int = 7860
     gradio_share: bool = False
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def is_hf_spaces(self) -> bool:
+        """Check if running in HF Spaces environment."""
+        return is_running_in_hf_spaces()
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def use_direct_invocation(self) -> bool:
+        """
+        Check if should use direct DeepISLES invocation (vs Docker).
+
+        Direct invocation is used when:
+        1. Running in HF Spaces (cannot run Docker-in-Docker)
+        2. DeepISLES modules are available for import
+        """
+        return self.is_hf_spaces or is_deepisles_direct_available()
 
     @field_validator("results_dir", mode="before")
     @classmethod

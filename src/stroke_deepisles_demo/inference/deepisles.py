@@ -1,4 +1,14 @@
-"""DeepISLES stroke segmentation wrapper."""
+"""DeepISLES stroke segmentation wrapper.
+
+This module provides a unified interface for running DeepISLES segmentation.
+It automatically detects the runtime environment and uses either:
+- Docker invocation (local development with Docker)
+- Direct Python invocation (HF Spaces, inside DeepISLES container)
+
+See:
+    - docs/specs/07-hf-spaces-deployment.md
+    - https://github.com/ezequieldlrosa/DeepIsles
+"""
 
 from __future__ import annotations
 
@@ -6,6 +16,7 @@ import time
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from stroke_deepisles_demo.core.config import get_settings
 from stroke_deepisles_demo.core.exceptions import DeepISLESError, MissingInputError
 from stroke_deepisles_demo.core.logging import get_logger
 from stroke_deepisles_demo.inference.docker import (
@@ -30,7 +41,7 @@ class DeepISLESResult:
     """Result of DeepISLES inference."""
 
     prediction_path: Path
-    docker_result: DockerRunResult
+    docker_result: DockerRunResult | None  # None when using direct invocation
     elapsed_seconds: float
 
 
@@ -103,50 +114,25 @@ def find_prediction_mask(output_dir: Path) -> Path:
     )
 
 
-def run_deepisles_on_folder(
+def _run_via_docker(
     input_dir: Path,
+    output_dir: Path,
     *,
-    output_dir: Path | None = None,
-    fast: bool = True,
-    gpu: bool = True,
-    timeout: float | None = 1800,  # 30 minutes default
+    flair_path: Path | None,
+    fast: bool,
+    gpu: bool,
+    timeout: float | None,
 ) -> DeepISLESResult:
     """
-    Run DeepISLES stroke segmentation on a folder of NIfTI files.
+    Run DeepISLES via Docker container.
 
-    Args:
-        input_dir: Directory containing dwi.nii.gz, adc.nii.gz, [flair.nii.gz]
-        output_dir: Where to write results (default: input_dir/results)
-        fast: If True, use single-model mode (faster, slightly less accurate)
-        gpu: If True, use GPU acceleration
-        timeout: Maximum seconds to wait for inference
-
-    Returns:
-        DeepISLESResult with path to prediction mask
-
-    Raises:
-        DockerNotAvailableError: If Docker is not available
-        DockerGPUNotAvailableError: If GPU requested but not available
-        MissingInputError: If required input files are missing
-        DeepISLESError: If inference fails (non-zero exit, missing output)
-
-    Example:
-        >>> result = run_deepisles_on_folder(Path("/data/case001"), fast=True)
-        >>> print(result.prediction_path)
-        /data/case001/results/prediction.nii.gz
+    This is the standard execution path for local development.
     """
     start_time = time.time()
-
-    # Validate inputs
-    _dwi_path, _adc_path, flair_path = validate_input_folder(input_dir)
 
     # Check GPU if requested
     if gpu:
         ensure_gpu_available_if_requested(gpu)
-
-    # Set up output directory
-    if output_dir is None:
-        output_dir = input_dir
 
     # Build command arguments
     command: list[str] = [
@@ -167,6 +153,8 @@ def run_deepisles_on_folder(
         input_dir.resolve(): "/input",
         output_dir.resolve(): "/output",
     }
+
+    logger.info("Running DeepISLES via Docker: input=%s, fast=%s, gpu=%s", input_dir, fast, gpu)
 
     # Run the container
     docker_result = run_container(
@@ -194,3 +182,114 @@ def run_deepisles_on_folder(
         docker_result=docker_result,
         elapsed_seconds=elapsed,
     )
+
+
+def _run_via_direct_invocation(
+    input_dir: Path,
+    output_dir: Path,
+    *,
+    flair_path: Path | None,
+    fast: bool,
+) -> DeepISLESResult:
+    """
+    Run DeepISLES via direct Python invocation.
+
+    This execution path is used on HF Spaces where Docker-in-Docker
+    is not available. The container is based on isleschallenge/deepisles
+    so all dependencies are pre-installed.
+    """
+    from stroke_deepisles_demo.inference.direct import run_deepisles_direct
+
+    dwi_path = input_dir / "dwi.nii.gz"
+    adc_path = input_dir / "adc.nii.gz"
+
+    logger.info(
+        "Running DeepISLES via direct invocation: input=%s, fast=%s",
+        input_dir,
+        fast,
+    )
+
+    result = run_deepisles_direct(
+        dwi_path=dwi_path,
+        adc_path=adc_path,
+        output_dir=output_dir,
+        flair_path=flair_path,
+        fast=fast,
+    )
+
+    return DeepISLESResult(
+        prediction_path=result.prediction_path,
+        docker_result=None,  # No Docker result for direct invocation
+        elapsed_seconds=result.elapsed_seconds,
+    )
+
+
+def run_deepisles_on_folder(
+    input_dir: Path,
+    *,
+    output_dir: Path | None = None,
+    fast: bool = True,
+    gpu: bool = True,
+    timeout: float | None = 1800,  # 30 minutes default
+) -> DeepISLESResult:
+    """
+    Run DeepISLES stroke segmentation on a folder of NIfTI files.
+
+    This function automatically selects the execution method based on
+    the runtime environment:
+    - Docker invocation: Used for local development
+    - Direct invocation: Used on HF Spaces (Docker-in-Docker not available)
+
+    Args:
+        input_dir: Directory containing dwi.nii.gz, adc.nii.gz, [flair.nii.gz]
+        output_dir: Where to write results (default: input_dir/results)
+        fast: If True, use single-model mode (faster, slightly less accurate)
+        gpu: If True, use GPU acceleration (only affects Docker mode)
+        timeout: Maximum seconds to wait for inference (only affects Docker mode)
+
+    Returns:
+        DeepISLESResult with path to prediction mask
+
+    Raises:
+        DockerNotAvailableError: If Docker is not available (Docker mode only)
+        DockerGPUNotAvailableError: If GPU requested but not available (Docker mode only)
+        MissingInputError: If required input files are missing
+        DeepISLESError: If inference fails (non-zero exit, missing output)
+
+    Example:
+        >>> result = run_deepisles_on_folder(Path("/data/case001"), fast=True)
+        >>> print(result.prediction_path)
+        /data/case001/results/prediction.nii.gz
+    """
+    # Validate inputs
+    _dwi_path, _adc_path, flair_path = validate_input_folder(input_dir)
+
+    # Set up output directory
+    if output_dir is None:
+        output_dir = input_dir
+
+    # Check if we should use direct invocation
+    settings = get_settings()
+    use_direct = settings.use_direct_invocation
+
+    if use_direct:
+        logger.info(
+            "Using direct DeepISLES invocation (HF Spaces mode: %s)",
+            settings.is_hf_spaces,
+        )
+        return _run_via_direct_invocation(
+            input_dir=input_dir,
+            output_dir=output_dir,
+            flair_path=flair_path,
+            fast=fast,
+        )
+    else:
+        logger.info("Using Docker-based DeepISLES invocation")
+        return _run_via_docker(
+            input_dir=input_dir,
+            output_dir=output_dir,
+            flair_path=flair_path,
+            fast=fast,
+            gpu=gpu,
+            timeout=timeout,
+        )

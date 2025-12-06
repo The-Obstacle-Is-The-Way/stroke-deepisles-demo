@@ -1,0 +1,24 @@
+# requirements.txt for Hugging Face Spaces Docker deployment
+# Generated: December 2025
+# See: docs/specs/07-hf-spaces-deployment.md
+
+# Core - Tobias's fork with BIDS + NIfTI lazy loading
+git+https://github.com/CloseChoice/datasets.git@feat/bids-loader-streaming-upload-fix
+
+# HuggingFace
+huggingface-hub>=0.25.0
+
+# NIfTI handling
+nibabel>=5.2.0
+numpy>=1.26.0,<2.0.0
+
+# Configuration
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+
+# UI - Gradio 6.x (latest stable as of Dec 2025)
+gradio>=6.0.0,<7.0.0
+matplotlib>=3.8.0
+
+# Networking
+requests>=2.0.0

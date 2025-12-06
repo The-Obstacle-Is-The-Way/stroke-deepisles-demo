@@ -8,7 +8,12 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     import pytest
 
-from stroke_deepisles_demo.core.config import Settings, reload_settings
+from stroke_deepisles_demo.core.config import (
+    Settings,
+    is_deepisles_direct_available,
+    is_running_in_hf_spaces,
+    reload_settings,
+)
 
 
 class TestSettings:
@@ -59,3 +64,72 @@ class TestSettings:
         assert config.settings.log_level == "ERROR"
         # Ensure it's the same object instance reference in the module
         assert config.settings is new_settings
+
+
+class TestHFSpacesDetection:
+    """Tests for HF Spaces environment detection."""
+
+    def test_not_in_hf_spaces_by_default(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Returns False when not in HF Spaces."""
+        # Clear any HF Spaces env vars
+        monkeypatch.delenv("HF_SPACES", raising=False)
+        monkeypatch.delenv("SPACE_ID", raising=False)
+        assert is_running_in_hf_spaces() is False
+
+    def test_detects_hf_spaces_env_var(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Detects HF Spaces via HF_SPACES env var."""
+        monkeypatch.setenv("HF_SPACES", "1")
+        assert is_running_in_hf_spaces() is True
+
+    def test_detects_space_id_env_var(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Detects HF Spaces via SPACE_ID env var."""
+        monkeypatch.delenv("HF_SPACES", raising=False)
+        monkeypatch.setenv("SPACE_ID", "username/space-name")
+        assert is_running_in_hf_spaces() is True
+
+
+class TestDirectInvocationDetection:
+    """Tests for direct DeepISLES invocation detection."""
+
+    def test_not_available_by_default(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Returns False when DeepISLES modules not available."""
+        # Clear env var
+        monkeypatch.delenv("DEEPISLES_DIRECT_INVOCATION", raising=False)
+        # In test environment, DeepISLES won't be importable
+        assert is_deepisles_direct_available() is False
+
+    def test_detects_env_var(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Detects direct invocation via env var."""
+        monkeypatch.setenv("DEEPISLES_DIRECT_INVOCATION", "1")
+        assert is_deepisles_direct_available() is True
+
+
+class TestSettingsComputedFields:
+    """Tests for Settings computed fields."""
+
+    def test_is_hf_spaces_computed(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Settings.is_hf_spaces reflects environment."""
+        monkeypatch.delenv("HF_SPACES", raising=False)
+        monkeypatch.delenv("SPACE_ID", raising=False)
+        settings = Settings()
+        assert settings.is_hf_spaces is False
+
+        monkeypatch.setenv("HF_SPACES", "1")
+        # Need new instance to pick up env change
+        settings2 = Settings()
+        assert settings2.is_hf_spaces is True
+
+    def test_use_direct_invocation_computed(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Settings.use_direct_invocation reflects environment."""
+        monkeypatch.delenv("HF_SPACES", raising=False)
+        monkeypatch.delenv("SPACE_ID", raising=False)
+        monkeypatch.delenv("DEEPISLES_DIRECT_INVOCATION", raising=False)
+
+        settings = Settings()
+        # Not in HF Spaces and DeepISLES not directly available
+        assert settings.use_direct_invocation is False
+
+        # Enable direct invocation
+        monkeypatch.setenv("DEEPISLES_DIRECT_INVOCATION", "1")
+        settings2 = Settings()
+        assert settings2.use_direct_invocation is True

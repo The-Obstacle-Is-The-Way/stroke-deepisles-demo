@@ -25,14 +25,14 @@ dependencies = [
 
     # NIfTI handling
     "nibabel>=5.2.0",
-    "numpy>=1.26.0",
+    "numpy>=1.26.0,<2.0.0",
 
     # Configuration
     "pydantic>=2.5.0",
     "pydantic-settings>=2.1.0",
 
-    # UI (Gradio 5.x)
-    "gradio>=5.0.0",
+    # UI (Gradio 6.x - Dec 2025 stable)
+    "gradio>=6.0.0,<7.0.0",
     "matplotlib>=3.8.0",
 
     # Networking
@@ -112,6 +112,8 @@ module = [
     "niivue.*",
     "numpy.*",
     "pytest.*",
+    # DeepISLES modules (only available in DeepISLES Docker image)
+    "src.isles22_ensemble",
 ]
 ignore_missing_imports = true
 
