@@ -38,12 +38,7 @@ DEEPISLES_SEARCH_PATHS = [
 
 @dataclass(frozen=True)
 class DirectInvocationResult:
-    """Result of direct DeepISLES invocation.
-
-    Note:
-        Unlike DockerRunResult, this doesn't include stdout/stderr because
-        direct invocation calls Python APIs directly, not subprocess.
-    """
+    """Result of direct DeepISLES invocation."""
 
     prediction_path: Path
     elapsed_seconds: float
@@ -192,6 +187,7 @@ def run_deepisles_direct(
             parallelize=parallelize,
         )
     except Exception as e:
+        logger.exception("DeepISLES inference failed")
         raise DeepISLESError(f"DeepISLES inference failed: {e}") from e
 
     # Find the prediction mask (using shared function from deepisles module)
