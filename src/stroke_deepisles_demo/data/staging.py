@@ -111,10 +111,12 @@ def _materialize_nifti(source: Path | str | bytes | Any, dest: Path) -> None:
     Materialize a NIfTI file to a local path.
 
     Handles:
-    - Local Path: copy
-    - URL string: download (not implemented yet, placeholder)
+    - Local Path or path string: copy (file must exist)
     - bytes: write directly
-    - NIfTI object: serialize with nibabel
+    - NIfTI object: serialize with to_filename() or to_bytes()
+
+    Note:
+        URLs are not supported and will raise MissingInputError.
     """
     if isinstance(source, Path):
         if not source.exists():

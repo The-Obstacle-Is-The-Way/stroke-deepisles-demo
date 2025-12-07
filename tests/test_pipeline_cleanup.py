@@ -29,11 +29,7 @@ def test_pipeline_cleanup_default() -> None:
         mock_result.prediction_mask = Path("/tmp/results/pred.nii.gz")
         mock_run.return_value = mock_result
 
-        # Run pipeline with defaults (expecting cleanup=True to be the new default)
-        # Note: currently it is False, so this test might fail if I assert called,
-        # or pass if I assert NOT called depending on what I want to prove.
-        # I want to prove it IS called by default.
-
+        # Run pipeline with defaults (cleanup_staging=True is the default)
         run_pipeline_on_case("case1")
 
         # Verify that rmtree was called

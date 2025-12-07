@@ -59,7 +59,7 @@ def build_local_dataset(data_dir: Path) -> LocalDataset:
     Logs warnings for incomplete cases that are skipped.
 
     Raises:
-        FileNotFoundError: If data directory or required subdirectories missing
+        FileNotFoundError: If DWI subdirectory (Images-DWI) is missing
     """
     dwi_dir = data_dir / "Images-DWI"
     adc_dir = data_dir / "Images-ADC"
