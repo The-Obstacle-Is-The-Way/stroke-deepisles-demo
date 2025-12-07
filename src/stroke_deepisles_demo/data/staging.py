@@ -122,21 +122,11 @@ def _materialize_nifti(source: Path | str | bytes | Any, dest: Path) -> None:
         # Use copy2 to preserve metadata
         shutil.copy2(source, dest)
     elif isinstance(source, str):
-        if source.startswith(("http://", "https://")):
-            import requests
-
-            # Download the file
-            response = requests.get(source, stream=True, timeout=30)
-            response.raise_for_status()
-            with dest.open("wb") as f:
-                for chunk in response.iter_content(chunk_size=8192):
-                    f.write(chunk)
-        else:
-            # Assume local path string
-            src_path = Path(source)
-            if not src_path.exists():
-                raise MissingInputError(f"Source file does not exist: {source}")
-            shutil.copy2(src_path, dest)
+        # Assume local path string
+        src_path = Path(source)
+        if not src_path.exists():
+            raise MissingInputError(f"Source file does not exist: {source}")
+        shutil.copy2(src_path, dest)
     elif isinstance(source, bytes):
         dest.write_bytes(source)
     elif hasattr(source, "to_bytes"):

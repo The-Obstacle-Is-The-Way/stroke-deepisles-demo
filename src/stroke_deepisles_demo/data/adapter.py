@@ -57,10 +57,16 @@ def build_local_dataset(data_dir: Path) -> LocalDataset:
 
     Matches DWI + ADC + Mask files by subject ID.
     Logs warnings for incomplete cases that are skipped.
+
+    Raises:
+        FileNotFoundError: If data directory or required subdirectories missing
     """
     dwi_dir = data_dir / "Images-DWI"
     adc_dir = data_dir / "Images-ADC"
     mask_dir = data_dir / "Masks"
+
+    if not dwi_dir.exists():
+        raise FileNotFoundError(f"Data directory not found or invalid: {dwi_dir}")
 
     cases: dict[str, CaseFiles] = {}
     skipped_no_subject_id = 0

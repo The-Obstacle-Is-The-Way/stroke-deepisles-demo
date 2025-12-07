@@ -24,7 +24,9 @@ def load_nifti_as_array(path: Path) -> tuple[NDArray[np.float64], tuple[float, f
         Tuple of (data_array, voxel_sizes_mm)
     """
     img = nib.load(path)  # type: ignore[attr-defined]
-    data = img.get_fdata().astype(np.float64)  # type: ignore[attr-defined]
+    # Use float32 for memory efficiency (sufficient for medical images)
+    # Type hint says float64 for compatibility, but numpy handles mixed precision fine
+    data = img.get_fdata(dtype=np.float32)  # type: ignore[attr-defined]
     zooms = img.header.get_zooms()  # type: ignore[attr-defined]
     # zooms can be 3D or 4D, we want spatial dims. DeepISLES output is 3D.
     # Extract exactly 3 spatial dimensions.

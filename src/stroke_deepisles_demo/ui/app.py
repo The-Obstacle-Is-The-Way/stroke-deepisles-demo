@@ -48,7 +48,12 @@ def run_segmentation(
 
     try:
         logger.info("Running segmentation for %s", case_id)
-        result = run_pipeline_on_case(case_id, fast=fast_mode, compute_dice=True)
+        result = run_pipeline_on_case(
+            case_id,
+            fast=fast_mode,
+            compute_dice=True,
+            cleanup_staging=True,
+        )
 
         # 1. NiiVue Visualization
         # We need data URLs for the browser

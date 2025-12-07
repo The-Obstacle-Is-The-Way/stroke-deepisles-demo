@@ -58,7 +58,7 @@ def run_pipeline_on_case(
     fast: bool = True,
     gpu: bool = True,
     compute_dice: bool = True,
-    cleanup_staging: bool = False,
+    cleanup_staging: bool = True,
 ) -> PipelineResult:
     """
     Run the complete segmentation pipeline on a single case.
