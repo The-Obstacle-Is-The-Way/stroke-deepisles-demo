@@ -154,12 +154,13 @@ def _run_via_docker(
         command.extend(["--flair_file_name", "flair.nii.gz"])
 
     if fast:
-        command.extend(["--fast", "True"])
+        command.append("--fast")
 
     # Set up volume mounts
+    # DeepISLES expects input files at /app/data/ and outputs to /app/output/
     volumes = {
-        input_dir.resolve(): "/input",
-        output_dir.resolve(): "/output",
+        input_dir.resolve(): "/app/data",
+        output_dir.resolve(): "/app/output",
     }
 
     logger.info("Running DeepISLES via Docker: input=%s, fast=%s, gpu=%s", input_dir, fast, gpu)
