@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import math
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import nibabel as nib
 import numpy as np
@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from numpy.typing import NDArray
 
 
-def load_nifti_as_array(path: Path) -> tuple[NDArray[np.float64], tuple[float, float, float]]:
+def load_nifti_as_array(path: Path) -> tuple[NDArray[np.floating[Any]], tuple[float, float, float]]:
     """
     Load NIfTI file and return data array with voxel dimensions.
 
@@ -25,7 +25,6 @@ def load_nifti_as_array(path: Path) -> tuple[NDArray[np.float64], tuple[float, f
     """
     img = nib.load(path)  # type: ignore[attr-defined]
     # Use float32 for memory efficiency (sufficient for medical images)
-    # Type hint says float64 for compatibility, but numpy handles mixed precision fine
     data = img.get_fdata(dtype=np.float32)  # type: ignore[attr-defined]
     zooms = img.header.get_zooms()  # type: ignore[attr-defined]
     # zooms can be 3D or 4D, we want spatial dims. DeepISLES output is 3D.
@@ -40,8 +39,8 @@ def load_nifti_as_array(path: Path) -> tuple[NDArray[np.float64], tuple[float, f
 
 
 def compute_dice(
-    prediction: Path | NDArray[np.float64],
-    ground_truth: Path | NDArray[np.float64],
+    prediction: Path | NDArray[np.floating[Any]],
+    ground_truth: Path | NDArray[np.floating[Any]],
     *,
     threshold: float = 0.5,
 ) -> float:
@@ -90,7 +89,7 @@ def compute_dice(
 
 
 def compute_volume_ml(
-    mask: Path | NDArray[np.float64],
+    mask: Path | NDArray[np.floating[Any]],
     voxel_size_mm: tuple[float, float, float] | None = None,
 ) -> float:
     """
@@ -103,10 +102,6 @@ def compute_volume_ml(
     Returns:
         Volume in milliliters (mL)
     """
-    # Resolve data and voxel sizes
-    data: NDArray[np.float64]
-    voxel_dims: tuple[float, float, float]
-
     if isinstance(mask, Path):
         data, loaded_zooms = load_nifti_as_array(mask)
         voxel_dims = voxel_size_mm if voxel_size_mm is not None else loaded_zooms

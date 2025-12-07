@@ -1,6 +1,6 @@
 # Technical Debt and Known Issues
 
-> **Last Audit**: December 2025 (Revision 3)
+> **Last Audit**: December 2025 (Revision 4)
 > **Auditor**: Claude Code + External Senior Review
 > **Status**: Ironclad / Production-Ready (Google DeepMind level)
 
@@ -31,7 +31,7 @@ Full architectural review completed. All critical and major technical debt items
 **Resolution**: Removed unreachable HTTP download code from `staging.py`. Verified with `tests/data/test_staging_security.py`.
 
 ### ✅ P3: Redundant float64 Cast (Memory Optimization)
-**Resolution**: Updated `metrics.py` to load NIfTI data as `float32` directly, reducing memory usage by 50%. Verified with `tests/test_metrics_memory.py`.
+**Resolution**: Updated `metrics.py` to load NIfTI data as `float32` directly, reducing memory usage by 50%. Type annotations updated to use `np.floating[Any]` for flexibility. Verified with `tests/test_metrics_memory.py`.
 
 ---
 
