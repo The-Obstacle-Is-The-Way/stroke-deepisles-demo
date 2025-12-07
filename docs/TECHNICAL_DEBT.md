@@ -1,19 +1,19 @@
 # Technical Debt and Known Issues
 
-> **Last Audit**: December 2025
-> **Auditor**: Claude Code
-> **Status**: Clean - No blocking issues found
+> **Last Audit**: December 2025 (Revision 2)
+> **Auditor**: Claude Code + External Senior Review
+> **Status**: Production-ready with known limitations
 
 ## Summary
 
-Full architectural review completed. The codebase is **production-ready** with only minor improvements possible.
+Full architectural review completed with external validation. The codebase is **production-ready** with documented limitations.
 
 | Severity | Count | Description |
 |----------|-------|-------------|
 | P0 (Critical) | 0 | None |
 | P1 (High) | 0 | None |
-| P2 (Medium) | 1 | Silent empty dataset on missing directory |
-| P3 (Low) | 3 | Type ignore comments (expected) |
+| P2 (Medium) | 3 | Temp dir leak, silent empty dataset, brittle git dep |
+| P3 (Low) | 6 | Type ignores, SSRF vector, base64 overhead, float64 |
 
 ---
 
@@ -49,6 +49,63 @@ def build_local_dataset(data_dir: Path) -> LocalDataset:
 
 ---
 
+## P2: Unbounded Temporary Directory Accumulation (UI Path)
+
+**Location**: `src/stroke_deepisles_demo/pipeline.py:61,106-113` and `src/stroke_deepisles_demo/ui/app.py:51`
+
+**Issue**: The `run_pipeline_on_case()` function creates temporary directories using `tempfile.mkdtemp()` and defaults to `cleanup_staging=False`. The CLI correctly overrides this to `True`, but the Gradio UI does not pass this parameter.
+
+**Evidence**:
+```python
+# pipeline.py:61 - default is False
+cleanup_staging: bool = False,
+
+# cli.py:76 - CLI correctly overrides ✅
+cleanup_staging=True,
+
+# app.py:51 - UI does NOT pass it ❌
+result = run_pipeline_on_case(case_id, fast=fast_mode, compute_dice=True)
+```
+
+**Risk**: In a long-running Gradio app on HF Spaces, each inference request creates a new temporary directory (`deepisles_pipeline_*`) that is never deleted. This will eventually consume all available disk space, causing DoS.
+
+**Mitigation**: HF Spaces containers are ephemeral and restart periodically, which limits accumulation. However, heavy usage could still trigger disk pressure.
+
+**Recommended Fix**:
+```python
+# Option A: Fix UI to pass cleanup_staging=True
+result = run_pipeline_on_case(case_id, fast=fast_mode, compute_dice=True, cleanup_staging=True)
+
+# Option B: Change default to True (breaking change for programmatic users who want to keep staging)
+cleanup_staging: bool = True,
+```
+
+**Status**: Should fix before production deployment
+
+---
+
+## P2: Brittle Git Branch Dependency
+
+**Location**: `pyproject.toml:23`
+
+**Issue**: The project depends on a specific branch of a third-party fork for the `datasets` library.
+
+**Evidence**:
+```toml
+"datasets @ git+https://github.com/CloseChoice/datasets.git@feat/bids-loader-streaming-upload-fix",
+```
+
+**Risk**: If the repository owner deletes the branch `feat/bids-loader-streaming-upload-fix` or force-pushes changes, all builds will fail immediately. This endangers reproducibility and CI/CD reliability.
+
+**Recommended Fix** (in priority order):
+1. Get the fix merged upstream to `huggingface/datasets` and pin to a released version
+2. Fork the repository to the project's organization for permanence
+3. Vendor the required changes directly
+
+**Status**: Monitor upstream; consider forking if not merged within 30 days
+
+---
+
 ## P3: Type Ignore Comments (Expected)
 
 These `# type: ignore` comments are **correct and expected** due to library typing limitations:
@@ -79,6 +136,104 @@ def is_hf_spaces(self) -> bool:
 **Reason**: pydantic-settings `computed_field` decorator typing quirk
 
 **Status**: These are industry-standard workarounds, not technical debt
+
+---
+
+## P3: Latent SSRF Vector in Staging Utility
+
+**Location**: `src/stroke_deepisles_demo/data/staging.py:124-133`
+
+**Issue**: The `_materialize_nifti()` helper function contains code to download files from arbitrary HTTP/HTTPS URLs using `requests.get()`.
+
+**Evidence**:
+```python
+elif isinstance(source, str):
+    if source.startswith(("http://", "https://")):
+        import requests
+        response = requests.get(source, stream=True, timeout=30)
+        response.raise_for_status()
+        # ...writes to local file
+```
+
+**Current State**: This code path is **currently unreachable** because:
+- `CaseFiles` from `adapter.py` only contains local `Path` objects
+- No user-facing interface accepts URL input
+
+**Risk**: If a future feature allows user-supplied URLs (e.g., "Load from URL" button), this becomes a Server-Side Request Forgery (SSRF) vulnerability. An attacker could:
+- Probe internal networks from the HF Space container
+- Access cloud metadata services (169.254.169.254)
+- Exfiltrate data to attacker-controlled servers
+
+**Recommended Fix**:
+```python
+# Option A: Remove the HTTP code path entirely (recommended if not needed)
+# Option B: Add domain allowlist if URL loading is required
+ALLOWED_DOMAINS = {"huggingface.co", "github.com"}
+parsed = urllib.parse.urlparse(source)
+if parsed.netloc not in ALLOWED_DOMAINS:
+    raise ValueError(f"URL domain not allowed: {parsed.netloc}")
+```
+
+**Status**: Acceptable if no URL input features are added; document for future developers
+
+---
+
+## P3: Redundant float64 Cast in NIfTI Loading
+
+**Location**: `src/stroke_deepisles_demo/metrics.py:27`
+
+**Issue**: The code explicitly casts NIfTI data to `float64`, but nibabel's `get_fdata()` already returns `float64` by default.
+
+**Evidence**:
+```python
+data = img.get_fdata().astype(np.float64)  # Redundant - get_fdata() already returns float64
+```
+
+**Analysis**:
+- The `.astype(np.float64)` call is a no-op in most cases
+- It does NOT double memory as initially claimed (nibabel already loads as float64)
+- However, `float32` would be sufficient for Dice computation and would halve memory usage
+
+**Risk**: Increased memory usage for large volumes. A 512×512×256 volume:
+- float64: ~512 MB
+- float32: ~256 MB (50% savings)
+
+**Recommended Fix** (optional optimization):
+```python
+data = img.get_fdata(dtype=np.float32)  # Use float32 for memory efficiency
+```
+
+**Status**: Low priority optimization; current behavior is correct but suboptimal
+
+---
+
+## P3: Base64 Data URL Overhead for NiiVue Viewer
+
+**Location**: `src/stroke_deepisles_demo/ui/viewer.py:47-51`
+
+**Issue**: NIfTI files are embedded in HTML as base64 data URLs, incurring ~33% size overhead.
+
+**Evidence**:
+```python
+with nifti_path.open("rb") as f:
+    nifti_bytes = f.read()
+nifti_b64 = base64.b64encode(nifti_bytes).decode("utf-8")
+return f"data:application/octet-stream;base64,{nifti_b64}"
+```
+
+**Impact**:
+- A 5 MB NIfTI file becomes ~6.7 MB in the DOM
+- Large DOM sizes can freeze browser tabs
+- Server RAM spikes during encoding
+
+**Why It Exists**: This is the standard pattern for Gradio HTML components. Gradio doesn't expose a straightforward static file serving API.
+
+**Alternative** (significant refactor):
+- Use `gr.File` output and let NiiVue load from a relative URL
+- Add custom FastAPI route to serve files as binary streams
+- Use Gradio's `add_static_files` (if supported in Gradio 6.x)
+
+**Status**: Acceptable for demo; revisit if performance issues arise in production
 
 ---
 
@@ -140,4 +295,15 @@ def get_demo() -> gr.Blocks:
 
 ## Conclusion
 
-The codebase is **clean and well-architected**. The single P2 issue is already mitigated by downstream checks. No action required before deployment.
+The codebase is **well-architected and production-ready** with documented limitations.
+
+### Before Production Deployment
+1. **Fix P2: Temp dir leak** - Add `cleanup_staging=True` to UI path (1 line change)
+
+### Monitor / Low Priority
+2. **P2: Git dependency** - Track upstream merge; fork if needed
+3. **P2: Empty dataset** - Already mitigated downstream
+4. **P3 issues** - Document for future developers; no immediate action
+
+### Verdict
+The codebase follows clean code principles with proper error handling, type safety, and fail-loud design. The identified issues are manageable and do not block deployment.
