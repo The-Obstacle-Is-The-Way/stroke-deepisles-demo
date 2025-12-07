@@ -287,21 +287,28 @@ class TestPipelineIntegration:
     @pytest.mark.skipif(not REAL_DATA_PATH.exists(), reason="Real data not found in data/isles24")
     def test_run_on_real_case(self, temp_dir: Path) -> None:
         """Run pipeline on actual ISLES24-MR-Lite case."""
-        # Requires: real ISLES24 data, Docker, DeepISLES image
+        # Requires: real ISLES24 data, Docker, DeepISLES image, GPU
         # Run with: pytest -m "integration and slow"
 
+        from stroke_deepisles_demo.core.exceptions import DeepISLESError
         from stroke_deepisles_demo.inference.docker import check_docker_available
 
         if not check_docker_available():
             pytest.skip("Docker not available")
 
-        result = run_pipeline_on_case(
-            0,  # First case
-            fast=True,
-            gpu=False,
-            compute_dice=True,
-            output_dir=temp_dir / "pipeline_test_output",
-        )
+        try:
+            result = run_pipeline_on_case(
+                0,  # First case
+                fast=True,
+                gpu=False,
+                compute_dice=True,
+                output_dir=temp_dir / "pipeline_test_output",
+            )
+        except DeepISLESError as e:
+            # DeepISLES requires nvidia-smi even with gpu=False for model loading
+            if "nvidia-smi" in str(e).lower():
+                pytest.skip("DeepISLES requires GPU (nvidia-smi not available)")
+            raise
 
         assert result.prediction_mask.exists()
         # Dice might be None if no ground truth, but ISLES24 has masks
