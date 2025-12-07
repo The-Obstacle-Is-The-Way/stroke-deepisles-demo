@@ -19,8 +19,8 @@ classifiers = [
 keywords = ["stroke", "neuroimaging", "segmentation", "BIDS", "NIfTI", "deep-learning"]
 
 dependencies = [
-    # Core - pinned to Tobias's fork for BIDS + NIfTI lazy loading
-    "datasets @ git+https://github.com/CloseChoice/datasets.git@feat/bids-loader-streaming-upload-fix",
+    # Core - pinned to Tobias's fork for BIDS + NIfTI lazy loading (commit c1c15aa)
+    "datasets @ git+https://github.com/CloseChoice/datasets.git@c1c15aaa4f00f28f1916f3a896283494162eac49",
     "huggingface-hub>=0.25.0",
 
     # NIfTI handling
