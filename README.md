@@ -12,7 +12,7 @@ short_description: Ischemic stroke lesion segmentation using DeepISLES
 models:
   - isleschallenge/deepisles
 datasets:
-  - YongchengYAO/ISLES24-MR-Lite
+  - hugging-science/isles24-stroke
 tags:
   - medical-imaging
   - stroke
@@ -29,7 +29,7 @@ tags:
 [![Code style: ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 
-A demonstration pipeline and UI for ischemic stroke lesion segmentation using **DeepISLES** and **ISLES24-MR-Lite** data.
+A demonstration pipeline and UI for ischemic stroke lesion segmentation using **DeepISLES** and **ISLES'24** data.
 
 This project provides a complete end-to-end workflow:
 1.  **Data Loading**: Lazy-loading of NIfTI neuroimaging data from HuggingFace.
