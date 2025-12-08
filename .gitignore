@@ -212,3 +212,6 @@ data/isles24/
 # Discovery artifacts (schema reports, samples)
 data/discovery/
 data/scratch/
+
+# macOS
+.DS_Store
