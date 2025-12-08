@@ -79,9 +79,11 @@ def load_isles_dataset(
         elif isinstance(source, Path):
             local_mode = True
         else:
-            # String: check if it's an existing local path first
+            # String: check if it's an existing local path
+            # Only select local mode if the path itself exists
+            # (avoids misclassifying HF dataset IDs like "org/dataset")
             source_path = Path(source)
-            local_mode = source_path.exists() or source_path.parent.exists()
+            local_mode = source_path.exists()
 
     if local_mode:
         from stroke_deepisles_demo.data.adapter import build_local_dataset

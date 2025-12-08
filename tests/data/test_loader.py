@@ -37,7 +37,7 @@ def test_load_hf_raises_on_invalid_dataset() -> None:
 @pytest.mark.integration
 def test_load_from_huggingface_returns_hf_dataset() -> None:
     """Test that loading from HuggingFace returns a HuggingFaceDataset."""
-    dataset = load_isles_dataset()  # Default is HuggingFace mode
-    assert isinstance(dataset, HuggingFaceDataset)
-    assert len(dataset) == 149
-    assert dataset.list_case_ids()[0] == "sub-stroke0001"
+    with load_isles_dataset() as dataset:  # Default is HuggingFace mode
+        assert isinstance(dataset, HuggingFaceDataset)
+        assert len(dataset) == 149
+        assert dataset.list_case_ids()[0] == "sub-stroke0001"

@@ -177,7 +177,7 @@ class HuggingFaceDataset:
 
     def list_case_ids(self) -> list[str]:
         """Return sorted list of subject IDs."""
-        return self._case_ids
+        return sorted(self._case_ids)
 
     def get_case(self, case_id: str | int) -> CaseFiles:
         """Get files for a case by ID or index.
