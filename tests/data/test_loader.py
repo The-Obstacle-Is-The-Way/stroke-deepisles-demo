@@ -5,8 +5,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pytest
+from datasets.exceptions import DatasetNotFoundError
 
-from stroke_deepisles_demo.data.adapter import LocalDataset
+from stroke_deepisles_demo.data.adapter import HuggingFaceDataset, LocalDataset
 from stroke_deepisles_demo.data.loader import load_isles_dataset
 
 if TYPE_CHECKING:
@@ -27,7 +28,16 @@ def test_load_from_local_finds_all_cases(synthetic_isles_dir: Path) -> None:
     assert dataset.list_case_ids() == ["sub-stroke0001", "sub-stroke0002"]
 
 
-def test_load_raises_not_implemented_for_hf() -> None:
-    """Test that HF mode raises NotImplementedError."""
-    with pytest.raises(NotImplementedError):
-        load_isles_dataset(source="fake/dataset", local_mode=False)
+def test_load_hf_raises_on_invalid_dataset() -> None:
+    """Test that loading a non-existent HF dataset raises DatasetNotFoundError."""
+    with pytest.raises(DatasetNotFoundError):
+        load_isles_dataset(source="fake/nonexistent-dataset", local_mode=False)
+
+
+@pytest.mark.integration
+def test_load_from_huggingface_returns_hf_dataset() -> None:
+    """Test that loading from HuggingFace returns a HuggingFaceDataset."""
+    dataset = load_isles_dataset()  # Default is HuggingFace mode
+    assert isinstance(dataset, HuggingFaceDataset)
+    assert len(dataset) == 149
+    assert dataset.list_case_ids()[0] == "sub-stroke0001"

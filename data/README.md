@@ -1,39 +1,52 @@
 # Data Directory
 
-This folder contains local neuroimaging data for the stroke-deepisles-demo project.
+This folder is for local development data only. The primary data source is HuggingFace.
 
-## Structure
+## Data Source
 
+**Primary**: [hugging-science/isles24-stroke](https://huggingface.co/datasets/hugging-science/isles24-stroke)
+
+The dataset is automatically downloaded and cached by HuggingFace when you run:
+
+```python
+from stroke_deepisles_demo.data import load_isles_dataset
+
+# Loads from HuggingFace (default)
+dataset = load_isles_dataset()
+
+# Access cases
+case = dataset.get_case(0)  # or dataset.get_case("sub-stroke0001")
+```
+
+## HuggingFace Cache Location
+
+Data is cached at: `~/.cache/huggingface/datasets/hugging-science___isles24-stroke/`
+
+## Dataset Contents
+
+149 acute ischemic stroke cases with:
+- **Imaging**: DWI, ADC, CT, CTA, perfusion maps (tmax, mtt, cbf, cbv)
+- **Masks**: lesion_mask, lvo_mask, cow_segmentation
+- **Clinical**: age, sex, nihss_admission, mrs_admission, mrs_3month
+
+## Local Development (Optional)
+
+For offline development, you can still use a local directory:
+
+```python
+dataset = load_isles_dataset("path/to/local/data", local_mode=True)
+```
+
+Expected structure for local mode:
 ```text
 data/
-├── README.md           # This file (tracked)
-├── isles24/            # ISLES24 NIfTI files (gitignored)
-│   ├── Images-DWI/     # DWI volumes (149 files)
-│   ├── Images-ADC/     # ADC maps (149 files)
-│   └── Masks/          # Ground truth lesion masks (149 files)
-└── discovery/          # Schema reports (gitignored)
-    └── isles24_schema_report.txt
+├── Images-DWI/     # DWI volumes
+├── Images-ADC/     # ADC maps
+└── Masks/          # Ground truth lesion masks
 ```
-
-## Setup
-
-1. Download ISLES24-MR-Lite from [HuggingFace](https://huggingface.co/datasets/YongchengYAO/ISLES24-MR-Lite)
-2. Extract the ZIP files into `data/isles24/`:
-   - `Images-DWI.zip` → `data/isles24/Images-DWI/`
-   - `Images-ADC.zip` → `data/isles24/Images-ADC/`
-   - `Masks.zip` → `data/isles24/Masks/`
-
-## File Naming Convention
-
-Files follow BIDS-like naming:
-```text
-sub-stroke{XXXX}_ses-02_{modality}.nii.gz
-```
-
-Example: `sub-stroke0005_ses-02_dwi.nii.gz`
 
 ## Notes
 
-- All data files are gitignored to avoid committing large binaries
-- The `discovery/` folder contains schema reports from data exploration scripts
-- See `docs/specs/02-phase-1-data-access.md` for detailed data loading documentation
+- All data files are gitignored
+- On HuggingFace Spaces, data loads automatically from the HF cache
+- See dataset card for citation requirements

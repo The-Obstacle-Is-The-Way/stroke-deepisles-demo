@@ -3,14 +3,15 @@
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass
-from typing import TYPE_CHECKING
+import tempfile
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import TYPE_CHECKING, Any
 
 from stroke_deepisles_demo.core.logging import get_logger
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
-    from pathlib import Path
 
     from stroke_deepisles_demo.core.types import CaseFiles
 
@@ -111,3 +112,108 @@ def build_local_dataset(data_dir: Path) -> LocalDataset:
 
     logger.info("Loaded %d cases from %s", len(cases), data_dir)
     return LocalDataset(data_dir=data_dir, cases=cases)
+
+
+# =============================================================================
+# HuggingFace Dataset Adapter
+# =============================================================================
+
+
+@dataclass
+class HuggingFaceDataset:
+    """Dataset adapter for HuggingFace ISLES24 dataset.
+
+    Wraps the HuggingFace dataset and provides the same interface as LocalDataset.
+    When get_case() is called, writes NIfTI bytes to temp files and returns paths.
+    """
+
+    dataset_id: str
+    _hf_dataset: Any = field(repr=False)
+    _case_ids: list[str] = field(default_factory=list)
+    _temp_dirs: list[Path] = field(default_factory=list, repr=False)
+
+    def __len__(self) -> int:
+        return len(self._hf_dataset)
+
+    def __iter__(self) -> Iterator[str]:
+        return iter(self._case_ids)
+
+    def list_case_ids(self) -> list[str]:
+        """Return sorted list of subject IDs."""
+        return self._case_ids
+
+    def get_case(self, case_id: str | int) -> CaseFiles:
+        """Get files for a case by ID or index.
+
+        Downloads NIfTI data from HuggingFace and writes to temp files.
+        """
+        if isinstance(case_id, int):
+            idx = case_id
+            subject_id = self._case_ids[idx]
+        else:
+            subject_id = case_id
+            idx = self._case_ids.index(subject_id)
+
+        # Get the HuggingFace example
+        example = self._hf_dataset[idx]
+
+        # Create temp directory for this case
+        temp_dir = Path(tempfile.mkdtemp(prefix=f"isles24_{subject_id}_"))
+        self._temp_dirs.append(temp_dir)
+
+        # Write NIfTI files to temp directory
+        dwi_path = temp_dir / f"{subject_id}_ses-02_dwi.nii.gz"
+        adc_path = temp_dir / f"{subject_id}_ses-02_adc.nii.gz"
+        mask_path = temp_dir / f"{subject_id}_ses-02_lesion-msk.nii.gz"
+
+        # Write the gzipped NIfTI bytes
+        dwi_path.write_bytes(example["dwi"]["bytes"])
+        adc_path.write_bytes(example["adc"]["bytes"])
+
+        case_files: CaseFiles = {
+            "dwi": dwi_path,
+            "adc": adc_path,
+        }
+
+        # Write lesion mask if available
+        if example.get("lesion_mask") and example["lesion_mask"].get("bytes"):
+            mask_path.write_bytes(example["lesion_mask"]["bytes"])
+            case_files["ground_truth"] = mask_path
+
+        return case_files
+
+    def cleanup(self) -> None:
+        """Remove all temp directories created by get_case()."""
+        import shutil
+
+        for temp_dir in self._temp_dirs:
+            if temp_dir.exists():
+                shutil.rmtree(temp_dir, ignore_errors=True)
+        self._temp_dirs.clear()
+
+
+def build_huggingface_dataset(dataset_id: str) -> HuggingFaceDataset:
+    """
+    Load ISLES24 dataset from HuggingFace Hub.
+
+    Args:
+        dataset_id: HuggingFace dataset identifier (e.g., "hugging-science/isles24-stroke")
+
+    Returns:
+        HuggingFaceDataset providing case access
+    """
+    from datasets import load_dataset
+
+    logger.info("Loading HuggingFace dataset: %s", dataset_id)
+    hf_dataset = load_dataset(dataset_id, split="train")
+
+    # Extract case IDs
+    case_ids = [example["subject_id"] for example in hf_dataset]
+
+    logger.info("Loaded %d cases from HuggingFace: %s", len(case_ids), dataset_id)
+
+    return HuggingFaceDataset(
+        dataset_id=dataset_id,
+        _hf_dataset=hf_dataset,
+        _case_ids=case_ids,
+    )
