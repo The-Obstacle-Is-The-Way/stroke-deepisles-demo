@@ -232,4 +232,5 @@ if __name__ == "__main__":
         share=settings.gradio_share,
         theme=gr.themes.Soft(),
         css="footer {visibility: hidden}",
+        show_error=True,  # Show full Python tracebacks in UI for debugging
     )

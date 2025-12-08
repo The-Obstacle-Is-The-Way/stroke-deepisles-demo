@@ -164,7 +164,7 @@ class HuggingFaceDataset:
     _cached_cases: dict[str, CaseFiles] = field(default_factory=dict, repr=False)
 
     def __len__(self) -> int:
-        return len(self._hf_dataset)
+        return len(self._case_ids)
 
     def __iter__(self) -> Iterator[str]:
         return iter(self._case_ids)
@@ -203,6 +203,15 @@ class HuggingFaceDataset:
         if self._temp_dir is None:
             self._temp_dir = Path(tempfile.mkdtemp(prefix="isles24_hf_"))
             logger.debug("Created temp directory: %s", self._temp_dir)
+
+        # Lazy load full dataset on first get_case() call
+        # This defers the expensive download until actually needed
+        if self._hf_dataset is None:
+            from datasets import load_dataset
+
+            logger.info("Loading full dataset for case access (lazy load)...")
+            self._hf_dataset = load_dataset(self.dataset_id, split="train")
+            logger.info("Full dataset loaded: %d examples", len(self._hf_dataset))
 
         # Get the HuggingFace example
         example = self._hf_dataset[idx]
@@ -263,6 +272,9 @@ def build_huggingface_dataset(dataset_id: str) -> HuggingFaceDataset:
     """
     Load ISLES24 dataset from HuggingFace Hub.
 
+    Uses streaming mode to quickly enumerate case IDs without downloading
+    the full dataset. Actual data is downloaded lazily when get_case() is called.
+
     Args:
         dataset_id: HuggingFace dataset identifier (e.g., "hugging-science/isles24-stroke")
 
@@ -272,15 +284,23 @@ def build_huggingface_dataset(dataset_id: str) -> HuggingFaceDataset:
     from datasets import load_dataset
 
     logger.info("Loading HuggingFace dataset: %s", dataset_id)
-    hf_dataset = load_dataset(dataset_id, split="train")
 
-    # Extract case IDs
-    case_ids = [example["subject_id"] for example in hf_dataset]
+    # Use streaming to quickly get case IDs without downloading full dataset
+    # This avoids the "Generating train split" phase that hangs on HF Spaces
+    logger.info("Streaming dataset to enumerate case IDs...")
+    streaming_ds = load_dataset(dataset_id, split="train", streaming=True)
 
-    logger.info("Loaded %d cases from HuggingFace: %s", len(case_ids), dataset_id)
+    # Extract case IDs from streaming dataset (accesses only subject_id field,
+    # deferring heavy binary NIfTI downloads to get_case())
+    case_ids = []
+    for example in streaming_ds:
+        case_ids.append(example["subject_id"])
 
+    logger.info("Found %d cases from HuggingFace: %s", len(case_ids), dataset_id)
+
+    # Return dataset with lazy loading - full data downloaded only when get_case() called
     return HuggingFaceDataset(
         dataset_id=dataset_id,
-        _hf_dataset=hf_dataset,
+        _hf_dataset=None,  # Lazy load on first get_case()
         _case_ids=case_ids,
     )
