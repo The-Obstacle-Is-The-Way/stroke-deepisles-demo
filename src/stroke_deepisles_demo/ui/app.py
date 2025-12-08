@@ -9,6 +9,7 @@ import gradio as gr
 from matplotlib.figure import Figure  # noqa: TC002
 
 from stroke_deepisles_demo.core.logging import get_logger
+from stroke_deepisles_demo.data import list_case_ids
 from stroke_deepisles_demo.pipeline import run_pipeline_on_case
 from stroke_deepisles_demo.ui.components import (
     create_case_selector,
@@ -28,6 +29,31 @@ logger = get_logger(__name__)
 
 # Shared output directory for UI results (cleaned up between runs to prevent disk accumulation)
 _previous_results_dir: Path | None = None
+
+
+def initialize_case_selector() -> gr.Dropdown:
+    """
+    Initialize case selector by loading dataset (lazy load).
+
+    This prevents the app from hanging during startup while downloading data.
+    Called via demo.load() after the UI renders.
+    """
+    try:
+        logger.info("Initializing dataset for case selector...")
+        case_ids = list_case_ids()
+
+        if not case_ids:
+            return gr.Dropdown(choices=[], info="No cases found in dataset.")
+
+        return gr.Dropdown(
+            choices=case_ids,
+            value=case_ids[0],
+            info="Choose a case from ISLES24-MR-Lite",
+            interactive=True,
+        )
+    except Exception as e:
+        logger.exception("Failed to initialize dataset")
+        return gr.Dropdown(choices=[], info=f"Error loading data: {e!s}")
 
 
 def run_segmentation(
@@ -174,6 +200,9 @@ def create_app() -> gr.Blocks:
                 status,
             ],
         )
+
+        # Trigger data loading after UI renders (prevents startup timeout)
+        demo.load(initialize_case_selector, outputs=[case_selector])
 
     return demo  # type: ignore[no-any-return]
 
