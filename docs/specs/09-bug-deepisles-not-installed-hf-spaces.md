@@ -12,7 +12,7 @@ Our Dockerfile was **overwriting DeepISLES modules** by copying our app to `/app
 ## Root Cause
 
 The `isleschallenge/deepisles:latest` Docker image has this structure:
-```
+```text
 /app/
 ├── main.py
 ├── requirements.txt

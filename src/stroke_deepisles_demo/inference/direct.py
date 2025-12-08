@@ -42,15 +42,14 @@ def _get_deepisles_search_paths() -> list[str]:
     if env_path:
         paths.append(env_path)
 
-    # Add common installation locations
-    paths.extend(
-        [
-            "/app",  # Default location in isleschallenge/deepisles Docker image
-            "/DeepIsles",
-            "/opt/deepisles",
-            "/home/user/DeepIsles",
-        ]
-    )
+    # Add common installation locations (excluding any already added via env var)
+    fallback_paths = [
+        "/app",  # Default location in isleschallenge/deepisles Docker image
+        "/DeepIsles",
+        "/opt/deepisles",
+        "/home/user/DeepIsles",
+    ]
+    paths.extend(p for p in fallback_paths if p not in paths)
 
     return paths
 
