@@ -18,13 +18,13 @@ def test_create_app_returns_blocks() -> None:
     """create_app returns a gr.Blocks instance."""
     import gradio as gr
 
-    # Mock list_case_ids to avoid network call
-    with patch("stroke_deepisles_demo.ui.components.list_case_ids", return_value=["sub-001"]):
-        from stroke_deepisles_demo.ui.app import create_app
+    from stroke_deepisles_demo.ui.app import create_app
 
-        app = create_app()
+    # No mock needed - create_case_selector is now lazy (empty dropdown)
+    # Data loading happens via demo.load() after UI renders
+    app = create_app()
 
-        assert isinstance(app, gr.Blocks)
+    assert isinstance(app, gr.Blocks)
 
 
 def test_viewer_module_imports() -> None:

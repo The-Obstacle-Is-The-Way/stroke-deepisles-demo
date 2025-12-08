@@ -76,7 +76,7 @@ class Settings(BaseSettings):
     log_format: Literal["simple", "detailed", "json"] = "simple"
 
     # HuggingFace
-    hf_dataset_id: str = "YongchengYAO/ISLES24-MR-Lite"
+    hf_dataset_id: str = "hugging-science/isles24-stroke"
     hf_cache_dir: Path | None = None
     hf_token: str | None = Field(default=None, repr=False)  # Hidden from logs
 

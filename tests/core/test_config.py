@@ -23,7 +23,7 @@ class TestSettings:
         """Has sensible defaults."""
         settings = Settings()
         assert settings.log_level == "INFO"
-        assert settings.hf_dataset_id == "YongchengYAO/ISLES24-MR-Lite"
+        assert settings.hf_dataset_id == "hugging-science/isles24-stroke"
         assert settings.deepisles_timeout_seconds == 1800
         assert settings.results_dir == Path("./results")
 

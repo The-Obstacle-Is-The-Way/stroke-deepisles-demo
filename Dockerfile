@@ -44,6 +44,8 @@ RUN pip install --no-cache-dir --no-deps -e .
 # This allows the app to detect runtime environment and use direct invocation
 ENV HF_SPACES=1
 ENV DEEPISLES_DIRECT_INVOCATION=1
+# Ensure HuggingFace cache uses our writable directory
+ENV HF_HOME=/app/cache
 
 # Create directories for data with proper permissions
 RUN mkdir -p /app/data /app/results /app/cache && \
