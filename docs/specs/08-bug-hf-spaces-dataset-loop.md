@@ -26,7 +26,7 @@ The "Select Case" dropdown **never** populates. Users see "Preparing Space" spin
 
 ## Timeline from Logs
 
-```
+```text
 16:43:33 - Application Startup
 16:43:33 - Initializing dataset...
 16:43:33 - Downloading data: 0%
@@ -145,7 +145,7 @@ case_ids = [ex["case_id"] for ex in ds]  # Iterate without full load
 
 ## Reproduction Steps
 
-1. Go to https://huggingface.co/spaces/VibecoderMcSwaggins/stroke-deepisles-demo
+1. Go to [the demo space](https://huggingface.co/spaces/VibecoderMcSwaggins/stroke-deepisles-demo)
 2. Open Logs tab
 3. Watch download complete (5 min)
 4. Watch "Generating train split" start

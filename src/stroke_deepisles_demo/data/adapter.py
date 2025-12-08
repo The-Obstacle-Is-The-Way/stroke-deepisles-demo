@@ -290,7 +290,8 @@ def build_huggingface_dataset(dataset_id: str) -> HuggingFaceDataset:
     logger.info("Streaming dataset to enumerate case IDs...")
     streaming_ds = load_dataset(dataset_id, split="train", streaming=True)
 
-    # Extract case IDs from streaming dataset (only reads metadata, not binary data)
+    # Extract case IDs from streaming dataset (accesses only subject_id field,
+    # deferring heavy binary NIfTI downloads to get_case())
     case_ids = []
     for example in streaming_ds:
         case_ids.append(example["subject_id"])
