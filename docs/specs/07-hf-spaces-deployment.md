@@ -498,17 +498,33 @@ For showcasing to others. Spin up when needed, pause when done.
 
 ```dockerfile
 # Dockerfile for HF Spaces
+# CRITICAL: DeepISLES code lives at /app/src/ in the base image.
+# We install our demo at /home/user/demo to avoid overwriting DeepISLES.
 FROM isleschallenge/deepisles:latest
 
+# HF Spaces runs containers with user ID 1000
+RUN useradd -m -u 1000 user 2>/dev/null || true
+
+# IMPORTANT: Use /home/user/demo for our app, NOT /app
+WORKDIR /home/user/demo
+
 # Add our application
-COPY requirements.txt /app/
-RUN pip install -r /app/requirements.txt
+COPY --chown=1000:1000 requirements.txt /home/user/demo/requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-COPY src/ /app/src/
-COPY app.py /app/
+COPY --chown=1000:1000 pyproject.toml /home/user/demo/pyproject.toml
+COPY --chown=1000:1000 src/ /home/user/demo/src/
+COPY --chown=1000:1000 app.py /home/user/demo/app.py
+RUN pip install --no-cache-dir --no-deps -e .
 
-WORKDIR /app
+# Environment variables for HF Spaces + direct invocation
+ENV HF_SPACES=1
+ENV DEEPISLES_DIRECT_INVOCATION=1
+ENV DEEPISLES_PATH=/app
+
+USER user
 EXPOSE 7860
+ENTRYPOINT []
 CMD ["python", "-m", "stroke_deepisles_demo.ui.app"]
 ```
 
@@ -681,19 +697,34 @@ uv run stroke-demo run --case sub-stroke0001
 
 ```dockerfile
 # Dockerfile
+# CRITICAL: DeepISLES code lives at /app/src/ in the base image.
+# We install our demo at /home/user/demo to avoid overwriting DeepISLES.
 FROM isleschallenge/deepisles:latest
 
+# HF Spaces runs containers with user ID 1000
+RUN useradd -m -u 1000 user 2>/dev/null || true
+
+# IMPORTANT: Use /home/user/demo for our app, NOT /app
+WORKDIR /home/user/demo
+
 # Install additional dependencies
-COPY requirements.txt /app/
-RUN pip install --no-cache-dir -r /app/requirements.txt
+COPY --chown=1000:1000 requirements.txt /home/user/demo/requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
-COPY src/ /app/src/
-COPY app.py /app/
+COPY --chown=1000:1000 pyproject.toml /home/user/demo/pyproject.toml
+COPY --chown=1000:1000 src/ /home/user/demo/src/
+COPY --chown=1000:1000 app.py /home/user/demo/app.py
+RUN pip install --no-cache-dir --no-deps -e .
 
-WORKDIR /app
+# Environment variables for HF Spaces + direct invocation
+ENV HF_SPACES=1
+ENV DEEPISLES_DIRECT_INVOCATION=1
+ENV DEEPISLES_PATH=/app
+
+USER user
 EXPOSE 7860
-
+ENTRYPOINT []
 CMD ["python", "-m", "stroke_deepisles_demo.ui.app"]
 ```
 
