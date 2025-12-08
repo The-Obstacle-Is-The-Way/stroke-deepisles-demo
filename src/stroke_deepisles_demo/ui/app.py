@@ -48,7 +48,7 @@ def initialize_case_selector() -> gr.Dropdown:
         return gr.Dropdown(
             choices=case_ids,
             value=case_ids[0],
-            info="Choose a case from ISLES24-MR-Lite",
+            info="Choose a case from isles24-stroke dataset",
             interactive=True,
         )
     except Exception as e:
@@ -165,7 +165,7 @@ def create_app() -> gr.Blocks:
 
         This demo runs [DeepISLES](https://github.com/ezequieldlrosa/DeepIsles)
         stroke segmentation on cases from
-        [ISLES24-MR-Lite](https://huggingface.co/datasets/YongchengYAO/ISLES24-MR-Lite).
+        [isles24-stroke](https://huggingface.co/datasets/hugging-science/isles24-stroke).
 
         **Model:** SEALS (ISLES'22 winner) - Fast, accurate ischemic stroke lesion segmentation.
 
