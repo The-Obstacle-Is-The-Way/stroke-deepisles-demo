@@ -5,6 +5,13 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      run_integration:
+        description: 'Run integration tests (requires HuggingFace download)'
+        required: false
+        default: 'false'
+        type: boolean
 
 jobs:
   lint:
@@ -69,9 +76,22 @@ jobs:
 
   integration:
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # Only run integration tests when explicitly requested via workflow_dispatch
+    # These tests download large datasets from HuggingFace and require significant disk space
+    if: github.event_name == 'workflow_dispatch' && inputs.run_integration == true
     steps:
       - uses: actions/checkout@v4
+
+      - name: Free disk space
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: false
+          swap-storage: true
 
       - name: Install uv
         uses: astral-sh/setup-uv@v4
@@ -84,3 +104,5 @@ jobs:
 
       - name: Run integration tests
         run: uv run pytest -m integration --timeout=600
+        env:
+          HF_HOME: /tmp/hf_cache

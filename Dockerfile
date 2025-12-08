@@ -55,6 +55,9 @@ USER user
 # Expose the Gradio port
 EXPOSE 7860
 
-# Set the default command
-# Use Gradio's built-in server settings for HF Spaces
+# IMPORTANT: Reset ENTRYPOINT from base image (DeepISLES sets ENTRYPOINT to main.py)
+# Without this, our CMD gets passed as arguments to DeepISLES's main.py
+ENTRYPOINT []
+
+# Set the default command to run our Gradio app
 CMD ["python", "-m", "stroke_deepisles_demo.ui.app"]
