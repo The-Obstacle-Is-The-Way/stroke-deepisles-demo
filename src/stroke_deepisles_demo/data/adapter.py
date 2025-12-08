@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 import re
+import shutil
 import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Self
 
+from stroke_deepisles_demo.core.exceptions import DataLoadError
 from stroke_deepisles_demo.core.logging import get_logger
 
 if TYPE_CHECKING:
@@ -20,7 +22,15 @@ logger = get_logger(__name__)
 
 @dataclass
 class LocalDataset:
-    """File-based dataset for local ISLES24 data."""
+    """File-based dataset for local ISLES24 data.
+
+    Can be used as a context manager for consistency with HuggingFaceDataset,
+    though no cleanup is needed for local files.
+
+    Example:
+        with build_local_dataset(path) as ds:
+            case = ds.get_case(0)
+    """
 
     data_dir: Path
     cases: dict[str, CaseFiles]  # subject_id -> files
@@ -31,6 +41,13 @@ class LocalDataset:
     def __iter__(self) -> Iterator[str]:
         return iter(self.cases.keys())
 
+    def __enter__(self) -> Self:
+        return self
+
+    def __exit__(self, *args: object) -> None:
+        # No cleanup needed for local files
+        pass
+
     def list_case_ids(self) -> list[str]:
         """Return sorted list of subject IDs."""
         return sorted(self.cases.keys())
@@ -40,6 +57,10 @@ class LocalDataset:
         if isinstance(case_id, int):
             case_id = self.list_case_ids()[case_id]
         return self.cases[case_id]
+
+    def cleanup(self) -> None:
+        """No-op for local dataset (files are not temporary)."""
+        pass
 
 
 # Subject ID extraction
@@ -125,18 +146,34 @@ class HuggingFaceDataset:
 
     Wraps the HuggingFace dataset and provides the same interface as LocalDataset.
     When get_case() is called, writes NIfTI bytes to temp files and returns paths.
+
+    IMPORTANT: Use as a context manager to ensure temp files are cleaned up:
+
+        with load_isles_dataset() as ds:
+            case = ds.get_case(0)
+            # ... process case ...
+        # temp files automatically cleaned up
+
+    Or call cleanup() manually when done.
     """
 
     dataset_id: str
     _hf_dataset: Any = field(repr=False)
     _case_ids: list[str] = field(default_factory=list)
-    _temp_dirs: list[Path] = field(default_factory=list, repr=False)
+    _temp_dir: Path | None = field(default=None, repr=False)
+    _cached_cases: dict[str, CaseFiles] = field(default_factory=dict, repr=False)
 
     def __len__(self) -> int:
         return len(self._hf_dataset)
 
     def __iter__(self) -> Iterator[str]:
         return iter(self._case_ids)
+
+    def __enter__(self) -> Self:
+        return self
+
+    def __exit__(self, *args: object) -> None:
+        self.cleanup()
 
     def list_case_ids(self) -> list[str]:
         """Return sorted list of subject IDs."""
@@ -145,7 +182,11 @@ class HuggingFaceDataset:
     def get_case(self, case_id: str | int) -> CaseFiles:
         """Get files for a case by ID or index.
 
-        Downloads NIfTI data from HuggingFace and writes to temp files.
+        Writes NIfTI bytes to temp files on first access; returns cached paths
+        on subsequent calls for the same case.
+
+        Raises:
+            DataError: If HuggingFace data is malformed or missing required fields.
         """
         if isinstance(case_id, int):
             idx = case_id
@@ -154,21 +195,40 @@ class HuggingFaceDataset:
             subject_id = case_id
             idx = self._case_ids.index(subject_id)
 
+        # Return cached case if already materialized
+        if subject_id in self._cached_cases:
+            return self._cached_cases[subject_id]
+
+        # Create shared temp directory on first use
+        if self._temp_dir is None:
+            self._temp_dir = Path(tempfile.mkdtemp(prefix="isles24_hf_"))
+            logger.debug("Created temp directory: %s", self._temp_dir)
+
         # Get the HuggingFace example
         example = self._hf_dataset[idx]
 
-        # Create temp directory for this case
-        temp_dir = Path(tempfile.mkdtemp(prefix=f"isles24_{subject_id}_"))
-        self._temp_dirs.append(temp_dir)
+        # Create case subdirectory
+        case_dir = self._temp_dir / subject_id
+        case_dir.mkdir(exist_ok=True)
 
         # Write NIfTI files to temp directory
-        dwi_path = temp_dir / f"{subject_id}_ses-02_dwi.nii.gz"
-        adc_path = temp_dir / f"{subject_id}_ses-02_adc.nii.gz"
-        mask_path = temp_dir / f"{subject_id}_ses-02_lesion-msk.nii.gz"
+        dwi_path = case_dir / f"{subject_id}_ses-02_dwi.nii.gz"
+        adc_path = case_dir / f"{subject_id}_ses-02_adc.nii.gz"
+        mask_path = case_dir / f"{subject_id}_ses-02_lesion-msk.nii.gz"
+
+        # Extract bytes with defensive error handling
+        try:
+            dwi_bytes = example["dwi"]["bytes"]
+            adc_bytes = example["adc"]["bytes"]
+        except (KeyError, TypeError) as e:
+            raise DataLoadError(
+                f"Malformed HuggingFace data for {subject_id}: missing 'dwi' or 'adc' bytes. "
+                f"The dataset schema may have changed. Error: {e}"
+            ) from e
 
         # Write the gzipped NIfTI bytes
-        dwi_path.write_bytes(example["dwi"]["bytes"])
-        adc_path.write_bytes(example["adc"]["bytes"])
+        dwi_path.write_bytes(dwi_bytes)
+        adc_path.write_bytes(adc_bytes)
 
         case_files: CaseFiles = {
             "dwi": dwi_path,
@@ -176,20 +236,27 @@ class HuggingFaceDataset:
         }
 
         # Write lesion mask if available
-        if example.get("lesion_mask") and example["lesion_mask"].get("bytes"):
-            mask_path.write_bytes(example["lesion_mask"]["bytes"])
-            case_files["ground_truth"] = mask_path
+        try:
+            mask_data = example.get("lesion_mask")
+            if mask_data and mask_data.get("bytes"):
+                mask_path.write_bytes(mask_data["bytes"])
+                case_files["ground_truth"] = mask_path
+        except (KeyError, TypeError):
+            # Mask is optional, log and continue
+            logger.debug("No lesion mask available for %s", subject_id)
+
+        # Cache for subsequent calls
+        self._cached_cases[subject_id] = case_files
 
         return case_files
 
     def cleanup(self) -> None:
-        """Remove all temp directories created by get_case()."""
-        import shutil
-
-        for temp_dir in self._temp_dirs:
-            if temp_dir.exists():
-                shutil.rmtree(temp_dir, ignore_errors=True)
-        self._temp_dirs.clear()
+        """Remove temp directory and clear cache."""
+        if self._temp_dir and self._temp_dir.exists():
+            shutil.rmtree(self._temp_dir, ignore_errors=True)
+            logger.debug("Cleaned up temp directory: %s", self._temp_dir)
+        self._temp_dir = None
+        self._cached_cases.clear()
 
 
 def build_huggingface_dataset(dataset_id: str) -> HuggingFaceDataset:

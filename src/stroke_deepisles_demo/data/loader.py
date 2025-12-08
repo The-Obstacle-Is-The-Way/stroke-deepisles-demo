@@ -4,18 +4,29 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Protocol
+from typing import TYPE_CHECKING, Protocol, Self
 
 if TYPE_CHECKING:
     from stroke_deepisles_demo.core.types import CaseFiles
 
 
 class Dataset(Protocol):
-    """Protocol for dataset access."""
+    """Protocol for dataset access.
+
+    All dataset implementations support context manager usage for proper cleanup:
+
+        with load_isles_dataset() as ds:
+            case = ds.get_case(0)
+            # ... process case ...
+        # cleanup happens automatically
+    """
 
     def __len__(self) -> int: ...
+    def __enter__(self) -> Self: ...
+    def __exit__(self, *args: object) -> None: ...
     def list_case_ids(self) -> list[str]: ...
     def get_case(self, case_id: str | int) -> CaseFiles: ...
+    def cleanup(self) -> None: ...
 
 
 @dataclass
@@ -47,11 +58,13 @@ def load_isles_dataset(
                     If None, auto-detect based on source type.
 
     Returns:
-        Dataset-like object providing case access
+        Dataset-like object providing case access. Use as context manager
+        for automatic cleanup of temp files (important for HuggingFace mode).
 
     Examples:
-        # Load from HuggingFace (recommended for HF Spaces)
-        ds = load_isles_dataset()
+        # Load from HuggingFace with automatic cleanup (recommended)
+        with load_isles_dataset() as ds:
+            case = ds.get_case(0)
 
         # Load from local directory
         ds = load_isles_dataset("data/isles24", local_mode=True)
@@ -66,8 +79,9 @@ def load_isles_dataset(
         elif isinstance(source, Path):
             local_mode = True
         else:
-            # String: check if it looks like a path
-            local_mode = "/" in source or source.startswith(".")
+            # String: check if it's an existing local path first
+            source_path = Path(source)
+            local_mode = source_path.exists() or source_path.parent.exists()
 
     if local_mode:
         from stroke_deepisles_demo.data.adapter import build_local_dataset
