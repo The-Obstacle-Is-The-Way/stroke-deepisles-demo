@@ -51,7 +51,7 @@ def test_run_segmentation_logic() -> None:
     mock_result = PipelineResult(
         case_id="sub-001",
         input_files={"dwi": MagicMock(), "adc": MagicMock()},
-        staged_dir=MagicMock(),
+        results_dir=MagicMock(),
         prediction_mask=MagicMock(),
         ground_truth=MagicMock(),
         dice_score=0.85,

@@ -25,11 +25,15 @@ logger = get_logger(__name__)
 
 @dataclass(frozen=True)
 class PipelineResult:
-    """Complete result of running the pipeline on a case."""
+    """Complete result of running the pipeline on a case.
+
+    All file paths in this result point to valid, accessible files in results_dir.
+    Callers are responsible for cleaning up results_dir when done (if desired).
+    """
 
     case_id: str
-    input_files: CaseFiles
-    staged_dir: Path
+    input_files: CaseFiles  # Copied to results_dir; always valid paths
+    results_dir: Path  # Directory containing all result files (for cleanup)
     prediction_mask: Path
     ground_truth: Path | None
     dice_score: float | None  # None if ground truth unavailable or not computed
@@ -81,38 +85,64 @@ def run_pipeline_on_case(
 
     start_time = time.time()
 
-    # 1. Load Dataset
-    dataset = load_isles_dataset()  # Uses default local path for now
+    # Use context manager to ensure HuggingFace temp files are cleaned up
+    # This prevents unbounded disk usage from accumulating temp NIfTI files
+    with load_isles_dataset() as dataset:
+        # Resolve ID if integer
+        if isinstance(case_id, int):
+            all_ids = dataset.list_case_ids()
+            if case_id < 0 or case_id >= len(all_ids):
+                raise IndexError(f"Case index {case_id} out of range (0-{len(all_ids) - 1})")
+            resolved_case_id = all_ids[case_id]
+        else:
+            resolved_case_id = case_id
 
-    # Resolve ID if integer
-    if isinstance(case_id, int):
-        all_ids = dataset.list_case_ids()
-        if case_id < 0 or case_id >= len(all_ids):
-            raise IndexError(f"Case index {case_id} out of range (0-{len(all_ids) - 1})")
-        resolved_case_id = all_ids[case_id]
-    else:
-        resolved_case_id = case_id
+        # Set up output directories (now that we have resolved_case_id)
+        if output_dir:
+            output_dir = Path(output_dir)
+            output_dir.mkdir(parents=True, exist_ok=True)
+            staging_root = output_dir / "staging" / resolved_case_id
+            results_dir = output_dir / resolved_case_id
+        else:
+            base_temp = Path(tempfile.mkdtemp(prefix="deepisles_pipeline_"))
+            staging_root = base_temp / "staging"
+            results_dir = base_temp / "results"
 
-    # Get case files
-    case_files = dataset.get_case(resolved_case_id)
+        # Get case files
+        case_files = dataset.get_case(resolved_case_id)
 
-    # 2. Stage Files
-    # Use a temp dir for staging if output_dir not provided, or a subdir of output_dir
-    if output_dir:
-        output_dir = Path(output_dir)
-        output_dir.mkdir(parents=True, exist_ok=True)
-        staging_root = output_dir / "staging" / resolved_case_id
-        results_dir = output_dir / resolved_case_id
-    else:
-        # If no output dir, we create a temp dir that persists (unless cleanup requested)
-        # But wait, the user wants paths. If we use tempfile.TemporaryDirectory context,
-        # it disappears. We should use mkdtemp or let stage_case handle it.
-        # Let's use a temp dir for staging.
-        base_temp = Path(tempfile.mkdtemp(prefix="deepisles_pipeline_"))
-        staging_root = base_temp / "staging"
-        results_dir = base_temp / "results"
+        # Stage files (copies DWI/ADC to staging directory)
+        staged = stage_case_for_deepisles(case_files, staging_root)
 
-    staged = stage_case_for_deepisles(case_files, staging_root)
+        # Copy input files to results_dir before dataset cleanup
+        # (HuggingFace mode stores files in temp dirs that get cleaned up)
+        # This ensures all paths in PipelineResult remain valid after function returns
+        results_dir.mkdir(parents=True, exist_ok=True)
+
+        # Copy DWI (required for UI visualization)
+        dwi_dest = results_dir / f"{resolved_case_id}_dwi.nii.gz"
+        shutil.copy2(case_files["dwi"], dwi_dest)
+
+        # Copy ADC
+        adc_dest = results_dir / f"{resolved_case_id}_adc.nii.gz"
+        shutil.copy2(case_files["adc"], adc_dest)
+
+        # Copy ground truth if available
+        ground_truth: Path | None = None
+        original_ground_truth = case_files.get("ground_truth")
+        if original_ground_truth and original_ground_truth.exists():
+            ground_truth = results_dir / f"{resolved_case_id}_ground_truth.nii.gz"
+            shutil.copy2(original_ground_truth, ground_truth)
+
+        # Build input_files with copied paths (always valid after function returns)
+        preserved_input_files: CaseFiles = {
+            "dwi": dwi_dest,
+            "adc": adc_dest,
+        }
+        if ground_truth:
+            preserved_input_files["ground_truth"] = ground_truth
+
+    # Dataset temp files cleaned up here (context manager __exit__)
 
     # 3. Run Inference
     inference_result = run_deepisles_on_folder(
@@ -122,10 +152,8 @@ def run_pipeline_on_case(
         gpu=gpu,
     )
 
-    # 4. Compute Metrics
+    # 4. Compute Metrics (using copied ground truth)
     dice_score: float | None = None
-    ground_truth = case_files.get("ground_truth")
-
     if compute_dice and ground_truth and ground_truth.exists():
         try:
             dice_score = metrics.compute_dice(inference_result.prediction_path, ground_truth)
@@ -140,8 +168,8 @@ def run_pipeline_on_case(
 
     return PipelineResult(
         case_id=resolved_case_id,
-        input_files=case_files,
-        staged_dir=staged.input_dir,
+        input_files=preserved_input_files,
+        results_dir=results_dir,
         prediction_mask=inference_result.prediction_path,
         ground_truth=ground_truth,
         dice_score=dice_score,
