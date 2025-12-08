@@ -7,7 +7,7 @@ import shutil
 import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Self
+from typing import TYPE_CHECKING, Self
 
 from stroke_deepisles_demo.core.exceptions import DataLoadError
 from stroke_deepisles_demo.core.logging import get_logger
@@ -145,11 +145,16 @@ class HuggingFaceDataset:
     """Dataset adapter for HuggingFace ISLES24 dataset.
 
     Wraps the HuggingFace dataset and provides the same interface as LocalDataset.
-    When get_case() is called, writes NIfTI bytes to temp files and returns paths.
+    When get_case() is called, downloads NIfTI bytes from individual parquet files
+    and writes them to temp files.
+
+    This implementation bypasses `load_dataset()` entirely to avoid:
+    1. PyArrow streaming bug (apache/arrow#45214) that hangs on parquet iteration
+    2. Memory issues from downloading the full 99GB dataset
 
     IMPORTANT: Use as a context manager to ensure temp files are cleaned up:
 
-        with load_isles_dataset() as ds:
+        with build_huggingface_dataset(dataset_id) as ds:
             case = ds.get_case(0)
             # ... process case ...
         # temp files automatically cleaned up
@@ -158,8 +163,8 @@ class HuggingFaceDataset:
     """
 
     dataset_id: str
-    _hf_dataset: Any = field(repr=False)
     _case_ids: list[str] = field(default_factory=list)
+    _case_index: dict[str, int] = field(default_factory=dict)
     _temp_dir: Path | None = field(default=None, repr=False)
     _cached_cases: dict[str, CaseFiles] = field(default_factory=dict, repr=False)
 
@@ -182,18 +187,27 @@ class HuggingFaceDataset:
     def get_case(self, case_id: str | int) -> CaseFiles:
         """Get files for a case by ID or index.
 
-        Writes NIfTI bytes to temp files on first access; returns cached paths
-        on subsequent calls for the same case.
+        Downloads NIfTI bytes from the individual parquet file for this case
+        and writes to temp files. Returns cached paths on subsequent calls.
+
+        This uses HfFileSystem + pyarrow to download only the single case (~50MB)
+        instead of the full dataset (99GB), completing in ~2 seconds.
 
         Raises:
-            DataError: If HuggingFace data is malformed or missing required fields.
+            DataLoadError: If HuggingFace data is malformed or missing required fields.
+            KeyError: If case_id is not found in the dataset.
         """
+        # Resolve case_id to subject_id and file index
         if isinstance(case_id, int):
-            idx = case_id
-            subject_id = self._case_ids[idx]
+            if case_id < 0 or case_id >= len(self._case_ids):
+                raise IndexError(f"Case index {case_id} out of range [0, {len(self._case_ids)})")
+            subject_id = self._case_ids[case_id]
+            file_idx = case_id
         else:
             subject_id = case_id
-            idx = self._case_ids.index(subject_id)
+            if subject_id not in self._case_index:
+                raise KeyError(f"Case ID '{subject_id}' not found in dataset")
+            file_idx = self._case_index[subject_id]
 
         # Return cached case if already materialized
         if subject_id in self._cached_cases:
@@ -204,17 +218,9 @@ class HuggingFaceDataset:
             self._temp_dir = Path(tempfile.mkdtemp(prefix="isles24_hf_"))
             logger.debug("Created temp directory: %s", self._temp_dir)
 
-        # Lazy load full dataset on first get_case() call
-        # This defers the expensive download until actually needed
-        if self._hf_dataset is None:
-            from datasets import load_dataset
-
-            logger.info("Loading full dataset for case access (lazy load)...")
-            self._hf_dataset = load_dataset(self.dataset_id, split="train")
-            logger.info("Full dataset loaded: %d examples", len(self._hf_dataset))
-
-        # Get the HuggingFace example
-        example = self._hf_dataset[idx]
+        # Download case data from individual parquet file
+        logger.info("Downloading case %s from HuggingFace...", subject_id)
+        case_data = self._download_case_from_parquet(file_idx, subject_id)
 
         # Create case subdirectory
         case_dir = self._temp_dir / subject_id
@@ -225,19 +231,9 @@ class HuggingFaceDataset:
         adc_path = case_dir / f"{subject_id}_ses-02_adc.nii.gz"
         mask_path = case_dir / f"{subject_id}_ses-02_lesion-msk.nii.gz"
 
-        # Extract bytes with defensive error handling
-        try:
-            dwi_bytes = example["dwi"]["bytes"]
-            adc_bytes = example["adc"]["bytes"]
-        except (KeyError, TypeError) as e:
-            raise DataLoadError(
-                f"Malformed HuggingFace data for {subject_id}: missing 'dwi' or 'adc' bytes. "
-                f"The dataset schema may have changed. Error: {e}"
-            ) from e
-
         # Write the gzipped NIfTI bytes
-        dwi_path.write_bytes(dwi_bytes)
-        adc_path.write_bytes(adc_bytes)
+        dwi_path.write_bytes(case_data["dwi_bytes"])
+        adc_path.write_bytes(case_data["adc_bytes"])
 
         case_files: CaseFiles = {
             "dwi": dwi_path,
@@ -245,19 +241,88 @@ class HuggingFaceDataset:
         }
 
         # Write lesion mask if available
-        try:
-            mask_data = example.get("lesion_mask")
-            if mask_data and mask_data.get("bytes"):
-                mask_path.write_bytes(mask_data["bytes"])
-                case_files["ground_truth"] = mask_path
-        except (KeyError, TypeError):
-            # Mask is optional, log and continue
-            logger.debug("No lesion mask available for %s", subject_id)
+        if case_data.get("mask_bytes"):
+            mask_path.write_bytes(case_data["mask_bytes"])
+            case_files["ground_truth"] = mask_path
 
         # Cache for subsequent calls
         self._cached_cases[subject_id] = case_files
+        logger.info(
+            "Case %s ready: DWI=%.1fMB, ADC=%.1fMB",
+            subject_id,
+            len(case_data["dwi_bytes"]) / 1024 / 1024,
+            len(case_data["adc_bytes"]) / 1024 / 1024,
+        )
 
         return case_files
+
+    def _download_case_from_parquet(self, file_idx: int, subject_id: str) -> dict[str, bytes]:
+        """Download case data directly from individual parquet file.
+
+        Uses HfFileSystem + pyarrow to read only the columns we need from
+        a single parquet file, avoiding the need to download the full dataset.
+
+        Args:
+            file_idx: Index of the parquet file (0-148)
+            subject_id: Expected subject ID (for validation)
+
+        Returns:
+            Dict with dwi_bytes, adc_bytes, and optionally mask_bytes
+        """
+        import pyarrow.parquet as pq  # type: ignore[import-untyped]
+        from huggingface_hub import HfFileSystem
+
+        from stroke_deepisles_demo.data.constants import ISLES24_NUM_FILES
+
+        # Construct path to the specific parquet file
+        fpath = f"datasets/{self.dataset_id}/data/train-{file_idx:05d}-of-{ISLES24_NUM_FILES:05d}.parquet"
+
+        try:
+            fs = HfFileSystem()
+            with fs.open(fpath, "rb") as f:
+                pf = pq.ParquetFile(f)
+                # Read only the columns we need
+                table = pf.read(columns=["subject_id", "dwi", "adc", "lesion_mask"])
+                df = table.to_pandas()
+
+                if len(df) != 1:
+                    raise DataLoadError(f"Expected 1 row in parquet file, got {len(df)}: {fpath}")
+
+                row = df.iloc[0]
+
+                # Validate subject_id matches
+                actual_subject_id = row["subject_id"]
+                if actual_subject_id != subject_id:
+                    raise DataLoadError(
+                        f"Subject ID mismatch: expected {subject_id}, got {actual_subject_id} in {fpath}"
+                    )
+
+                # Extract bytes with defensive error handling
+                try:
+                    dwi_bytes = row["dwi"]["bytes"]
+                    adc_bytes = row["adc"]["bytes"]
+                except (KeyError, TypeError) as e:
+                    raise DataLoadError(
+                        f"Malformed HuggingFace data for {subject_id}: missing 'dwi' or 'adc' bytes. "
+                        f"The dataset schema may have changed. Error: {e}"
+                    ) from e
+
+                result: dict[str, bytes] = {
+                    "dwi_bytes": dwi_bytes,
+                    "adc_bytes": adc_bytes,
+                }
+
+                # Extract mask if available
+                mask_data = row.get("lesion_mask")
+                if mask_data is not None and isinstance(mask_data, dict) and mask_data.get("bytes"):
+                    result["mask_bytes"] = mask_data["bytes"]
+
+                return result
+
+        except Exception as e:
+            if isinstance(e, DataLoadError):
+                raise
+            raise DataLoadError(f"Failed to download case {subject_id} from {fpath}: {e}") from e
 
     def cleanup(self) -> None:
         """Remove temp directory and clear cache."""
@@ -270,10 +335,11 @@ class HuggingFaceDataset:
 
 def build_huggingface_dataset(dataset_id: str) -> HuggingFaceDataset:
     """
-    Load ISLES24 dataset from HuggingFace Hub.
+    Build ISLES24 dataset adapter for HuggingFace Hub.
 
-    Uses streaming mode to quickly enumerate case IDs without downloading
-    the full dataset. Actual data is downloaded lazily when get_case() is called.
+    Uses pre-computed case IDs to avoid streaming enumeration (which hangs
+    due to PyArrow bug apache/arrow#45214). Actual data is downloaded lazily
+    from individual parquet files when get_case() is called.
 
     Args:
         dataset_id: HuggingFace dataset identifier (e.g., "hugging-science/isles24-stroke")
@@ -281,26 +347,29 @@ def build_huggingface_dataset(dataset_id: str) -> HuggingFaceDataset:
     Returns:
         HuggingFaceDataset providing case access
     """
-    from datasets import load_dataset
+    from stroke_deepisles_demo.data.constants import (
+        ISLES24_CASE_IDS,
+        ISLES24_CASE_INDEX,
+        ISLES24_DATASET_ID,
+    )
 
-    logger.info("Loading HuggingFace dataset: %s", dataset_id)
+    # Validate dataset_id matches our pre-computed constants
+    if dataset_id != ISLES24_DATASET_ID:
+        logger.warning(
+            "Dataset ID '%s' does not match pre-computed constants for '%s'. "
+            "Case IDs may be incorrect.",
+            dataset_id,
+            ISLES24_DATASET_ID,
+        )
 
-    # Use streaming to quickly get case IDs without downloading full dataset
-    # This avoids the "Generating train split" phase that hangs on HF Spaces
-    logger.info("Streaming dataset to enumerate case IDs...")
-    streaming_ds = load_dataset(dataset_id, split="train", streaming=True)
+    logger.info(
+        "Building HuggingFace dataset adapter: %s (%d cases, pre-computed)",
+        dataset_id,
+        len(ISLES24_CASE_IDS),
+    )
 
-    # Extract case IDs from streaming dataset (accesses only subject_id field,
-    # deferring heavy binary NIfTI downloads to get_case())
-    case_ids = []
-    for example in streaming_ds:
-        case_ids.append(example["subject_id"])
-
-    logger.info("Found %d cases from HuggingFace: %s", len(case_ids), dataset_id)
-
-    # Return dataset with lazy loading - full data downloaded only when get_case() called
     return HuggingFaceDataset(
         dataset_id=dataset_id,
-        _hf_dataset=None,  # Lazy load on first get_case()
-        _case_ids=case_ids,
+        _case_ids=list(ISLES24_CASE_IDS),
+        _case_index=dict(ISLES24_CASE_INDEX),
     )
