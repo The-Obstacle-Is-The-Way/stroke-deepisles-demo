@@ -4,11 +4,11 @@ from __future__ import annotations
 
 import os
 from typing import TYPE_CHECKING
+from unittest.mock import patch
 
 import pytest
-from datasets.exceptions import DatasetNotFoundError
 
-from stroke_deepisles_demo.data.adapter import HuggingFaceDataset, LocalDataset
+from stroke_deepisles_demo.data.adapter import HuggingFaceDataset, LocalDataset, logger
 from stroke_deepisles_demo.data.loader import load_isles_dataset
 
 if TYPE_CHECKING:
@@ -35,10 +35,20 @@ def test_load_from_local_finds_all_cases(synthetic_isles_dir: Path) -> None:
     assert dataset.list_case_ids() == ["sub-stroke0001", "sub-stroke0002"]
 
 
-def test_load_hf_raises_on_invalid_dataset() -> None:
-    """Test that loading a non-existent HF dataset raises DatasetNotFoundError."""
-    with pytest.raises(DatasetNotFoundError):
-        load_isles_dataset(source="fake/nonexistent-dataset", local_mode=False)
+def test_load_hf_warns_on_non_standard_dataset() -> None:
+    """Test that loading a non-standard HF dataset logs a warning.
+
+    Note: With pre-computed case IDs, the dataset ID mismatch is only detected
+    at build time (warning logged), not at get_case() time. The actual 404 error
+    would only occur when trying to download a case that doesn't exist.
+    """
+    with patch.object(logger, "warning") as mock_warning:
+        ds = load_isles_dataset(source="fake/nonexistent-dataset", local_mode=False)
+        mock_warning.assert_called_once()
+        assert "does not match pre-computed constants" in mock_warning.call_args[0][0]
+        # Dataset is still created with pre-computed case IDs
+        assert isinstance(ds, HuggingFaceDataset)
+        assert len(ds) == 149  # Uses pre-computed list
 
 
 @pytest.mark.integration
