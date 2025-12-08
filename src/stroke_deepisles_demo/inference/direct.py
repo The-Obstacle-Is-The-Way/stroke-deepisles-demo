@@ -16,6 +16,7 @@ See:
 
 from __future__ import annotations
 
+import os
 import sys
 import time
 from dataclasses import dataclass
@@ -27,13 +28,31 @@ from stroke_deepisles_demo.inference.deepisles import find_prediction_mask
 
 logger = get_logger(__name__)
 
-# Paths where DeepISLES source might be located in the Docker image
-DEEPISLES_SEARCH_PATHS = [
-    "/app",
-    "/DeepIsles",
-    "/opt/deepisles",
-    "/home/user/DeepIsles",
-]
+
+def _get_deepisles_search_paths() -> list[str]:
+    """Get paths to search for DeepISLES modules.
+
+    Checks DEEPISLES_PATH environment variable first, then falls back to
+    common installation locations.
+    """
+    paths = []
+
+    # Check environment variable first (set in Dockerfile)
+    env_path = os.environ.get("DEEPISLES_PATH")
+    if env_path:
+        paths.append(env_path)
+
+    # Add common installation locations
+    paths.extend(
+        [
+            "/app",  # Default location in isleschallenge/deepisles Docker image
+            "/DeepIsles",
+            "/opt/deepisles",
+            "/home/user/DeepIsles",
+        ]
+    )
+
+    return paths
 
 
 @dataclass(frozen=True)
@@ -54,7 +73,9 @@ def _ensure_deepisles_importable() -> str:
     Raises:
         DeepISLESError: If DeepISLES cannot be found
     """
-    for path in DEEPISLES_SEARCH_PATHS:
+    search_paths = _get_deepisles_search_paths()
+
+    for path in search_paths:
         if Path(path).exists():
             if path not in sys.path:
                 sys.path.insert(0, path)
@@ -70,7 +91,7 @@ def _ensure_deepisles_importable() -> str:
     raise DeepISLESError(
         "DeepISLES modules not found. Direct invocation requires running "
         "inside the DeepISLES Docker image. Searched paths: "
-        f"{DEEPISLES_SEARCH_PATHS}"
+        f"{search_paths}"
     )
 
 

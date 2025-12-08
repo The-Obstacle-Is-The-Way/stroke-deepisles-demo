@@ -4,6 +4,9 @@
 #
 # IMPORTANT: During Docker build, GPU is NOT available.
 # All GPU operations happen at runtime only.
+#
+# CRITICAL: DeepISLES code lives at /app/src/ in the base image.
+# We install our demo at /home/user/demo to avoid overwriting DeepISLES.
 
 # NOTE: isleschallenge/deepisles only publishes 'latest' tag on Docker Hub.
 # For reproducibility, consider using a SHA digest if available:
@@ -21,20 +24,21 @@ ENV PYTHONDONTWRITEBYTECODE=1
 # Create user if not exists (DeepISLES image may already have a user)
 RUN useradd -m -u 1000 user 2>/dev/null || true
 
-# Set working directory
-WORKDIR /app
+# IMPORTANT: Use /home/user/demo for our app, NOT /app
+# /app contains DeepISLES code (main.py, src/, weights/) that we must NOT overwrite
+WORKDIR /home/user/demo
 
 # Copy requirements first for better layer caching
-COPY --chown=1000:1000 requirements.txt /app/requirements.txt
+COPY --chown=1000:1000 requirements.txt /home/user/demo/requirements.txt
 
 # Install Python dependencies (extras only - DeepISLES image has PyTorch, nnUNet, etc.)
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application source code and package files
-COPY --chown=1000:1000 pyproject.toml /app/pyproject.toml
-COPY --chown=1000:1000 README.md /app/README.md
-COPY --chown=1000:1000 src/ /app/src/
-COPY --chown=1000:1000 app.py /app/app.py
+COPY --chown=1000:1000 pyproject.toml /home/user/demo/pyproject.toml
+COPY --chown=1000:1000 README.md /home/user/demo/README.md
+COPY --chown=1000:1000 src/ /home/user/demo/src/
+COPY --chown=1000:1000 app.py /home/user/demo/app.py
 
 # Install the package itself (makes stroke_deepisles_demo importable)
 # Using --no-deps since requirements.txt already installed dependencies
@@ -44,12 +48,17 @@ RUN pip install --no-cache-dir --no-deps -e .
 # This allows the app to detect runtime environment and use direct invocation
 ENV HF_SPACES=1
 ENV DEEPISLES_DIRECT_INVOCATION=1
+
+# Point to DeepISLES location for direct invocation
+# DeepISLES code is at /app in the base image
+ENV DEEPISLES_PATH=/app
+
 # Ensure HuggingFace cache uses our writable directory
-ENV HF_HOME=/app/cache
+ENV HF_HOME=/home/user/demo/cache
 
 # Create directories for data with proper permissions
-RUN mkdir -p /app/data /app/results /app/cache && \
-    chown -R 1000:1000 /app
+RUN mkdir -p /home/user/demo/data /home/user/demo/results /home/user/demo/cache && \
+    chown -R 1000:1000 /home/user/demo
 
 # Switch to non-root user (required by HF Spaces)
 USER user
