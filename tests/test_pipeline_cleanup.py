@@ -17,9 +17,13 @@ def test_pipeline_cleanup_default() -> None:
     ):
         # Setup mocks
         mock_dataset = MagicMock()
-        mock_load.return_value = mock_dataset
         mock_dataset.list_case_ids.return_value = ["case1"]
-        mock_dataset.get_case.return_value = {"dwi": Path("dwi.nii.gz")}
+        # Return dict without ground_truth to avoid file copy attempt
+        mock_dataset.get_case.return_value = {"dwi": Path("dwi.nii.gz"), "adc": Path("adc.nii.gz")}
+
+        # Support context manager protocol: with load_isles_dataset() as dataset:
+        mock_load.return_value.__enter__ = MagicMock(return_value=mock_dataset)
+        mock_load.return_value.__exit__ = MagicMock(return_value=None)
 
         mock_staged = MagicMock()
         mock_staged.input_dir = Path("/tmp/mock_staging")
