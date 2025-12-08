@@ -169,14 +169,19 @@ class TestBuildHuggingFaceDataset:
 
     @patch("datasets.load_dataset")
     def test_loads_dataset_from_hub(self, mock_load_dataset: MagicMock) -> None:
-        """Test that build_huggingface_dataset calls load_dataset correctly."""
-        mock_ds = MagicMock()
-        mock_ds.__iter__ = MagicMock(return_value=iter([{"subject_id": "sub-stroke0001"}]))
-        mock_load_dataset.return_value = mock_ds
+        """Test that build_huggingface_dataset uses streaming to enumerate case IDs."""
+        mock_streaming_ds = MagicMock()
+        mock_streaming_ds.__iter__ = MagicMock(
+            return_value=iter([{"subject_id": "sub-stroke0001"}])
+        )
+        mock_load_dataset.return_value = mock_streaming_ds
 
         result = build_huggingface_dataset("test/my-dataset")
 
-        mock_load_dataset.assert_called_once_with("test/my-dataset", split="train")
+        # Should use streaming mode for initial case ID enumeration
+        mock_load_dataset.assert_called_once_with("test/my-dataset", split="train", streaming=True)
         assert isinstance(result, HuggingFaceDataset)
         assert result.dataset_id == "test/my-dataset"
         assert result._case_ids == ["sub-stroke0001"]
+        # Dataset should be None initially (lazy load)
+        assert result._hf_dataset is None
