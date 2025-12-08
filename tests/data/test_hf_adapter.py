@@ -2,30 +2,12 @@
 
 from __future__ import annotations
 
-from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
 
 from stroke_deepisles_demo.core.exceptions import DataLoadError
 from stroke_deepisles_demo.data.adapter import HuggingFaceDataset, build_huggingface_dataset
-
-
-def create_mock_parquet_data(subject_id: str, include_mask: bool = True) -> dict[str, Any]:
-    """Create mock data that matches what we read from parquet files."""
-    data: dict[str, Any] = {
-        "subject_id": subject_id,
-        "dwi": {"bytes": b"fake_dwi_nifti_data", "path": f"{subject_id}_dwi.nii.gz"},
-        "adc": {"bytes": b"fake_adc_nifti_data", "path": f"{subject_id}_adc.nii.gz"},
-    }
-    if include_mask:
-        data["lesion_mask"] = {
-            "bytes": b"fake_mask_nifti_data",
-            "path": f"{subject_id}_lesion-msk.nii.gz",
-        }
-    else:
-        data["lesion_mask"] = None
-    return data
 
 
 class TestHuggingFaceDataset:

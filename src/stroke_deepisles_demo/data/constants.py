@@ -172,5 +172,10 @@ ISLES24_CASE_INDEX: dict[str, int] = {case_id: idx for idx, case_id in enumerate
 # Total number of parquet files in the dataset
 ISLES24_NUM_FILES: int = 149
 
+# Sanity check: ensure constants are consistent
+assert len(ISLES24_CASE_IDS) == ISLES24_NUM_FILES, (
+    f"ISLES24_CASE_IDS has {len(ISLES24_CASE_IDS)} entries but ISLES24_NUM_FILES is {ISLES24_NUM_FILES}"
+)
+
 # Dataset identifier on HuggingFace Hub
 ISLES24_DATASET_ID: str = "hugging-science/isles24-stroke"
