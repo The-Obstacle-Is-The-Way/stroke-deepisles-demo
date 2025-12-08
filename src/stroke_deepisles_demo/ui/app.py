@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from typing import Any
+import shutil
+from typing import TYPE_CHECKING, Any
 
 import gradio as gr
 from matplotlib.figure import Figure  # noqa: TC002
@@ -20,7 +21,13 @@ from stroke_deepisles_demo.ui.viewer import (
     render_slice_comparison,
 )
 
+if TYPE_CHECKING:
+    from pathlib import Path
+
 logger = get_logger(__name__)
+
+# Shared output directory for UI results (cleaned up between runs to prevent disk accumulation)
+_previous_results_dir: Path | None = None
 
 
 def run_segmentation(
@@ -47,6 +54,13 @@ def run_segmentation(
         )
 
     try:
+        global _previous_results_dir
+
+        # Clean up previous results to prevent disk accumulation on HF Spaces
+        if _previous_results_dir and _previous_results_dir.exists():
+            shutil.rmtree(_previous_results_dir, ignore_errors=True)
+            logger.debug("Cleaned up previous results: %s", _previous_results_dir)
+
         logger.info("Running segmentation for %s", case_id)
         result = run_pipeline_on_case(
             case_id,
@@ -54,6 +68,9 @@ def run_segmentation(
             compute_dice=True,
             cleanup_staging=True,
         )
+
+        # Track results_dir for cleanup on next run
+        _previous_results_dir = result.results_dir
 
         # 1. NiiVue Visualization
         # We need data URLs for the browser

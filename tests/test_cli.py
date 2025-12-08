@@ -26,7 +26,7 @@ class TestCli:
         result = PipelineResult(
             case_id="sub-001",
             input_files=MagicMock(),
-            staged_dir=MagicMock(),
+            results_dir=MagicMock(),
             prediction_mask=MagicMock(),
             ground_truth=None,
             dice_score=None,
@@ -50,7 +50,7 @@ class TestCli:
         result = PipelineResult(
             case_id="sub-001",
             input_files=MagicMock(),
-            staged_dir=MagicMock(),
+            results_dir=MagicMock(),
             prediction_mask=MagicMock(),
             ground_truth=None,
             dice_score=None,

@@ -25,11 +25,15 @@ logger = get_logger(__name__)
 
 @dataclass(frozen=True)
 class PipelineResult:
-    """Complete result of running the pipeline on a case."""
+    """Complete result of running the pipeline on a case.
+
+    All file paths in this result point to valid, accessible files in results_dir.
+    Callers are responsible for cleaning up results_dir when done (if desired).
+    """
 
     case_id: str
-    input_files: CaseFiles
-    staged_dir: Path
+    input_files: CaseFiles  # Copied to results_dir; always valid paths
+    results_dir: Path  # Directory containing all result files (for cleanup)
     prediction_mask: Path
     ground_truth: Path | None
     dice_score: float | None  # None if ground truth unavailable or not computed
@@ -110,14 +114,33 @@ def run_pipeline_on_case(
         # Stage files (copies DWI/ADC to staging directory)
         staged = stage_case_for_deepisles(case_files, staging_root)
 
-        # Copy ground truth to results_dir before dataset cleanup
-        # (HuggingFace mode stores ground truth in temp files that get cleaned up)
+        # Copy input files to results_dir before dataset cleanup
+        # (HuggingFace mode stores files in temp dirs that get cleaned up)
+        # This ensures all paths in PipelineResult remain valid after function returns
+        results_dir.mkdir(parents=True, exist_ok=True)
+
+        # Copy DWI (required for UI visualization)
+        dwi_dest = results_dir / f"{resolved_case_id}_dwi.nii.gz"
+        shutil.copy2(case_files["dwi"], dwi_dest)
+
+        # Copy ADC
+        adc_dest = results_dir / f"{resolved_case_id}_adc.nii.gz"
+        shutil.copy2(case_files["adc"], adc_dest)
+
+        # Copy ground truth if available
         ground_truth: Path | None = None
         original_ground_truth = case_files.get("ground_truth")
         if original_ground_truth and original_ground_truth.exists():
-            results_dir.mkdir(parents=True, exist_ok=True)
             ground_truth = results_dir / f"{resolved_case_id}_ground_truth.nii.gz"
             shutil.copy2(original_ground_truth, ground_truth)
+
+        # Build input_files with copied paths (always valid after function returns)
+        preserved_input_files: CaseFiles = {
+            "dwi": dwi_dest,
+            "adc": adc_dest,
+        }
+        if ground_truth:
+            preserved_input_files["ground_truth"] = ground_truth
 
     # Dataset temp files cleaned up here (context manager __exit__)
 
@@ -145,8 +168,8 @@ def run_pipeline_on_case(
 
     return PipelineResult(
         case_id=resolved_case_id,
-        input_files=case_files,
-        staged_dir=staged.input_dir,
+        input_files=preserved_input_files,
+        results_dir=results_dir,
         prediction_mask=inference_result.prediction_path,
         ground_truth=ground_truth,
         dice_score=dice_score,

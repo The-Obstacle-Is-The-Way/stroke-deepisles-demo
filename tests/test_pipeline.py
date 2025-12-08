@@ -35,20 +35,18 @@ class TestRunPipelineOnCase:
             # Configure mocks
             mock_dataset = MagicMock()
 
-            # Create real temp files for ground truth (context manager cleans up HF temp files)
+            # Create real temp files (pipeline copies these to results_dir)
+            dwi_file = temp_dir / "dwi_mock.nii.gz"
+            dwi_file.write_bytes(b"fake dwi nifti")
+            adc_file = temp_dir / "adc_mock.nii.gz"
+            adc_file.write_bytes(b"fake adc nifti")
             gt_file = temp_dir / "gt_mock.nii.gz"
-            gt_file.write_bytes(b"fake nifti")
-
-            # Mock paths that "exist"
-            dwi_path = MagicMock(spec=Path)
-            dwi_path.exists.return_value = True
-            adc_path = MagicMock(spec=Path)
-            adc_path.exists.return_value = True
+            gt_file.write_bytes(b"fake gt nifti")
 
             mock_dataset.get_case.return_value = CaseFiles(
-                dwi=dwi_path,
-                adc=adc_path,
-                ground_truth=gt_file,  # Use real file for copy operation
+                dwi=dwi_file,
+                adc=adc_file,
+                ground_truth=gt_file,
                 # flair omitted
             )
             # Support context manager protocol: with load_isles_dataset() as dataset:
@@ -146,17 +144,18 @@ class TestRunPipelineOnCase:
     def test_handles_missing_ground_truth(
         self,
         mock_dependencies: dict[str, MagicMock],
-        temp_dir: Path,  # noqa: ARG002
+        temp_dir: Path,
     ) -> None:
         """Handles cases without ground truth gracefully."""
-        # Modify mock to return no ground truth
-        dwi = MagicMock(spec=Path)
-        dwi.exists.return_value = True
-        adc = MagicMock(spec=Path)
-        adc.exists.return_value = True
+        # Create real files for DWI/ADC (pipeline copies these)
+        dwi_file = temp_dir / "dwi_no_gt.nii.gz"
+        dwi_file.write_bytes(b"fake dwi")
+        adc_file = temp_dir / "adc_no_gt.nii.gz"
+        adc_file.write_bytes(b"fake adc")
+
         mock_dependencies["dataset"].get_case.return_value = CaseFiles(
-            dwi=dwi,
-            adc=adc,
+            dwi=dwi_file,
+            adc=adc_file,
             # ground_truth omitted
         )
 
@@ -237,7 +236,7 @@ class TestRunPipelineOnBatch:
                 PipelineResult(
                     case_id="sub-001",
                     input_files=MagicMock(),
-                    staged_dir=MagicMock(),
+                    results_dir=MagicMock(),
                     prediction_mask=MagicMock(),
                     ground_truth=None,
                     dice_score=0.8,
@@ -246,7 +245,7 @@ class TestRunPipelineOnBatch:
                 PipelineResult(
                     case_id="sub-002",
                     input_files=MagicMock(),
-                    staged_dir=MagicMock(),
+                    results_dir=MagicMock(),
                     prediction_mask=MagicMock(),
                     ground_truth=None,
                     dice_score=0.9,
@@ -267,7 +266,7 @@ class TestRunPipelineOnBatch:
             mock_run.return_value = PipelineResult(
                 case_id="sub-001",
                 input_files=MagicMock(),
-                staged_dir=MagicMock(),
+                results_dir=MagicMock(),
                 prediction_mask=MagicMock(),
                 ground_truth=None,
                 dice_score=0.8,
