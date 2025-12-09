@@ -1,57 +1,37 @@
-"""Direct DeepISLES invocation without Docker.
+"""Direct DeepISLES invocation via subprocess.
 
-This module provides direct Python invocation of DeepISLES when running
-inside the DeepISLES Docker image (e.g., on HF Spaces). This avoids
-Docker-in-Docker which is not supported on HF Spaces.
+This module provides subprocess-based invocation of DeepISLES when running
+on HF Spaces. We use subprocess because:
+- DeepISLES runs in a conda env with Python 3.8
+- Our Gradio app requires Python 3.10+ for modern dependencies
+- The two environments are incompatible, so we bridge via subprocess
 
 Usage:
-    When running in HF Spaces, our container is based on isleschallenge/deepisles,
-    which has all DeepISLES dependencies pre-installed. This module imports
-    and calls DeepISLES directly.
+    The subprocess calls /app/deepisles_adapter.py inside the isles_ensemble
+    conda environment, which imports and runs IslesEnsemble.
 
 See:
     - https://github.com/ezequieldlrosa/DeepIsles
     - docs/specs/07-hf-spaces-deployment.md
+    - scripts/deepisles_adapter.py
 """
 
 from __future__ import annotations
 
-import os
-import sys
+import subprocess
 import time
 from dataclasses import dataclass
-from pathlib import Path
+from pathlib import Path  # noqa: TC003 - used at runtime in dataclass and functions
 
 from stroke_deepisles_demo.core.exceptions import DeepISLESError, MissingInputError
 from stroke_deepisles_demo.core.logging import get_logger
-from stroke_deepisles_demo.inference.deepisles import find_prediction_mask
 
 logger = get_logger(__name__)
 
-
-def _get_deepisles_search_paths() -> list[str]:
-    """Get paths to search for DeepISLES modules.
-
-    Checks DEEPISLES_PATH environment variable first, then falls back to
-    common installation locations.
-    """
-    paths = []
-
-    # Check environment variable first (set in Dockerfile)
-    env_path = os.environ.get("DEEPISLES_PATH")
-    if env_path:
-        paths.append(env_path)
-
-    # Add common installation locations (excluding any already added via env var)
-    fallback_paths = [
-        "/app",  # Default location in isleschallenge/deepisles Docker image
-        "/DeepIsles",
-        "/opt/deepisles",
-        "/home/user/DeepIsles",
-    ]
-    paths.extend(p for p in fallback_paths if p not in paths)
-
-    return paths
+# Path to conda and adapter script in the Docker container
+CONDA_PATH = "/opt/conda/bin/conda"
+ADAPTER_SCRIPT = "/app/deepisles_adapter.py"
+CONDA_ENV_NAME = "isles_ensemble"
 
 
 @dataclass(frozen=True)
@@ -60,53 +40,6 @@ class DirectInvocationResult:
 
     prediction_path: Path
     elapsed_seconds: float
-
-
-def _ensure_deepisles_importable() -> str:
-    """
-    Ensure DeepISLES modules are importable by adding to sys.path.
-
-    Returns:
-        Path where DeepISLES was found
-
-    Raises:
-        DeepISLESError: If DeepISLES cannot be found
-    """
-    search_paths = _get_deepisles_search_paths()
-
-    for path in search_paths:
-        path_obj = Path(path)
-        if path_obj.exists():
-            # Log what we find for debugging
-            logger.info("Checking path %s - exists: True", path)
-            if (path_obj / "src").exists():
-                src_contents = list((path_obj / "src").iterdir())[:10]
-                logger.info("  /src contents: %s", [f.name for f in src_contents])
-            else:
-                logger.info("  /src does NOT exist")
-                # Check what IS in this directory
-                contents = list(path_obj.iterdir())[:10]
-                logger.info("  directory contents: %s", [f.name for f in contents])
-
-            if path not in sys.path:
-                sys.path.insert(0, path)
-            try:
-                # Test import (only available in DeepISLES Docker image)
-                from src.isles22_ensemble import IslesEnsemble  # noqa: F401
-
-                logger.info("Found DeepISLES at %s", path)
-                return path
-            except ImportError as e:
-                logger.warning("Import failed at %s: %s", path, e)
-                continue
-        else:
-            logger.info("Checking path %s - exists: False", path)
-
-    raise DeepISLESError(
-        "DeepISLES modules not found. Direct invocation requires running "
-        "inside the DeepISLES Docker image. Searched paths: "
-        f"{search_paths}"
-    )
 
 
 def validate_input_files(
@@ -133,6 +66,39 @@ def validate_input_files(
         raise MissingInputError(f"FLAIR file not found: {flair_path}")
 
 
+def find_prediction_mask(output_dir: Path) -> Path:
+    """
+    Find the prediction mask in DeepISLES output directory.
+
+    DeepISLES outputs the lesion mask as 'lesion_msk.nii.gz'.
+
+    Args:
+        output_dir: DeepISLES output directory
+
+    Returns:
+        Path to the prediction mask NIfTI file
+
+    Raises:
+        DeepISLESError: If no prediction mask found
+    """
+    # DeepISLES outputs lesion_msk.nii.gz
+    expected_path = output_dir / "lesion_msk.nii.gz"
+    if expected_path.exists():
+        return expected_path
+
+    # Fall back to searching for any NIfTI file
+    nifti_files = list(output_dir.glob("*.nii.gz"))
+    nifti_files = [
+        f for f in nifti_files if not any(x in f.name.lower() for x in ["dwi", "adc", "flair"])
+    ]
+    if nifti_files:
+        return nifti_files[0]
+
+    raise DeepISLESError(
+        f"No prediction mask found in {output_dir}. Expected 'lesion_msk.nii.gz' or similar."
+    )
+
+
 def run_deepisles_direct(
     dwi_path: Path,
     adc_path: Path,
@@ -140,17 +106,18 @@ def run_deepisles_direct(
     *,
     flair_path: Path | None = None,
     fast: bool = True,
-    skull_strip: bool = False,
-    parallelize: bool = True,
-    save_team_outputs: bool = False,
-    results_mni: bool = False,
+    skull_strip: bool = False,  # noqa: ARG001 - kept for API compatibility
+    parallelize: bool = True,  # noqa: ARG001 - kept for API compatibility
+    save_team_outputs: bool = False,  # noqa: ARG001 - kept for API compatibility
+    results_mni: bool = False,  # noqa: ARG001 - kept for API compatibility
+    timeout: float = 1800,  # 30 minutes
 ) -> DirectInvocationResult:
     """
-    Run DeepISLES segmentation via direct Python invocation.
+    Run DeepISLES segmentation via subprocess into conda environment.
 
-    This function calls the DeepISLES IslesEnsemble.predict_ensemble() method
-    directly, bypassing Docker. It's used when running inside the DeepISLES
-    container on HF Spaces.
+    This function calls the deepisles_adapter.py script inside the
+    isles_ensemble conda environment via subprocess. This bridges the
+    Python version gap (Gradio needs 3.10+, DeepISLES needs 3.8).
 
     Args:
         dwi_path: Path to DWI NIfTI file (b=1000)
@@ -158,10 +125,11 @@ def run_deepisles_direct(
         output_dir: Directory for output files
         flair_path: Optional path to FLAIR NIfTI file
         fast: If True, use SEALS model only (faster, no FLAIR needed)
-        skull_strip: If True, perform skull stripping
-        parallelize: If True, run models in parallel
-        save_team_outputs: If True, save individual team outputs
-        results_mni: If True, output results in MNI space
+        skull_strip: If True, perform skull stripping (not passed to subprocess)
+        parallelize: If True, run models in parallel (not passed to subprocess)
+        save_team_outputs: If True, save individual team outputs (not passed)
+        results_mni: If True, output results in MNI space (not passed)
+        timeout: Maximum seconds to wait for inference
 
     Returns:
         DirectInvocationResult with path to prediction mask
@@ -184,52 +152,76 @@ def run_deepisles_direct(
     # Validate inputs
     validate_input_files(dwi_path, adc_path, flair_path)
 
-    # Ensure DeepISLES is importable
-    deepisles_path = _ensure_deepisles_importable()
-
-    # Import DeepISLES (only available in DeepISLES Docker image)
-    try:
-        from src.isles22_ensemble import IslesEnsemble
-    except ImportError as e:
-        raise DeepISLESError(f"Failed to import DeepISLES: {e}") from e
-
     # Create output directory
     output_dir.mkdir(parents=True, exist_ok=True)
 
     logger.info(
-        "Running DeepISLES direct invocation: dwi=%s, adc=%s, flair=%s, fast=%s",
+        "Running DeepISLES via subprocess: dwi=%s, adc=%s, flair=%s, fast=%s",
         dwi_path,
         adc_path,
         flair_path,
         fast,
     )
 
+    # Build command to run adapter script in conda environment
+    # Using: conda run -n isles_ensemble python /app/deepisles_adapter.py ...
+    cmd = [
+        CONDA_PATH,
+        "run",
+        "-n",
+        CONDA_ENV_NAME,
+        "python",
+        ADAPTER_SCRIPT,
+        "--dwi",
+        str(dwi_path.resolve()),
+        "--adc",
+        str(adc_path.resolve()),
+        "--output",
+        str(output_dir.resolve()),
+    ]
+
+    if flair_path is not None:
+        cmd.extend(["--flair", str(flair_path.resolve())])
+
+    if fast:
+        cmd.append("--fast")
+
+    logger.info("Subprocess command: %s", " ".join(cmd))
+
     try:
-        # Initialize the ensemble
-        stroke_segm = IslesEnsemble()
-
-        # Run prediction
-        stroke_segm.predict_ensemble(
-            ensemble_path=deepisles_path,
-            input_dwi_path=str(dwi_path),
-            input_adc_path=str(adc_path),
-            input_flair_path=str(flair_path) if flair_path else None,
-            output_path=str(output_dir),
-            skull_strip=skull_strip,
-            fast=fast,
-            save_team_outputs=save_team_outputs,
-            results_mni=results_mni,
-            parallelize=parallelize,
+        result = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            cwd="/app",  # Run from DeepISLES directory
         )
-    except Exception as e:
-        logger.exception("DeepISLES inference failed")
-        raise DeepISLESError(f"DeepISLES inference failed: {e}") from e
 
-    # Find the prediction mask (using shared function from deepisles module)
+        # Log output
+        if result.stdout:
+            logger.info("DeepISLES stdout:\n%s", result.stdout)
+        if result.stderr:
+            logger.warning("DeepISLES stderr:\n%s", result.stderr)
+
+        # Check for failure
+        if result.returncode != 0:
+            raise DeepISLESError(
+                f"DeepISLES inference failed with exit code {result.returncode}. "
+                f"stderr: {result.stderr}"
+            )
+
+    except subprocess.TimeoutExpired as e:
+        raise DeepISLESError(f"DeepISLES inference timed out after {timeout} seconds") from e
+    except FileNotFoundError as e:
+        raise DeepISLESError(
+            f"Failed to run DeepISLES subprocess: {e}. Is conda available at /opt/conda/bin/conda?"
+        ) from e
+
+    # Find the prediction mask
     prediction_path = find_prediction_mask(output_dir)
 
     elapsed = time.time() - start_time
-    logger.info("DeepISLES direct invocation completed in %.2fs", elapsed)
+    logger.info("DeepISLES subprocess completed in %.2fs", elapsed)
 
     return DirectInvocationResult(
         prediction_path=prediction_path,
