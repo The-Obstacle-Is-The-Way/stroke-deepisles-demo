@@ -19,7 +19,6 @@ from stroke_deepisles_demo.ui.components import (
     create_settings_accordion,
 )
 from stroke_deepisles_demo.ui.viewer import (
-    NIIVUE_UPDATE_JS,
     create_niivue_html,
     nifti_to_gradio_url,
     render_3panel_view,
@@ -244,10 +243,12 @@ def create_app() -> gr.Blocks:
                 status,
                 previous_results_state,  # Update state with new results_dir
             ],
-        ).then(
-            fn=None,  # Explicitly None to run JS only
-            js=NIIVUE_UPDATE_JS,
         )
+        # DIAGNOSTIC: Temporarily disable NIIVUE_UPDATE_JS to test if app loads on HF Spaces
+        # .then(
+        #     fn=None,  # Explicitly None to run JS only
+        #     js=NIIVUE_UPDATE_JS,
+        # )
 
         # Trigger data loading after UI renders (prevents startup timeout)
         demo.load(initialize_case_selector, outputs=[case_selector])

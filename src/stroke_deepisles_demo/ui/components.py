@@ -6,7 +6,6 @@ import gradio as gr
 
 from stroke_deepisles_demo.core.config import get_settings
 from stroke_deepisles_demo.core.logging import get_logger
-from stroke_deepisles_demo.ui.viewer import NIIVUE_ON_LOAD_JS
 
 logger = get_logger(__name__)
 
@@ -41,13 +40,12 @@ def create_results_display() -> dict[str, gr.components.Component]:
     with gr.Group():
         with gr.Tabs():
             with gr.Tab("Interactive 3D"):
-                # NiiVue visualization uses HTML with js_on_load for JavaScript execution
-                # Note: Gradio strips <script> tags from HTML value for security,
-                # so we must use js_on_load to run our NiiVue initialization code.
-                # The HTML value contains data-* attributes with volume URLs.
+                # DIAGNOSTIC: Temporarily disable js_on_load to test if app loads on HF Spaces
+                # TODO: Re-enable after confirming this is the issue
+                # See: https://discuss.huggingface.co/t/gradio-html-component-with-javascript-code-dont-work/37316
                 niivue_viewer = gr.HTML(
                     label="Interactive 3D Viewer",
-                    js_on_load=NIIVUE_ON_LOAD_JS,
+                    # js_on_load=NIIVUE_ON_LOAD_JS,  # DISABLED FOR DIAGNOSTIC
                 )
 
             with gr.Tab("Static Report"):
