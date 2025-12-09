@@ -75,7 +75,7 @@ Inference works. The problem is client-side JavaScript execution.
 # components.py - js_on_load set once at component creation
 niivue_viewer = gr.HTML(
     label="Interactive 3D Viewer",
-    js_on_load=NIIVUE_JS_ON_LOAD,  # Runs ONCE on mount
+    js_on_load=NIIVUE_ON_LOAD_JS,  # Runs ONCE on mount
 )
 
 # app.py - returns new HTML value after segmentation
@@ -106,7 +106,7 @@ run_btn.click(
     outputs=[results["niivue_viewer"], ...],
 ).then(
     fn=None,  # MUST be explicit!
-    js=NIIVUE_INIT_JS,  # ⚠️ CANNOT reuse NIIVUE_JS_ON_LOAD - different context!
+    js=NIIVUE_UPDATE_JS,  # ⚠️ CANNOT reuse NIIVUE_ON_LOAD_JS - different context!
 )
 ```
 
@@ -342,12 +342,12 @@ Based on research, **Solution 1 (`.then(fn=None, js=...)`) is the correct fix**.
 
 #### Step 1: Create a NEW JavaScript constant for event handlers
 
-We **CANNOT** reuse `NIIVUE_JS_ON_LOAD` because it uses `element` which is not
+We **CANNOT** reuse `NIIVUE_ON_LOAD_JS` because it uses `element` which is not
 available in the event handler context. We need a new constant:
 
 ```python
 # viewer.py - NEW constant for event handler context
-NIIVUE_INIT_JS = f"""
+NIIVUE_UPDATE_JS = f"""
 (async () => {{
     // ⚠️ NO 'element' available - must use document.querySelector()
     const container = document.querySelector('.niivue-viewer');
@@ -410,7 +410,7 @@ NIIVUE_INIT_JS = f"""
 
 ```python
 # app.py
-from stroke_deepisles_demo.ui.viewer import NIIVUE_INIT_JS
+from stroke_deepisles_demo.ui.viewer import NIIVUE_UPDATE_JS
 
 run_btn.click(
     fn=run_segmentation,
@@ -419,7 +419,7 @@ run_btn.click(
              results["download"], status],
 ).then(
     fn=None,  # MUST be explicit per GitHub Issue #6729!
-    js=NIIVUE_INIT_JS,
+    js=NIIVUE_UPDATE_JS,
 )
 ```
 
@@ -427,7 +427,7 @@ run_btn.click(
 1. Python `run_segmentation()` updates gr.HTML value with new data-* attributes
 2. `.then()` chains after the click handler completes
 3. `fn=None` tells Gradio to skip Python, run JS only
-4. `js=NIIVUE_INIT_JS` runs our initialization code
+4. `js=NIIVUE_UPDATE_JS` runs our initialization code
 5. JS uses `document.querySelector()` to find the updated DOM
 
 ### ⚠️ CRITICAL: Different JS Context (VERIFIED)
@@ -454,8 +454,8 @@ reverse_btn.click(
 ```
 
 **This is why we need TWO separate JavaScript constants:**
-- `NIIVUE_JS_ON_LOAD` - Uses `element.querySelector()` (for initial mount)
-- `NIIVUE_INIT_JS` - Uses `document.querySelector()` (for .then() handler)
+- `NIIVUE_ON_LOAD_JS` - Uses `element.querySelector()` (for initial mount)
+- `NIIVUE_UPDATE_JS` - Uses `document.querySelector()` (for .then() handler)
 
 ### Risk Assessment: Is This Fixable?
 
