@@ -61,7 +61,10 @@ def test_run_segmentation_logic() -> None:
     # Mock everything that touches files/network
     with (
         patch("stroke_deepisles_demo.ui.app.run_pipeline_on_case", return_value=mock_result),
-        patch("stroke_deepisles_demo.ui.app.nifti_to_data_url", return_value="data:image..."),
+        patch(
+            "stroke_deepisles_demo.ui.app.nifti_to_gradio_url",
+            return_value="/gradio_api/file=/tmp/test.nii.gz",
+        ),
         patch("stroke_deepisles_demo.ui.app.create_niivue_html", return_value="<div></div>"),
         patch("stroke_deepisles_demo.ui.app.render_slice_comparison", return_value=MagicMock()),
     ):

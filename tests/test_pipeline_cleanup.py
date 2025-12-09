@@ -50,4 +50,5 @@ def test_pipeline_cleanup_default(temp_dir: Path) -> None:
         staging_root_passed = args[1]
 
         # Verify rmtree was called with that same path
-        mock_rmtree.assert_called_with(staging_root_passed, ignore_errors=True)
+        # Note: We no longer use ignore_errors=True; failures are logged instead
+        mock_rmtree.assert_called_with(staging_root_passed)

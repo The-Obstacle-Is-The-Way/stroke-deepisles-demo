@@ -16,6 +16,7 @@ from matplotlib.figure import Figure
 from stroke_deepisles_demo.ui.viewer import (
     create_niivue_html,
     get_slice_at_max_lesion,
+    nifti_to_gradio_url,
     render_3panel_view,
     render_slice_comparison,
 )
@@ -116,6 +117,39 @@ class TestGetSliceAtMaxLesion:
         slice_idx = get_slice_at_max_lesion(mask_path, orientation="axial")
 
         assert slice_idx == 10  # Middle of 20
+
+
+class TestNiftiToGradioUrl:
+    """Tests for nifti_to_gradio_url (Issue #19 optimization)."""
+
+    def test_returns_gradio_api_format(self, synthetic_nifti_3d: Path) -> None:
+        """Returns URL in Gradio API format."""
+        url = nifti_to_gradio_url(synthetic_nifti_3d)
+
+        assert url.startswith("/gradio_api/file=")
+
+    def test_uses_absolute_path(self, synthetic_nifti_3d: Path) -> None:
+        """URL contains absolute path to file."""
+        url = nifti_to_gradio_url(synthetic_nifti_3d)
+
+        # Extract path from URL
+        path_part = url.replace("/gradio_api/file=", "")
+        assert path_part.startswith("/")  # Absolute path
+        assert "synthetic.nii.gz" in path_part
+
+    def test_preserves_file_extension(self, synthetic_nifti_3d: Path) -> None:
+        """URL preserves .nii.gz extension."""
+        url = nifti_to_gradio_url(synthetic_nifti_3d)
+
+        assert url.endswith(".nii.gz")
+
+    def test_no_base64_encoding(self, synthetic_nifti_3d: Path) -> None:
+        """URL does not contain base64-encoded data (Issue #19 requirement)."""
+        url = nifti_to_gradio_url(synthetic_nifti_3d)
+
+        # Base64 data URLs start with "data:" and contain ";base64,"
+        assert not url.startswith("data:")
+        assert ";base64," not in url
 
 
 class TestCreateNiivueHtml:

@@ -162,7 +162,10 @@ def run_pipeline_on_case(
 
     # 5. Cleanup (Optional)
     if cleanup_staging:
-        shutil.rmtree(staging_root, ignore_errors=True)
+        try:
+            shutil.rmtree(staging_root)
+        except OSError as e:
+            logger.warning("Failed to cleanup staging directory %s: %s", staging_root, e)
 
     elapsed = time.time() - start_time
 

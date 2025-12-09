@@ -7,11 +7,11 @@ This module provides visualization components for neuroimaging data:
 See:
     - https://github.com/niivue/niivue (NiiVue v0.65.0)
     - docs/specs/07-hf-spaces-deployment.md
+    - docs/specs/19-perf-base64-to-file-urls.md (Issue #19 optimization)
 """
 
 from __future__ import annotations
 
-import base64
 import json
 import uuid
 from typing import TYPE_CHECKING
@@ -31,24 +31,37 @@ NIIVUE_VERSION = "0.65.0"
 NIIVUE_CDN_URL = f"https://unpkg.com/@niivue/niivue@{NIIVUE_VERSION}/dist/index.js"
 
 
-def nifti_to_data_url(nifti_path: Path) -> str:
+def nifti_to_gradio_url(nifti_path: Path) -> str:
     """
-    Convert NIfTI file to base64 data URL for NiiVue.
+    Get Gradio file URL for a NIfTI file.
+
+    Uses Gradio's built-in file serving instead of base64 encoding.
+    This reduces payload size by ~33% and improves browser performance
+    by avoiding large base64 strings in the DOM.
 
     Args:
-        nifti_path: Path to NIfTI file
+        nifti_path: Path to NIfTI file. Must be in an allowed path:
+            - tempfile.gettempdir() (default for pipeline results)
+            - Current working directory
+            - Paths specified in allowed_paths during launch()
 
     Returns:
-        Data URL string
-    """
-    # We load the raw bytes directly to avoid re-serialization overhead if possible
-    # But nibabel might be safer to ensure valid nifti if we were manipulating
-    # Here we just want the file content.
-    with nifti_path.open("rb") as f:
-        nifti_bytes = f.read()
+        Gradio file URL (e.g., /gradio_api/file=/tmp/.../dwi.nii.gz)
 
-    nifti_b64 = base64.b64encode(nifti_bytes).decode("utf-8")
-    return f"data:application/octet-stream;base64,{nifti_b64}"
+    Note:
+        This replaces the deprecated nifti_to_data_url() function.
+        See Issue #19 for performance analysis and benchmarks.
+
+    References:
+        - https://www.gradio.app/guides/file-access
+        - https://niivue.com/docs/loading/
+    """
+    # Ensure we use absolute path for Gradio's file serving
+    abs_path = nifti_path.resolve()
+
+    # Gradio file URL format (standard since Gradio 4.x)
+    # Files in tempfile.gettempdir() are allowed by default
+    return f"/gradio_api/file={abs_path}"
 
 
 def get_slice_at_max_lesion(
@@ -285,14 +298,14 @@ def create_niivue_html(
 
     This function generates an HTML snippet with data attributes containing
     volume URLs. The actual NiiVue initialization is handled by js_on_load
-    in the gr.HTML component (see NIIVUE_JS_ON_LOAD).
+    in the gr.HTML component (see NIIVUE_ON_LOAD_JS).
 
     IMPORTANT: Gradio's gr.HTML strips <script> tags for security.
     JavaScript must be passed via the js_on_load parameter instead.
 
     Args:
-        volume_url: Data URL or URL to volume NIfTI file
-        mask_url: Optional data URL or URL to mask NIfTI file
+        volume_url: Gradio file URL (e.g., /gradio_api/file=/path/to/file.nii.gz)
+        mask_url: Optional Gradio file URL to mask NIfTI file
         height: Viewer height in pixels
 
     Returns:
