@@ -75,17 +75,32 @@ def _ensure_deepisles_importable() -> str:
     search_paths = _get_deepisles_search_paths()
 
     for path in search_paths:
-        if Path(path).exists():
+        path_obj = Path(path)
+        if path_obj.exists():
+            # Log what we find for debugging
+            logger.info("Checking path %s - exists: True", path)
+            if (path_obj / "src").exists():
+                src_contents = list((path_obj / "src").iterdir())[:10]
+                logger.info("  /src contents: %s", [f.name for f in src_contents])
+            else:
+                logger.info("  /src does NOT exist")
+                # Check what IS in this directory
+                contents = list(path_obj.iterdir())[:10]
+                logger.info("  directory contents: %s", [f.name for f in contents])
+
             if path not in sys.path:
                 sys.path.insert(0, path)
             try:
                 # Test import (only available in DeepISLES Docker image)
                 from src.isles22_ensemble import IslesEnsemble  # noqa: F401
 
-                logger.debug("Found DeepISLES at %s", path)
+                logger.info("Found DeepISLES at %s", path)
                 return path
-            except ImportError:
+            except ImportError as e:
+                logger.warning("Import failed at %s: %s", path, e)
                 continue
+        else:
+            logger.info("Checking path %s - exists: False", path)
 
     raise DeepISLESError(
         "DeepISLES modules not found. Direct invocation requires running "
