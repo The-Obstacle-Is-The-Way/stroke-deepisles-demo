@@ -187,6 +187,7 @@ This caused the Gradio frontend to remain stuck on "Loading..." even though the 
 | `src/stroke_deepisles_demo/ui/viewer.py` | Use local path instead of CDN |
 | `src/stroke_deepisles_demo/ui/app.py` | Add `allowed_paths` to launch() |
 | `app.py` | Add `allowed_paths` to launch() |
+| `.pre-commit-config.yaml` | Exclude assets/ from hooks |
 
 ### Verification
 
