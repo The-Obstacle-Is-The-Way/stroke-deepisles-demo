@@ -19,7 +19,10 @@ from pathlib import Path
 import numpy as np
 from matplotlib.figure import Figure
 
+from stroke_deepisles_demo.core.logging import get_logger
 from stroke_deepisles_demo.metrics import load_nifti_as_array
+
+logger = get_logger(__name__)
 
 # NiiVue version - updated to latest stable (Dec 2025)
 # Switched to local vendoring to avoid CSP issues on HuggingFace Spaces (Issue #24)
@@ -31,6 +34,79 @@ _NIIVUE_JS_PATH = _ASSET_DIR / "niivue.js"
 # Ensure absolute path for Gradio serving
 # NOTE: This path must be added to allowed_paths in demo.launch()
 NIIVUE_JS_URL = f"/gradio_api/file={_NIIVUE_JS_PATH.resolve()}"
+
+
+def get_niivue_loader_path() -> Path:
+    """
+    Get path to the NiiVue loader HTML file, creating it if needed.
+
+    This function generates an HTML file that loads NiiVue as a global.
+    Using head_paths with a file is the official Gradio-recommended approach
+    for loading custom JavaScript (see GitHub issue #11649).
+
+    The HTML file is generated at runtime because the niivue.js path
+    is dynamic (depends on installation location).
+
+    Returns:
+        Path to the niivue-loader.html file
+
+    Note:
+        The returned path must be included in allowed_paths during launch().
+    """
+    loader_path = _ASSET_DIR / "niivue-loader.html"
+
+    # Generate the loader HTML with the correct absolute path
+    loader_content = f"""<!--
+    NiiVue Loader for Gradio (auto-generated)
+    Loads NiiVue library and exposes it globally for js_on_load handlers.
+    See: docs/specs/24-bug-hf-spaces-loading-forever.md
+-->
+<script type="module">
+    import {{ Niivue }} from '{NIIVUE_JS_URL}';
+    window.Niivue = Niivue;
+    console.log('[NiiVue Loader] Loaded globally:', typeof window.Niivue);
+</script>
+"""
+
+    # Write/update the loader file (idempotent)
+    # This ensures the path is always correct for the current installation
+    try:
+        # Check if file exists and has correct content
+        if loader_path.exists():
+            existing_content = loader_path.read_text()
+            if existing_content == loader_content:
+                return loader_path
+
+        loader_path.write_text(loader_content)
+        logger.debug("Generated NiiVue loader at %s", loader_path)
+    except OSError as e:
+        # If we can't write (e.g., read-only filesystem), the file should
+        # already exist from the build process
+        logger.warning("Could not write loader file at %s: %s", loader_path, e)
+        if not loader_path.exists():
+            raise RuntimeError(
+                f"NiiVue loader file not found and cannot be created: {loader_path}"
+            ) from e
+
+    return loader_path
+
+
+# Legacy function for backward compatibility
+def get_niivue_head_script() -> str:
+    """
+    Get HTML script tag for loading NiiVue in Gradio's head.
+
+    DEPRECATED: Use get_niivue_loader_path() with head_paths instead.
+    This function is kept for backward compatibility only.
+
+    Returns:
+        HTML string with script tag
+    """
+    return f"""<script type="module">
+    import {{ Niivue }} from '{NIIVUE_JS_URL}';
+    window.Niivue = Niivue;
+    console.log('NiiVue loaded globally:', typeof window.Niivue);
+</script>"""
 
 
 def nifti_to_gradio_url(nifti_path: Path) -> str:
@@ -358,8 +434,12 @@ def create_niivue_html(
 # JavaScript code for js_on_load parameter
 # This runs when the gr.HTML component FIRST loads (mounts)
 # Variables available: element, props, trigger
-NIIVUE_ON_LOAD_JS = f"""
-(async () => {{
+#
+# IMPORTANT: This code uses window.Niivue which must be loaded via
+# gr.Blocks(head=get_niivue_head_script()). Do NOT use dynamic import()
+# as it breaks Gradio on HF Spaces.
+NIIVUE_ON_LOAD_JS = """
+(async () => {
     const container = element.querySelector('.niivue-viewer') || element;
     const canvas = element.querySelector('canvas');
     const status = element.querySelector('.niivue-status');
@@ -369,34 +449,38 @@ NIIVUE_ON_LOAD_JS = f"""
     const maskUrl = container.dataset.maskUrl;
 
     // Skip if no volume URL (initial empty state)
-    if (!volumeUrl) {{
+    if (!volumeUrl) {
         if (status) status.innerText = 'Waiting for segmentation...';
         return;
-    }}
+    }
 
-    try {{
+    try {
         if (status) status.innerText = 'Checking WebGL2...';
 
         // Check WebGL2 support
         const gl = canvas.getContext('webgl2');
-        if (!gl) {{
+        if (!gl) {
             container.innerHTML = '<div style="color:#fff;padding:20px;text-align:center;">WebGL2 not supported. Please use a modern browser.</div>';
             return;
-        }}
+        }
 
         if (status) status.innerText = 'Loading NiiVue...';
 
-        // Dynamically import NiiVue from local asset (vendored)
-        const {{ Niivue }} = await import('{NIIVUE_JS_URL}');
+        // Use globally loaded NiiVue (from head script)
+        // Do NOT use dynamic import() - it breaks Gradio on HF Spaces
+        const Niivue = window.Niivue;
+        if (!Niivue) {
+            throw new Error('NiiVue not loaded. Ensure head script is included via gr.Blocks(head=...)');
+        }
 
         // Initialize NiiVue
-        const nv = new Niivue({{
+        const nv = new Niivue({
             logging: false,
             show3Dcrosshair: true,
             textHeight: 0.04,
             backColor: [0, 0, 0, 1],
             crosshairColor: [0.2, 0.8, 0.2, 1]
-        }});
+        });
 
         // Attach to canvas
         await nv.attachToCanvas(canvas);
@@ -405,31 +489,31 @@ NIIVUE_ON_LOAD_JS = f"""
         if (status) status.style.display = 'none';
 
         // Prepare volumes
-        const volumes = [{{ url: volumeUrl, name: 'input.nii.gz' }}];
+        const volumes = [{ url: volumeUrl, name: 'input.nii.gz' }];
 
-        if (maskUrl) {{
-            volumes.push({{
+        if (maskUrl) {
+            volumes.push({
                 url: maskUrl,
                 colorMap: 'red',
                 opacity: 0.5
-            }});
-        }}
+            });
+        }
 
         // Load volumes
         await nv.loadVolumes(volumes);
 
         // Configure view: multiplanar + 3D
         nv.setSliceType(nv.sliceTypeMultiplanar);
-        if (typeof nv.setMultiplanarLayout === 'function') {{
+        if (typeof nv.setMultiplanarLayout === 'function') {
             nv.setMultiplanarLayout(2);
-        }}
+        }
         nv.opts.show3Dcrosshair = true;
         nv.setRenderAzimuthElevation(120, 10);
         nv.drawScene();
 
         console.log('NiiVue viewer initialized successfully');
 
-    }} catch (error) {{
+    } catch (error) {
         console.error('NiiVue initialization error:', error);
         // Use textContent instead of innerHTML to prevent XSS
         const errorDiv = document.createElement('div');
@@ -437,22 +521,26 @@ NIIVUE_ON_LOAD_JS = f"""
         errorDiv.textContent = 'Error loading viewer: ' + error.message;
         container.innerHTML = '';
         container.appendChild(errorDiv);
-    }}
-}})();
+    }
+})();
 """
 
 # JavaScript code for event handlers (e.g. .then(js=...))
 # This runs after Python updates the HTML value.
 # ⚠️ CRITICAL: 'element' is NOT available here! Must use document.querySelector
-NIIVUE_UPDATE_JS = f"""
-(async () => {{
+#
+# IMPORTANT: This code uses window.Niivue which must be loaded via
+# head_paths with niivue-loader.html. Do NOT use dynamic import()
+# as it breaks Gradio on HF Spaces.
+NIIVUE_UPDATE_JS = """
+(async () => {
     // We must find the container globally since 'element' is not available in event handlers
     const container = document.querySelector('.niivue-viewer');
 
-    if (!container) {{
+    if (!container) {
         console.error('NiiVue container not found');
         return;
-    }}
+    }
 
     const canvas = container.querySelector('canvas');
     const status = container.querySelector('.niivue-status');
@@ -462,31 +550,35 @@ NIIVUE_UPDATE_JS = f"""
     const maskUrl = container.dataset.maskUrl;
 
     // Skip if no volume URL
-    if (!volumeUrl) {{
+    if (!volumeUrl) {
         return;
-    }}
+    }
 
-    try {{
+    try {
         if (status) status.innerText = 'Reloading NiiVue...';
 
         // Check WebGL2 support
         const gl = canvas.getContext('webgl2');
-        if (!gl) {{
+        if (!gl) {
             container.innerHTML = '<div style="color:#fff;padding:20px;text-align:center;">WebGL2 not supported. Please use a modern browser.</div>';
             return;
-        }}
+        }
 
-        // Dynamically import NiiVue from local asset (vendored)
-        const {{ Niivue }} = await import('{NIIVUE_JS_URL}');
+        // Use globally loaded NiiVue (from head script)
+        // Do NOT use dynamic import() - it breaks Gradio on HF Spaces
+        const Niivue = window.Niivue;
+        if (!Niivue) {
+            throw new Error('NiiVue not loaded. Ensure head_paths includes niivue-loader.html');
+        }
 
         // Initialize NiiVue
-        const nv = new Niivue({{
+        const nv = new Niivue({
             logging: false,
             show3Dcrosshair: true,
             textHeight: 0.04,
             backColor: [0, 0, 0, 1],
             crosshairColor: [0.2, 0.8, 0.2, 1]
-        }});
+        });
 
         // Attach to canvas
         await nv.attachToCanvas(canvas);
@@ -495,39 +587,39 @@ NIIVUE_UPDATE_JS = f"""
         if (status) status.style.display = 'none';
 
         // Prepare volumes
-        const volumes = [{{ url: volumeUrl, name: 'input.nii.gz' }}];
+        const volumes = [{ url: volumeUrl, name: 'input.nii.gz' }];
 
-        if (maskUrl) {{
-            volumes.push({{
+        if (maskUrl) {
+            volumes.push({
                 url: maskUrl,
                 colorMap: 'red',
                 opacity: 0.5
-            }});
-        }}
+            });
+        }
 
         // Load volumes
         await nv.loadVolumes(volumes);
 
         // Configure view: multiplanar + 3D
         nv.setSliceType(nv.sliceTypeMultiplanar);
-        if (typeof nv.setMultiplanarLayout === 'function') {{
+        if (typeof nv.setMultiplanarLayout === 'function') {
             nv.setMultiplanarLayout(2);
-        }}
+        }
         nv.opts.show3Dcrosshair = true;
         nv.setRenderAzimuthElevation(120, 10);
         nv.drawScene();
 
         console.log('NiiVue viewer re-initialized successfully via event handler');
 
-    }} catch (error) {{
+    } catch (error) {
         console.error('NiiVue re-initialization error:', error);
         const errorDiv = document.createElement('div');
         errorDiv.style.cssText = 'color:#f66;padding:20px;text-align:center;';
         errorDiv.textContent = 'Error reloading viewer: ' + error.message;
-        if (container) {{
+        if (container) {
             container.innerHTML = '';
             container.appendChild(errorDiv);
-        }}
-    }}
-}})();
+        }
+    }
+})();
 """

@@ -21,6 +21,7 @@ from stroke_deepisles_demo.ui.components import (
 from stroke_deepisles_demo.ui.viewer import (
     NIIVUE_UPDATE_JS,
     create_niivue_html,
+    get_niivue_loader_path,
     nifti_to_gradio_url,
     render_3panel_view,
     render_slice_comparison,
@@ -245,7 +246,7 @@ def create_app() -> gr.Blocks:
                 previous_results_state,  # Update state with new results_dir
             ],
         ).then(
-            fn=None,  # Explicitly None to run JS only
+            fn=None,  # JS-only handler to re-initialize NiiVue after HTML update
             js=NIIVUE_UPDATE_JS,
         )
 
@@ -277,6 +278,9 @@ if __name__ == "__main__":
     # Allow access to local assets (e.g., niivue.js)
     assets_dir = Path(__file__).parent / "assets"
 
+    # Generate the NiiVue loader HTML file (creates if needed)
+    niivue_loader = get_niivue_loader_path()
+
     get_demo().launch(
         server_name=settings.gradio_server_name,
         server_port=settings.gradio_server_port,
@@ -285,4 +289,5 @@ if __name__ == "__main__":
         css="footer {visibility: hidden}",
         show_error=True,  # Show full Python tracebacks in UI for debugging
         allowed_paths=[str(assets_dir)],
+        head_paths=[str(niivue_loader)],  # Official Gradio approach (Issue #11649)
     )

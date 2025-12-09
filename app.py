@@ -16,6 +16,7 @@ import gradio as gr
 from stroke_deepisles_demo.core.config import get_settings
 from stroke_deepisles_demo.core.logging import setup_logging
 from stroke_deepisles_demo.ui.app import get_demo
+from stroke_deepisles_demo.ui.viewer import get_niivue_loader_path
 
 # Initialize logging
 settings = get_settings()
@@ -35,6 +36,9 @@ if __name__ == "__main__":
     # Assets are located in src/stroke_deepisles_demo/ui/assets
     assets_dir = Path(__file__).parent / "src" / "stroke_deepisles_demo" / "ui" / "assets"
 
+    # Generate the NiiVue loader HTML file (creates if needed)
+    niivue_loader = get_niivue_loader_path()
+
     demo.launch(
         server_name=settings.gradio_server_name,
         server_port=settings.gradio_server_port,
@@ -42,4 +46,5 @@ if __name__ == "__main__":
         theme=gr.themes.Soft(),
         css="footer {visibility: hidden}",
         allowed_paths=[str(assets_dir)],
+        head_paths=[str(niivue_loader)],  # Official Gradio approach (Issue #11649)
     )

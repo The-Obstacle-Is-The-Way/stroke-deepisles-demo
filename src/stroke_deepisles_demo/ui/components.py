@@ -41,10 +41,9 @@ def create_results_display() -> dict[str, gr.components.Component]:
     with gr.Group():
         with gr.Tabs():
             with gr.Tab("Interactive 3D"):
-                # NiiVue visualization uses HTML with js_on_load for JavaScript execution
-                # Note: Gradio strips <script> tags from HTML value for security,
-                # so we must use js_on_load to run our NiiVue initialization code.
-                # The HTML value contains data-* attributes with volume URLs.
+                # NiiVue 3D viewer - uses js_on_load to initialize after HTML renders
+                # The NiiVue library is loaded globally via head_paths (see app.py)
+                # This handler accesses window.Niivue set by the loader script
                 niivue_viewer = gr.HTML(
                     label="Interactive 3D Viewer",
                     js_on_load=NIIVUE_ON_LOAD_JS,
