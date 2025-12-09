@@ -135,11 +135,42 @@ Our JavaScript has try/catch that should display errors in the container, but si
 
 ---
 
+## External Validation (2025-12-09)
+
+An external agent review claimed `js_on_load` does not exist. **This claim was REFUTED.**
+
+### Verification Results
+
+| Claim | Status | Evidence |
+|-------|--------|----------|
+| "gr.HTML does NOT have js_on_load parameter" | ❌ **REFUTED** | [Gradio Docs](https://www.gradio.app/docs/gradio/html) show `js_on_load` with default value |
+| "js_on_load was added in PR #12098" | ✅ Confirmed | Part of "gr.HTML custom components" feature |
+| "Base64 payload (~65MB) is a risk" | ✅ Confirmed | Valid concern, should use file URLs |
+| "CSP headers may block CDN" | ⚠️ Possible | HF Spaces typically allows unpkg.com, but worth testing |
+
+### Validated `js_on_load` Signature
+
+```python
+js_on_load: str | None = "element.addEventListener('click', function() { trigger('click') });"
+```
+
+**Available in js_on_load context:**
+- `element` - The HTML DOM element
+- `trigger(event_name)` - Fire Gradio events
+- `props` - Access component props including `props.value`
+
+**Untested (needs verification):**
+- Async/await patterns
+- Dynamic `import()` for CDN modules
+- Error propagation to Gradio
+
+---
+
 ## Proposed Solutions (Ranked)
 
 ### Solution 1: Use `js_on_load` Parameter (Recommended)
 
-Gradio 6's `gr.HTML` supports `js_on_load` for component-level JavaScript:
+Gradio 6's `gr.HTML` supports `js_on_load` for component-level JavaScript (added in PR #12098):
 
 ```python
 def create_niivue_component(volume_url, mask_url, height=400):
@@ -248,21 +279,39 @@ def create_results_display():
 
 ## Investigation Steps
 
-### Step 1: Verify js_on_load Works
+### Step 0: Test Async/Await in js_on_load (CRITICAL)
+Before implementing Solution 1, verify async works:
+```python
+import gradio as gr
+
+with gr.Blocks() as demo:
+    html = gr.HTML(
+        value="<div>Testing async...</div>",
+        js_on_load="""
+            (async () => {
+                element.innerText = 'Async started...';
+                await new Promise(r => setTimeout(r, 1000));
+                element.innerText = 'Async works!';
+                element.style.background = 'green';
+            })();
+        """
+    )
+
+demo.launch()
+```
+
+If this shows "Async works!" with green background after 1 second, async is supported.
+
+### Step 1: Verify js_on_load Works (Basic)
 Create minimal test:
 ```python
 import gradio as gr
 
-def test():
-    return gr.HTML(
-        value="<div id='test'>Click me</div>",
+with gr.Blocks() as demo:
+    html = gr.HTML(
+        value="<div id='test'>Loading...</div>",
         js_on_load="element.style.background='green'; element.innerText='JS Works!';"
     )
-
-with gr.Blocks() as demo:
-    btn = gr.Button("Test")
-    html = gr.HTML()
-    btn.click(test, outputs=html)
 
 demo.launch()
 ```
