@@ -31,9 +31,10 @@ WORKDIR /home/user/demo
 # Copy requirements first for better layer caching
 COPY --chown=1000:1000 requirements.txt /home/user/demo/requirements.txt
 
-# Install Python dependencies INTO THE CONDA ENVIRONMENT
-# DeepISLES uses 'isles_ensemble' conda env - we must install there
-RUN /bin/bash -c "source activate isles_ensemble && pip install --no-cache-dir -r requirements.txt"
+# Install Python dependencies into SYSTEM Python (NOT conda env)
+# DeepISLES conda env is Python 3.8, but Gradio 6 needs Python 3.10+
+# We'll shell out to conda env for inference only
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application source code and package files
 COPY --chown=1000:1000 pyproject.toml /home/user/demo/pyproject.toml
@@ -41,9 +42,13 @@ COPY --chown=1000:1000 README.md /home/user/demo/README.md
 COPY --chown=1000:1000 src/ /home/user/demo/src/
 COPY --chown=1000:1000 app.py /home/user/demo/app.py
 
-# Install the package itself INTO THE CONDA ENVIRONMENT
+# Copy adapter script for subprocess invocation of DeepISLES
+# This script runs in the conda env (Py3.8) and is called via subprocess
+COPY --chown=1000:1000 scripts/deepisles_adapter.py /app/deepisles_adapter.py
+
+# Install the package itself into SYSTEM Python
 # Using --no-deps since requirements.txt already installed dependencies
-RUN /bin/bash -c "source activate isles_ensemble && pip install --no-cache-dir --no-deps -e ."
+RUN pip install --no-cache-dir --no-deps -e .
 
 # Set environment variable to indicate we're running in HF Spaces
 # This allows the app to detect runtime environment and use direct invocation
@@ -67,10 +72,9 @@ USER user
 # Expose the Gradio port
 EXPOSE 7860
 
-# IMPORTANT: DeepISLES uses a conda environment called 'isles_ensemble'
-# All PyTorch/nnU-Net dependencies are ONLY available in that conda env
-# We must run our app inside that environment to access DeepISLES imports
+# Reset ENTRYPOINT from base image
 ENTRYPOINT []
 
-# Run our Gradio app inside the isles_ensemble conda environment
-CMD ["/bin/bash", "-c", "source activate isles_ensemble && python -m stroke_deepisles_demo.ui.app"]
+# Run Gradio app with SYSTEM Python (Py3.10+)
+# DeepISLES inference is invoked via subprocess into conda env
+CMD ["python", "-m", "stroke_deepisles_demo.ui.app"]

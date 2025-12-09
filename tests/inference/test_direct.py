@@ -143,9 +143,7 @@ class TestRunDeepISLESDirect:
         with pytest.raises(MissingInputError):
             run_deepisles_direct(dwi, adc, output)
 
-    def test_deepisles_not_available_raises(
-        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    def test_deepisles_not_available_raises(self, tmp_path: Path) -> None:
         """Raises DeepISLESError when DeepISLES not available."""
         from stroke_deepisles_demo.inference.direct import run_deepisles_direct
 
@@ -156,8 +154,7 @@ class TestRunDeepISLESDirect:
         dwi.touch()
         adc.touch()
 
-        # Ensure DeepISLES is not importable
-        monkeypatch.delenv("DEEPISLES_DIRECT_INVOCATION", raising=False)
-
-        with pytest.raises(DeepISLESError, match="DeepISLES modules not found"):
+        # Subprocess will fail because conda/adapter not available locally
+        # The error message depends on what's missing (conda, /app dir, etc.)
+        with pytest.raises(DeepISLESError, match=r"(subprocess|conda|No such file)"):
             run_deepisles_direct(dwi, adc, output)
