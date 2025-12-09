@@ -1,10 +1,21 @@
 # Bug #10: NiiVue 3D Viewer Renders Black Screen on HF Spaces
 
-## Status: OPEN (P2) - ROOT CAUSE CONFIRMED
+## Status: FIXED (pending HF Spaces verification)
 
 **Date:** 2025-12-09
-**Branch:** `debug/niivue-viewer-black-screen`
+**Branch:** `fix/niivue-js-on-load`
 **Discovered:** After fixing Bug #9 (DeepISLES subprocess bridge)
+
+### Fix Applied (2025-12-09)
+
+Implemented `js_on_load` approach (Solution 1 from this spec):
+
+1. **`viewer.py`**: Removed `<script>` tags, added `NIIVUE_JS_ON_LOAD` constant
+2. **`components.py`**: Added `js_on_load=NIIVUE_JS_ON_LOAD` to gr.HTML
+3. **All 130 tests pass locally**
+
+The HTML now uses `data-*` attributes to pass volume URLs, and JavaScript
+executes via `js_on_load` instead of inline `<script>` tags.
 
 ---
 

@@ -6,6 +6,7 @@ import gradio as gr
 
 from stroke_deepisles_demo.core.config import get_settings
 from stroke_deepisles_demo.core.logging import get_logger
+from stroke_deepisles_demo.ui.viewer import NIIVUE_JS_ON_LOAD
 
 logger = get_logger(__name__)
 
@@ -38,8 +39,14 @@ def create_results_display() -> dict[str, gr.components.Component]:
     """
     # Using gr.Group to group them visually
     with gr.Group():
-        # NiiVue visualization uses HTML
-        niivue_viewer = gr.HTML(label="Interactive 3D Viewer")
+        # NiiVue visualization uses HTML with js_on_load for JavaScript execution
+        # Note: Gradio strips <script> tags from HTML value for security,
+        # so we must use js_on_load to run our NiiVue initialization code.
+        # The HTML value contains data-* attributes with volume URLs.
+        niivue_viewer = gr.HTML(
+            label="Interactive 3D Viewer",
+            js_on_load=NIIVUE_JS_ON_LOAD,
+        )
 
         # Slice comparisons (Matplotlib)
         slice_plot = gr.Plot(label="Slice Comparison")
