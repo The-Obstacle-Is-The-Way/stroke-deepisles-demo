@@ -203,3 +203,52 @@ This caused the Gradio frontend to remain stuck on "Loading..." even though the 
 3. **Security-compliant:** Respects HF Spaces CSP policy
 4. **Reproducible:** Same NiiVue version always loaded
 5. **Standard practice:** Vendoring is the recommended approach for HF Spaces
+
+---
+
+## Update: Vendoring Alone Did Not Fix It (2025-12-09)
+
+### New Finding
+
+Vendoring NiiVue locally bypassed CSP but **the app still wouldn't load**.
+
+**Diagnostic test:** Disabled `js_on_load` parameter entirely.
+
+**Result:** App loads perfectly! Everything works EXCEPT Interactive 3D viewer.
+
+### Real Root Cause
+
+**`gr.HTML(js_on_load=...)` with dynamic ES module `import()` blocks Gradio frontend initialization on HF Spaces.**
+
+The issue is NOT the vendored file location - it's HOW we load the JavaScript:
+
+```javascript
+// This approach BREAKS the entire Gradio app on HF Spaces:
+const { Niivue } = await import('/gradio_api/file=...');
+```
+
+When this fails (silently), it prevents the Gradio frontend from completing initialization, causing the eternal "Loading..." screen.
+
+### Evidence
+
+With `js_on_load` disabled:
+- ✅ Gradio app loads
+- ✅ Case selector works
+- ✅ DeepISLES segmentation runs (38.66s)
+- ✅ Static Report (Matplotlib) renders correctly
+- ✅ Metrics JSON displays
+- ✅ Download works
+- ❌ Interactive 3D shows "Loading viewer..." (expected - JS disabled)
+
+### Correct Approach
+
+Use `gr.Blocks(head=...)` to load NiiVue as a `<script>` tag instead of dynamic `import()`:
+
+```python
+with gr.Blocks(
+    head='<script src="/gradio_api/file=.../niivue.js"></script>'
+) as demo:
+    ...
+```
+
+Or use the global `js` parameter on `gr.Blocks` to define initialization code that runs after the script loads.
