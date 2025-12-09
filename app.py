@@ -9,6 +9,8 @@ See:
     - https://huggingface.co/docs/hub/spaces-sdks-docker
 """
 
+from pathlib import Path
+
 import gradio as gr
 
 from stroke_deepisles_demo.core.config import get_settings
@@ -28,10 +30,16 @@ if __name__ == "__main__":
     # - server_port: 7860 is HF Spaces default
     # - theme: Gradio 6 uses launch() for theme
     # - css: Hide footer for cleaner look
+
+    # Allow access to local assets (e.g., niivue.js)
+    # Assets are located in src/stroke_deepisles_demo/ui/assets
+    assets_dir = Path(__file__).parent / "src" / "stroke_deepisles_demo" / "ui" / "assets"
+
     demo.launch(
         server_name=settings.gradio_server_name,
         server_port=settings.gradio_server_port,
         share=settings.gradio_share,
         theme=gr.themes.Soft(),
         css="footer {visibility: hidden}",
+        allowed_paths=[str(assets_dir)],
     )

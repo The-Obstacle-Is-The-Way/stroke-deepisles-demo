@@ -14,20 +14,23 @@ from __future__ import annotations
 
 import json
 import uuid
-from typing import TYPE_CHECKING
+from pathlib import Path
 
 import numpy as np
 from matplotlib.figure import Figure
 
 from stroke_deepisles_demo.metrics import load_nifti_as_array
 
-if TYPE_CHECKING:
-    from pathlib import Path
-
-
 # NiiVue version - updated to latest stable (Dec 2025)
+# Switched to local vendoring to avoid CSP issues on HuggingFace Spaces (Issue #24)
+# The file is located in src/stroke_deepisles_demo/ui/assets/niivue.js
 NIIVUE_VERSION = "0.65.0"
-NIIVUE_CDN_URL = f"https://unpkg.com/@niivue/niivue@{NIIVUE_VERSION}/dist/index.js"
+_ASSET_DIR = Path(__file__).parent / "assets"
+_NIIVUE_JS_PATH = _ASSET_DIR / "niivue.js"
+
+# Ensure absolute path for Gradio serving
+# NOTE: This path must be added to allowed_paths in demo.launch()
+NIIVUE_JS_URL = f"/gradio_api/file={_NIIVUE_JS_PATH.resolve()}"
 
 
 def nifti_to_gradio_url(nifti_path: Path) -> str:
@@ -383,8 +386,8 @@ NIIVUE_ON_LOAD_JS = f"""
 
         if (status) status.innerText = 'Loading NiiVue...';
 
-        // Dynamically import NiiVue from CDN
-        const {{ Niivue }} = await import('{NIIVUE_CDN_URL}');
+        // Dynamically import NiiVue from local asset (vendored)
+        const {{ Niivue }} = await import('{NIIVUE_JS_URL}');
 
         // Initialize NiiVue
         const nv = new Niivue({{
@@ -473,8 +476,8 @@ NIIVUE_UPDATE_JS = f"""
             return;
         }}
 
-        // Dynamically import NiiVue from CDN
-        const {{ Niivue }} = await import('{NIIVUE_CDN_URL}');
+        // Dynamically import NiiVue from local asset (vendored)
+        const {{ Niivue }} = await import('{NIIVUE_JS_URL}');
 
         // Initialize NiiVue
         const nv = new Niivue({{

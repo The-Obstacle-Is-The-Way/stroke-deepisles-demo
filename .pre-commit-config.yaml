@@ -19,7 +19,11 @@ repos:
     rev: v6.0.0
     hooks:
       - id: trailing-whitespace
+        exclude: ^src/stroke_deepisles_demo/ui/assets/
       - id: end-of-file-fixer
+        exclude: ^src/stroke_deepisles_demo/ui/assets/
       - id: check-yaml
       - id: check-added-large-files
         args: [--maxkb=1000]
+        # Exclude vendored assets (NiiVue library ~2.9MB)
+        exclude: ^src/stroke_deepisles_demo/ui/assets/

@@ -274,6 +274,9 @@ if __name__ == "__main__":
     settings = get_settings()
     setup_logging(settings.log_level, format_style=settings.log_format)
 
+    # Allow access to local assets (e.g., niivue.js)
+    assets_dir = Path(__file__).parent / "assets"
+
     get_demo().launch(
         server_name=settings.gradio_server_name,
         server_port=settings.gradio_server_port,
@@ -281,4 +284,5 @@ if __name__ == "__main__":
         theme=gr.themes.Soft(),
         css="footer {visibility: hidden}",
         show_error=True,  # Show full Python tracebacks in UI for debugging
+        allowed_paths=[str(assets_dir)],
     )
