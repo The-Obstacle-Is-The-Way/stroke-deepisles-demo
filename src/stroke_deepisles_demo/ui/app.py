@@ -17,6 +17,7 @@ from stroke_deepisles_demo.ui.components import (
     create_settings_accordion,
 )
 from stroke_deepisles_demo.ui.viewer import (
+    NIIVUE_UPDATE_JS,
     create_niivue_html,
     nifti_to_data_url,
     render_slice_comparison,
@@ -199,6 +200,9 @@ def create_app() -> gr.Blocks:
                 results["download"],
                 status,
             ],
+        ).then(
+            fn=None,  # Explicitly None to run JS only
+            js=NIIVUE_UPDATE_JS,
         )
 
         # Trigger data loading after UI renders (prevents startup timeout)

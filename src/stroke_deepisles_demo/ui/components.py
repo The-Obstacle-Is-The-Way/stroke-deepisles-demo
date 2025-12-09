@@ -6,7 +6,7 @@ import gradio as gr
 
 from stroke_deepisles_demo.core.config import get_settings
 from stroke_deepisles_demo.core.logging import get_logger
-from stroke_deepisles_demo.ui.viewer import NIIVUE_JS_ON_LOAD
+from stroke_deepisles_demo.ui.viewer import NIIVUE_ON_LOAD_JS
 
 logger = get_logger(__name__)
 
@@ -45,7 +45,7 @@ def create_results_display() -> dict[str, gr.components.Component]:
         # The HTML value contains data-* attributes with volume URLs.
         niivue_viewer = gr.HTML(
             label="Interactive 3D Viewer",
-            js_on_load=NIIVUE_JS_ON_LOAD,
+            js_on_load=NIIVUE_ON_LOAD_JS,
         )
 
         # Slice comparisons (Matplotlib)

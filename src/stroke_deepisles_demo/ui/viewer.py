@@ -326,9 +326,9 @@ def create_niivue_html(
 
 
 # JavaScript code for js_on_load parameter
-# This runs when the gr.HTML component loads/updates
+# This runs when the gr.HTML component FIRST loads (mounts)
 # Variables available: element, props, trigger
-NIIVUE_JS_ON_LOAD = f"""
+NIIVUE_ON_LOAD_JS = f"""
 (async () => {{
     const container = element.querySelector('.niivue-viewer') || element;
     const canvas = element.querySelector('canvas');
@@ -407,6 +407,97 @@ NIIVUE_JS_ON_LOAD = f"""
         errorDiv.textContent = 'Error loading viewer: ' + error.message;
         container.innerHTML = '';
         container.appendChild(errorDiv);
+    }}
+}})();
+"""
+
+# JavaScript code for event handlers (e.g. .then(js=...))
+# This runs after Python updates the HTML value.
+# ⚠️ CRITICAL: 'element' is NOT available here! Must use document.querySelector
+NIIVUE_UPDATE_JS = f"""
+(async () => {{
+    // We must find the container globally since 'element' is not available in event handlers
+    const container = document.querySelector('.niivue-viewer');
+
+    if (!container) {{
+        console.error('NiiVue container not found');
+        return;
+    }}
+
+    const canvas = container.querySelector('canvas');
+    const status = container.querySelector('.niivue-status');
+
+    // Get URLs from data attributes
+    const volumeUrl = container.dataset.volumeUrl;
+    const maskUrl = container.dataset.maskUrl;
+
+    // Skip if no volume URL
+    if (!volumeUrl) {{
+        return;
+    }}
+
+    try {{
+        if (status) status.innerText = 'Reloading NiiVue...';
+
+        // Check WebGL2 support
+        const gl = canvas.getContext('webgl2');
+        if (!gl) {{
+            container.innerHTML = '<div style="color:#fff;padding:20px;text-align:center;">WebGL2 not supported. Please use a modern browser.</div>';
+            return;
+        }}
+
+        // Dynamically import NiiVue from CDN
+        const {{ Niivue }} = await import('{NIIVUE_CDN_URL}');
+
+        // Initialize NiiVue
+        const nv = new Niivue({{
+            logging: false,
+            show3Dcrosshair: true,
+            textHeight: 0.04,
+            backColor: [0, 0, 0, 1],
+            crosshairColor: [0.2, 0.8, 0.2, 1]
+        }});
+
+        // Attach to canvas
+        await nv.attachToCanvas(canvas);
+
+        // Hide status message
+        if (status) status.style.display = 'none';
+
+        // Prepare volumes
+        const volumes = [{{ url: volumeUrl, name: 'input.nii.gz' }}];
+
+        if (maskUrl) {{
+            volumes.push({{
+                url: maskUrl,
+                colorMap: 'red',
+                opacity: 0.5
+            }});
+        }}
+
+        // Load volumes
+        await nv.loadVolumes(volumes);
+
+        // Configure view: multiplanar + 3D
+        nv.setSliceType(nv.sliceTypeMultiplanar);
+        if (typeof nv.setMultiplanarLayout === 'function') {{
+            nv.setMultiplanarLayout(2);
+        }}
+        nv.opts.show3Dcrosshair = true;
+        nv.setRenderAzimuthElevation(120, 10);
+        nv.drawScene();
+
+        console.log('NiiVue viewer re-initialized successfully via event handler');
+
+    }} catch (error) {{
+        console.error('NiiVue re-initialization error:', error);
+        const errorDiv = document.createElement('div');
+        errorDiv.style.cssText = 'color:#f66;padding:20px;text-align:center;';
+        errorDiv.textContent = 'Error reloading viewer: ' + error.message;
+        if (container) {{
+            container.innerHTML = '';
+            container.appendChild(errorDiv);
+        }}
     }}
 }})();
 """

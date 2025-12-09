@@ -1,12 +1,12 @@
 # Bug #10: NiiVue 3D Viewer Renders Black Screen on HF Spaces
 
-## Status: FIXED (pending HF Spaces verification)
+## Status: PARTIALLY FIXED → See Bug #11
 
 **Date:** 2025-12-09
-**Branch:** `fix/niivue-js-on-load`
+**Branch:** `fix/niivue-js-on-load` (merged), now `fix/niivue-js-rerun`
 **Discovered:** After fixing Bug #9 (DeepISLES subprocess bridge)
 
-### Fix Applied (2025-12-09)
+### Fix Applied (2025-12-09) - PARTIAL
 
 Implemented `js_on_load` approach (Solution 1 from this spec):
 
@@ -16,6 +16,16 @@ Implemented `js_on_load` approach (Solution 1 from this spec):
 
 The HTML now uses `data-*` attributes to pass volume URLs, and JavaScript
 executes via `js_on_load` instead of inline `<script>` tags.
+
+### Continued in Bug #11
+
+After HF Spaces deployment, we discovered that `js_on_load` **only runs once
+on component mount**, not on value updates. This means the NiiVue viewer
+initializes correctly on page load, but when `run_segmentation()` updates
+the gr.HTML value with new data-* attributes, the JS doesn't re-execute.
+
+**See [Bug #11](./11-bug-niivue-js-on-load-not-rerunning.md) for the complete
+analysis and the verified fix using `.then(fn=None, js=...)`.**
 
 ---
 
