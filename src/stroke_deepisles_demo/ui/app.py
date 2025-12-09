@@ -3,13 +3,15 @@
 from __future__ import annotations
 
 import shutil
-from typing import TYPE_CHECKING, Any
+from pathlib import Path
+from typing import Any
 
 import gradio as gr
 from matplotlib.figure import Figure  # noqa: TC002
 
 from stroke_deepisles_demo.core.logging import get_logger
 from stroke_deepisles_demo.data import list_case_ids
+from stroke_deepisles_demo.metrics import compute_volume_ml
 from stroke_deepisles_demo.pipeline import run_pipeline_on_case
 from stroke_deepisles_demo.ui.components import (
     create_case_selector,
@@ -20,16 +22,11 @@ from stroke_deepisles_demo.ui.viewer import (
     NIIVUE_UPDATE_JS,
     create_niivue_html,
     nifti_to_gradio_url,
+    render_3panel_view,
     render_slice_comparison,
 )
 
-if TYPE_CHECKING:
-    from pathlib import Path
-
 logger = get_logger(__name__)
-
-# Shared output directory for UI results (cleaned up between runs to prevent disk accumulation)
-_previous_results_dir: Path | None = None
 
 
 def initialize_case_selector() -> gr.Dropdown:
@@ -57,9 +54,26 @@ def initialize_case_selector() -> gr.Dropdown:
         return gr.Dropdown(choices=[], info=f"Error loading data: {e!s}")
 
 
+def _cleanup_previous_results(previous_results_dir: str | None) -> None:
+    """Clean up previous results directory (per-session, thread-safe)."""
+    if previous_results_dir is None:
+        return
+    prev_path = Path(previous_results_dir)
+    if prev_path.exists():
+        try:
+            shutil.rmtree(prev_path)
+            logger.debug("Cleaned up previous results: %s", prev_path)
+        except OSError as e:
+            # Log but don't fail - cleanup is best-effort
+            logger.warning("Failed to cleanup %s: %s", prev_path, e)
+
+
 def run_segmentation(
-    case_id: str, fast_mode: bool, show_ground_truth: bool
-) -> tuple[str, Figure | None, dict[str, Any], str | None, str]:
+    case_id: str,
+    fast_mode: bool,
+    show_ground_truth: bool,
+    previous_results_dir: str | None,
+) -> tuple[str, Figure | None, Figure | None, dict[str, Any], str | None, str, str | None]:
     """
     Run segmentation and return results for display.
 
@@ -67,30 +81,26 @@ def run_segmentation(
         case_id: Selected case identifier
         fast_mode: Whether to use fast mode (SEALS)
         show_ground_truth: Whether to show ground truth in plots
+        previous_results_dir: Path to previous results (from gr.State, for cleanup)
 
     Returns:
-        Tuple of (niivue_html, slice_fig, metrics_dict, download_path, status_msg)
+        Tuple of (niivue_html, slice_fig, ortho_fig, metrics_dict, download_path, status_msg, new_results_dir)
+        The new_results_dir is returned to update the gr.State for next cleanup.
     """
     if not case_id:
         return (
             "",
             None,
+            None,
             {},
             None,
             "Please select a case first.",
+            previous_results_dir,  # Keep existing state
         )
 
     try:
-        global _previous_results_dir
-
-        # Clean up previous results to prevent disk accumulation on HF Spaces
-        if _previous_results_dir is not None and _previous_results_dir.exists():
-            try:
-                shutil.rmtree(_previous_results_dir)
-                logger.debug("Cleaned up previous results: %s", _previous_results_dir)
-            except OSError as e:
-                # Log but don't fail - cleanup is best-effort
-                logger.warning("Failed to cleanup %s: %s", _previous_results_dir, e)
+        # Clean up previous results (per-session, thread-safe via gr.State)
+        _cleanup_previous_results(previous_results_dir)
 
         logger.info("Running segmentation for %s", case_id)
         result = run_pipeline_on_case(
@@ -99,9 +109,6 @@ def run_segmentation(
             compute_dice=True,
             cleanup_staging=True,
         )
-
-        # Track results_dir for cleanup on next run
-        _previous_results_dir = result.results_dir
 
         # 1. NiiVue Visualization
         # Use Gradio's file serving (Issue #19 optimization)
@@ -122,8 +129,10 @@ def run_segmentation(
             height=500,
         )
 
-        # 2. Slice Comparison (Static Plot)
+        # 2. Static Visualizations (Matplotlib)
         gt_path = result.ground_truth if show_ground_truth else None
+
+        # 2a. Slice Comparison
         slice_fig = render_slice_comparison(
             dwi_path=dwi_path,
             prediction_path=result.prediction_mask,
@@ -131,10 +140,24 @@ def run_segmentation(
             orientation="axial",
         )
 
-        # 3. Metrics
+        # 2b. Orthogonal 3-Panel View
+        ortho_fig = render_3panel_view(
+            nifti_path=dwi_path,
+            mask_path=result.prediction_mask,
+            mask_alpha=0.5,
+        )
+
+        # 3. Metrics (including volume with consistent 0.5 threshold)
+        volume_ml: float | None = None
+        try:
+            volume_ml = round(compute_volume_ml(result.prediction_mask, threshold=0.5), 2)
+        except Exception:
+            logger.warning("Failed to compute volume for %s", case_id, exc_info=True)
+
         metrics = {
             "case_id": result.case_id,
             "dice_score": result.dice_score,
+            "volume_ml": volume_ml,
             "elapsed_seconds": round(result.elapsed_seconds, 2),
             "model": "SEALS (Fast)" if fast_mode else "Ensemble",
         }
@@ -148,11 +171,20 @@ def run_segmentation(
             else "Success!"
         )
 
-        return niivue_html, slice_fig, metrics, download_path, status_msg
+        # Return new results_dir to update gr.State for next cleanup
+        return (
+            niivue_html,
+            slice_fig,
+            ortho_fig,
+            metrics,
+            download_path,
+            status_msg,
+            str(result.results_dir),
+        )
 
     except Exception as e:
         logger.exception("Error running segmentation")
-        return "", None, {}, None, f"Error: {e!s}"
+        return "", None, None, {}, None, f"Error: {e!s}", previous_results_dir
 
 
 def create_app() -> gr.Blocks:
@@ -165,6 +197,10 @@ def create_app() -> gr.Blocks:
     with gr.Blocks(
         title="Stroke Lesion Segmentation Demo",
     ) as demo:
+        # Per-session state for cleanup tracking (fixes race condition in multi-user env)
+        # This replaces the previous global _previous_results_dir variable
+        previous_results_state = gr.State(value=None)
+
         # Header
         gr.Markdown("""
         # Stroke Lesion Segmentation Demo
@@ -197,13 +233,16 @@ def create_app() -> gr.Blocks:
                 case_selector,
                 settings["fast_mode"],
                 settings["show_ground_truth"],
+                previous_results_state,  # Pass per-session state for cleanup
             ],
             outputs=[
                 results["niivue_viewer"],
                 results["slice_plot"],
+                results["ortho_plot"],
                 results["metrics"],
                 results["download"],
                 status,
+                previous_results_state,  # Update state with new results_dir
             ],
         ).then(
             fn=None,  # Explicitly None to run JS only

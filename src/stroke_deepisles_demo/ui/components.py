@@ -39,17 +39,21 @@ def create_results_display() -> dict[str, gr.components.Component]:
     """
     # Using gr.Group to group them visually
     with gr.Group():
-        # NiiVue visualization uses HTML with js_on_load for JavaScript execution
-        # Note: Gradio strips <script> tags from HTML value for security,
-        # so we must use js_on_load to run our NiiVue initialization code.
-        # The HTML value contains data-* attributes with volume URLs.
-        niivue_viewer = gr.HTML(
-            label="Interactive 3D Viewer",
-            js_on_load=NIIVUE_ON_LOAD_JS,
-        )
+        with gr.Tabs():
+            with gr.Tab("Interactive 3D"):
+                # NiiVue visualization uses HTML with js_on_load for JavaScript execution
+                # Note: Gradio strips <script> tags from HTML value for security,
+                # so we must use js_on_load to run our NiiVue initialization code.
+                # The HTML value contains data-* attributes with volume URLs.
+                niivue_viewer = gr.HTML(
+                    label="Interactive 3D Viewer",
+                    js_on_load=NIIVUE_ON_LOAD_JS,
+                )
 
-        # Slice comparisons (Matplotlib)
-        slice_plot = gr.Plot(label="Slice Comparison")
+            with gr.Tab("Static Report"):
+                # Slice comparisons (Matplotlib)
+                slice_plot = gr.Plot(label="Slice Comparison (Validation)")
+                ortho_plot = gr.Plot(label="Orthogonal Views (Anatomy)")
 
         metrics = gr.JSON(label="Metrics")
         download = gr.File(label="Download Prediction")
@@ -57,6 +61,7 @@ def create_results_display() -> dict[str, gr.components.Component]:
     return {
         "niivue_viewer": niivue_viewer,
         "slice_plot": slice_plot,
+        "ortho_plot": ortho_plot,
         "metrics": metrics,
         "download": download,
     }

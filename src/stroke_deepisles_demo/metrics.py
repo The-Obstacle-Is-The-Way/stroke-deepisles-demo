@@ -91,6 +91,8 @@ def compute_dice(
 def compute_volume_ml(
     mask: Path | NDArray[np.floating[Any]],
     voxel_size_mm: tuple[float, float, float] | None = None,
+    *,
+    threshold: float = 0.5,
 ) -> float:
     """
     Compute lesion volume in milliliters.
@@ -98,9 +100,14 @@ def compute_volume_ml(
     Args:
         mask: Path to NIfTI file or numpy array
         voxel_size_mm: Voxel dimensions in mm (read from NIfTI if None)
+        threshold: Threshold for binarization (default 0.5 for consistency with compute_dice)
 
     Returns:
         Volume in milliliters (mL)
+
+    Note:
+        Uses the same default threshold (0.5) as compute_dice for consistency.
+        This ensures the volume measurement matches the clinical segmentation decision boundary.
     """
     if isinstance(mask, Path):
         data, loaded_zooms = load_nifti_as_array(mask)
@@ -110,7 +117,8 @@ def compute_volume_ml(
         # Default to 1mm isotropic if not provided for array
         voxel_dims = voxel_size_mm if voxel_size_mm is not None else (1.0, 1.0, 1.0)
 
-    volume_voxels = np.sum(data > 0)
+    # Binarize at threshold for consistent measurement with compute_dice
+    volume_voxels = np.sum(data > threshold)
     voxel_vol_mm3 = math.prod(voxel_dims)
 
     return float(volume_voxels * voxel_vol_mm3 / 1000.0)  # mm3 -> mL

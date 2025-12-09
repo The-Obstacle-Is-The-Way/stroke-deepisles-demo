@@ -152,6 +152,97 @@ class TestNiftiToGradioUrl:
         assert ";base64," not in url
 
 
+class TestRenderSliceComparisonProbabilityMask:
+    """Tests for render_slice_comparison with probability masks (Issue #23).
+
+    This test class verifies that probability-valued prediction masks
+    are rendered visibly. The bug occurs when:
+    - Ground truth is binary (0 or 1) → renders as visible green
+    - Prediction is probability (0.1-0.5) → renders as nearly-invisible white
+
+    See: docs/specs/23-slice-comparison-overlay-bug.md
+    """
+
+    def test_probability_mask_has_visible_overlay(
+        self,
+        synthetic_nifti_3d: Path,
+        synthetic_probability_mask: Path,
+    ) -> None:
+        """
+        Probability mask should produce visible overlay in rendering.
+
+        This test exposes the bug where low probability values (e.g., 0.3)
+        render as nearly-white in the "Reds" colormap and are invisible.
+        """
+        fig = render_slice_comparison(
+            synthetic_nifti_3d,
+            synthetic_probability_mask,  # Probability values 0.3, 0.7
+            ground_truth_path=None,
+        )
+
+        # Get the prediction axis (index 1)
+        ax = fig.axes[1]
+
+        # The axis should have at least 2 images (DWI background + overlay)
+        images = ax.get_images()
+        assert len(images) >= 2, "Prediction panel should have overlay image"
+
+        # The overlay should have non-zero alpha (visible)
+        overlay = images[1]
+        alpha = overlay.get_alpha()
+        assert alpha is None or alpha > 0  # None means default alpha (1.0)
+
+        plt.close(fig)
+
+    def test_binary_vs_probability_mask_comparison(
+        self,
+        synthetic_nifti_3d: Path,
+        synthetic_binary_mask: Path,
+        synthetic_probability_mask: Path,
+    ) -> None:
+        """
+        Both binary and probability masks should render visible overlays.
+
+        This is the core test for Issue #23. If the probability mask renders
+        invisibly while the binary mask renders visibly, the bug is confirmed.
+        """
+        # Render with binary mask (expected to work)
+        fig_binary = render_slice_comparison(
+            synthetic_nifti_3d,
+            synthetic_binary_mask,
+            ground_truth_path=None,
+        )
+
+        # Render with probability mask (may be invisible - the bug)
+        fig_prob = render_slice_comparison(
+            synthetic_nifti_3d,
+            synthetic_probability_mask,
+            ground_truth_path=None,
+        )
+
+        # Get overlay data from both
+        binary_overlay = fig_binary.axes[1].get_images()[1].get_array()
+        prob_overlay = fig_prob.axes[1].get_images()[1].get_array()
+
+        # Both should have non-masked (visible) pixels
+        binary_visible = (
+            not binary_overlay.mask.all()  # type: ignore[union-attr]
+            if hasattr(binary_overlay, "mask")
+            else True
+        )
+        prob_visible = (
+            not prob_overlay.mask.all()  # type: ignore[union-attr]
+            if hasattr(prob_overlay, "mask")
+            else True
+        )
+
+        assert binary_visible, "Binary mask overlay should have visible pixels"
+        assert prob_visible, "Probability mask overlay should have visible pixels"
+
+        plt.close(fig_binary)
+        plt.close(fig_prob)
+
+
 class TestCreateNiivueHtml:
     """Tests for create_niivue_html."""
 
