@@ -401,7 +401,12 @@ NIIVUE_JS_ON_LOAD = f"""
 
     }} catch (error) {{
         console.error('NiiVue initialization error:', error);
-        container.innerHTML = '<div style="color:#f66;padding:20px;text-align:center;">Error loading viewer: ' + error.message + '</div>';
+        // Use textContent instead of innerHTML to prevent XSS
+        const errorDiv = document.createElement('div');
+        errorDiv.style.cssText = 'color:#f66;padding:20px;text-align:center;';
+        errorDiv.textContent = 'Error loading viewer: ' + error.message;
+        container.innerHTML = '';
+        container.appendChild(errorDiv);
     }}
 }})();
 """

@@ -102,7 +102,7 @@ TEST5_JS = """
     if (typeof props !== 'undefined') {
         status.innerText = 'Test 5: PASS - props object accessible!';
         status.style.color = '#90EE90';
-        valueDiv.innerText = 'props.value = ' + JSON.stringify(props.value).substring(0, 100) + '...';
+        valueDiv.innerText = 'props.value = ' + JSON.stringify(props.value ?? null).substring(0, 100) + '...';
     } else {
         status.innerText = 'Test 5: FAIL - props not defined';
         element.style.background = '#DC143C';

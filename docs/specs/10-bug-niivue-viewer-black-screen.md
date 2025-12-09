@@ -399,7 +399,7 @@ Create downsampled test NIfTI (~1MB) to isolate size vs JS issues.
 
 ## Appendix: HF Spaces Logs
 
-```
+```text
 INFO: Running segmentation for sub-stroke0002
 INFO: Case sub-stroke0002 ready: DWI=20.9MB, ADC=12.6MB
 INFO: DeepISLES subprocess completed in 30.88s
