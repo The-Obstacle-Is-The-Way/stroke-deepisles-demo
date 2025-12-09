@@ -67,12 +67,18 @@ def test_run_segmentation_logic() -> None:
         ),
         patch("stroke_deepisles_demo.ui.app.create_niivue_html", return_value="<div></div>"),
         patch("stroke_deepisles_demo.ui.app.render_slice_comparison", return_value=MagicMock()),
+        patch("stroke_deepisles_demo.ui.app.render_3panel_view", return_value=MagicMock()),
+        patch("stroke_deepisles_demo.ui.app.compute_volume_ml", return_value=15.5),
     ):
-        html, _fig, metrics, _dl_path, status = run_segmentation(
-            "sub-001", fast_mode=True, show_ground_truth=True
+        html, _fig, _ortho, metrics, _dl_path, status, _new_results_dir = run_segmentation(
+            "sub-001",
+            fast_mode=True,
+            show_ground_truth=True,
+            previous_results_dir=None,  # No previous results in test
         )
 
         assert html == "<div></div>"
         assert metrics["case_id"] == "sub-001"
         assert metrics["dice_score"] == 0.85
+        assert "volume_ml" in metrics  # New metric added
         assert "Success" in status

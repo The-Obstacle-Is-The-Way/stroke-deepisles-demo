@@ -16,15 +16,14 @@ import json
 import uuid
 from typing import TYPE_CHECKING
 
-import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.figure import Figure
 
 from stroke_deepisles_demo.metrics import load_nifti_as_array
 
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from matplotlib.figure import Figure
 
 # NiiVue version - updated to latest stable (Dec 2025)
 NIIVUE_VERSION = "0.65.0"
@@ -141,9 +140,10 @@ def render_3panel_view(
         center = coords.mean(axis=0).astype(int)
         mid_x, mid_y, mid_z = center[0], center[1], center[2]
 
-    # Create figure
-    fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+    # Create figure using OO API for thread safety
+    fig = Figure(figsize=(15, 5))
     fig.patch.set_facecolor("black")
+    axes = fig.subplots(1, 3)
 
     # Axial (XY plane, Z fixed) - often needs rotation 90 deg
     # NIfTI data[x, y, z]. To display standard axial:
@@ -153,8 +153,10 @@ def render_3panel_view(
     axes[0].set_title(f"Axial (z={mid_z})", color="white")
     if mask_data is not None:
         m_slice = np.rot90(mask_data[:, :, mid_z])
+        # Binarize at 0.5 threshold for visible overlay (consistent with compute_dice)
+        m_slice_binary = (m_slice > 0.5).astype(float)
         axes[0].imshow(
-            np.ma.masked_where(m_slice == 0, m_slice),  # type: ignore[no-untyped-call]
+            np.ma.masked_where(m_slice_binary == 0, m_slice_binary),  # type: ignore[no-untyped-call]
             cmap="Reds",
             alpha=mask_alpha,
             vmin=0,
@@ -167,8 +169,10 @@ def render_3panel_view(
     axes[1].set_title(f"Coronal (y={mid_y})", color="white")
     if mask_data is not None:
         m_slice = np.rot90(mask_data[:, mid_y, :])
+        # Binarize at 0.5 threshold for visible overlay (consistent with compute_dice)
+        m_slice_binary = (m_slice > 0.5).astype(float)
         axes[1].imshow(
-            np.ma.masked_where(m_slice == 0, m_slice),  # type: ignore[no-untyped-call]
+            np.ma.masked_where(m_slice_binary == 0, m_slice_binary),  # type: ignore[no-untyped-call]
             cmap="Reds",
             alpha=mask_alpha,
             vmin=0,
@@ -181,8 +185,10 @@ def render_3panel_view(
     axes[2].set_title(f"Sagittal (x={mid_x})", color="white")
     if mask_data is not None:
         m_slice = np.rot90(mask_data[mid_x, :, :])
+        # Binarize at 0.5 threshold for visible overlay (consistent with compute_dice)
+        m_slice_binary = (m_slice > 0.5).astype(float)
         axes[2].imshow(
-            np.ma.masked_where(m_slice == 0, m_slice),  # type: ignore[no-untyped-call]
+            np.ma.masked_where(m_slice_binary == 0, m_slice_binary),  # type: ignore[no-untyped-call]
             cmap="Reds",
             alpha=mask_alpha,
             vmin=0,
@@ -192,7 +198,7 @@ def render_3panel_view(
     for ax in axes:
         ax.axis("off")
 
-    plt.tight_layout()
+    fig.tight_layout()
     return fig
 
 
@@ -248,8 +254,11 @@ def render_slice_comparison(
 
     # Plotting
     num_plots = 3 if gt_data is not None else 2
-    fig, axes = plt.subplots(1, num_plots, figsize=(5 * num_plots, 5))
+    # Create figure using OO API for thread safety
+    fig = Figure(figsize=(5 * num_plots, 5))
     fig.patch.set_facecolor("black")
+    axes = fig.subplots(1, num_plots)
+
     if num_plots == 2:
         axes = np.array(axes)  # handle single case if needed, but subplots(1,2) returns array
 
@@ -258,9 +267,14 @@ def render_slice_comparison(
     axes[0].set_title("DWI Input", color="white")
 
     # 2. Prediction
+    # Binarize prediction at threshold 0.5 for visible overlay (Issue #23)
+    # Model output may contain probability values (0.0-1.0) which render as
+    # nearly-white in the "Reds" colormap. Binarizing ensures consistent
+    # visualization matching how compute_dice() evaluates predictions.
+    p_slice_binary = (p_slice > 0.5).astype(float)
     axes[1].imshow(d_slice, cmap="gray")
     axes[1].imshow(
-        np.ma.masked_where(p_slice == 0, p_slice),  # type: ignore[no-untyped-call]
+        np.ma.masked_where(p_slice_binary == 0, p_slice_binary),  # type: ignore[no-untyped-call]
         cmap="Reds",
         alpha=0.5,
         vmin=0,
@@ -283,7 +297,7 @@ def render_slice_comparison(
     for ax in axes:
         ax.axis("off")
 
-    plt.tight_layout()
+    fig.tight_layout()
     return fig
 
 

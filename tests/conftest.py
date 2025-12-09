@@ -62,6 +62,47 @@ def synthetic_case_files(temp_dir: Path) -> CaseFiles:
 
 
 @pytest.fixture
+def synthetic_probability_mask(temp_dir: Path) -> Path:
+    """
+    Create a synthetic probability mask (float values 0.0-1.0).
+
+    This simulates model output that may contain probability values
+    rather than binary 0/1 masks. Used to test visualization handling
+    of probability-valued segmentation masks.
+
+    The mask has values ONLY at slice 5 to ensure get_slice_at_max_lesion selects it:
+    - Outer region with low probability (0.3) - below 0.5 threshold
+    - Inner region with high probability (0.8) - above 0.5 threshold
+
+    See: docs/specs/23-slice-comparison-overlay-bug.md
+    """
+    mask_data = np.zeros((10, 10, 10), dtype=np.float32)
+
+    # Only populate slice 5 to ensure it's selected as max lesion slice
+    # Outer region: low confidence (below 0.5 threshold)
+    mask_data[2:8, 2:8, 5] = 0.3
+    # Inner region: high confidence (above 0.5 threshold) - this should be visible
+    mask_data[3:7, 3:7, 5] = 0.8
+
+    img = nib.Nifti1Image(mask_data, affine=np.eye(4))  # type: ignore
+    path = temp_dir / "probability_mask.nii.gz"
+    nib.save(img, path)  # type: ignore
+    return path
+
+
+@pytest.fixture
+def synthetic_binary_mask(temp_dir: Path) -> Path:
+    """Create a synthetic binary mask (0 or 1 values only)."""
+    mask_data = np.zeros((10, 10, 10), dtype=np.uint8)
+    mask_data[3:7, 3:7, 4:6] = 1  # Binary lesion region
+
+    img = nib.Nifti1Image(mask_data, affine=np.eye(4))  # type: ignore
+    path = temp_dir / "binary_mask.nii.gz"
+    nib.save(img, path)  # type: ignore
+    return path
+
+
+@pytest.fixture
 def synthetic_isles_dir(temp_dir: Path) -> Path:
     """
     Create synthetic ISLES24-like directory structure.
