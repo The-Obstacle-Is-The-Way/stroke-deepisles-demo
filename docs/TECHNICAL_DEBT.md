@@ -1,6 +1,6 @@
 # Technical Debt and Known Issues
 
-> **Last Audit**: December 2025 (Revision 4)
+> **Last Audit**: December 2025 (Revision 5)
 > **Auditor**: Claude Code + External Senior Review
 > **Status**: Ironclad / Production-Ready (Google DeepMind level)
 
@@ -11,8 +11,8 @@ Full architectural review completed. All critical and major technical debt items
 | Severity | Count | Description | Status |
 |----------|-------|-------------|--------|
 | P2 (Medium) | 0 | Temp dir leak, silent empty dataset, brittle git dep | **All Fixed** |
-| P3 (Low) | 0 | SSRF vector, float64 memory | **All Fixed** |
-| P3 (Low) | 2 | Type ignores, base64 overhead | **Acceptable** |
+| P3 (Low) | 0 | SSRF vector, float64 memory, base64 overhead | **All Fixed** |
+| P3 (Low) | 1 | Type ignores | **Acceptable** |
 
 ---
 
@@ -33,15 +33,26 @@ Full architectural review completed. All critical and major technical debt items
 ### ✅ P3: Redundant float64 Cast (Memory Optimization)
 **Resolution**: Updated `metrics.py` to load NIfTI data as `float32` directly, reducing memory usage by 50%. Type annotations updated to use `np.floating[Any]` for flexibility. Verified with `tests/test_metrics_memory.py`.
 
+### ✅ P3: Base64 Data URL Overhead for NiiVue Viewer (Issue #19)
+**Resolution**: Replaced base64 data URLs (~65MB payloads) with Gradio's built-in file serving via `/gradio_api/file=` URLs. Benefits:
+- **33% smaller payloads** (no base64 encoding overhead)
+- **Reduced browser memory pressure** (streaming vs. DOM string storage)
+- **Faster load times** (browser can efficiently fetch files)
+
+Implementation:
+- Added `nifti_to_gradio_url()` function in `viewer.py`
+- Removed deprecated `nifti_to_data_url()` function
+- Updated `app.py` to use Gradio file serving
+- Verified with `tests/ui/test_viewer.py::TestNiftiToGradioUrl`
+
+See: `docs/specs/19-perf-base64-to-file-urls.md`
+
 ---
 
 ## Remaining Acceptable Limitations
 
 ### P3: Type Ignore Comments
 **Status**: Industry-standard workarounds for libraries with incomplete type stubs (`nibabel`, `numpy`, `gradio`). No action required.
-
-### P3: Base64 Data URL Overhead for NiiVue Viewer
-**Status**: Acceptable for current scale. Refactoring to file-based serving via Gradio is possible but adds complexity not required for current demo purposes.
 
 ---
 
