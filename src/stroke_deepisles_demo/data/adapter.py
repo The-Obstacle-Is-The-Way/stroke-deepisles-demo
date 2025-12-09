@@ -326,9 +326,12 @@ class HuggingFaceDataset:
 
     def cleanup(self) -> None:
         """Remove temp directory and clear cache."""
-        if self._temp_dir and self._temp_dir.exists():
-            shutil.rmtree(self._temp_dir, ignore_errors=True)
-            logger.debug("Cleaned up temp directory: %s", self._temp_dir)
+        if self._temp_dir is not None and self._temp_dir.exists():
+            try:
+                shutil.rmtree(self._temp_dir)
+                logger.debug("Cleaned up temp directory: %s", self._temp_dir)
+            except OSError as e:
+                logger.warning("Failed to cleanup temp directory %s: %s", self._temp_dir, e)
         self._temp_dir = None
         self._cached_cases.clear()
 

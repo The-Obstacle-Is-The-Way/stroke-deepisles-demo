@@ -84,9 +84,13 @@ def run_segmentation(
         global _previous_results_dir
 
         # Clean up previous results to prevent disk accumulation on HF Spaces
-        if _previous_results_dir and _previous_results_dir.exists():
-            shutil.rmtree(_previous_results_dir, ignore_errors=True)
-            logger.debug("Cleaned up previous results: %s", _previous_results_dir)
+        if _previous_results_dir is not None and _previous_results_dir.exists():
+            try:
+                shutil.rmtree(_previous_results_dir)
+                logger.debug("Cleaned up previous results: %s", _previous_results_dir)
+            except OSError as e:
+                # Log but don't fail - cleanup is best-effort
+                logger.warning("Failed to cleanup %s: %s", _previous_results_dir, e)
 
         logger.info("Running segmentation for %s", case_id)
         result = run_pipeline_on_case(
@@ -106,8 +110,10 @@ def run_segmentation(
         dwi_path = result.input_files["dwi"]
         dwi_url = nifti_to_gradio_url(dwi_path)
 
+        # prediction_mask is always a valid Path from the pipeline (not Optional)
+        # The .exists() check is defense-in-depth only
         mask_url = None
-        if result.prediction_mask and result.prediction_mask.exists():
+        if result.prediction_mask.exists():
             mask_url = nifti_to_gradio_url(result.prediction_mask)
 
         niivue_html = create_niivue_html(

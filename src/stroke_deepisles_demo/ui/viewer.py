@@ -298,14 +298,14 @@ def create_niivue_html(
 
     This function generates an HTML snippet with data attributes containing
     volume URLs. The actual NiiVue initialization is handled by js_on_load
-    in the gr.HTML component (see NIIVUE_JS_ON_LOAD).
+    in the gr.HTML component (see NIIVUE_ON_LOAD_JS).
 
     IMPORTANT: Gradio's gr.HTML strips <script> tags for security.
     JavaScript must be passed via the js_on_load parameter instead.
 
     Args:
-        volume_url: Data URL or URL to volume NIfTI file
-        mask_url: Optional data URL or URL to mask NIfTI file
+        volume_url: Gradio file URL (e.g., /gradio_api/file=/path/to/file.nii.gz)
+        mask_url: Optional Gradio file URL to mask NIfTI file
         height: Viewer height in pixels
 
     Returns:
