@@ -31,8 +31,9 @@ WORKDIR /home/user/demo
 # Copy requirements first for better layer caching
 COPY --chown=1000:1000 requirements.txt /home/user/demo/requirements.txt
 
-# Install Python dependencies (extras only - DeepISLES image has PyTorch, nnUNet, etc.)
-RUN pip install --no-cache-dir -r requirements.txt
+# Install Python dependencies INTO THE CONDA ENVIRONMENT
+# DeepISLES uses 'isles_ensemble' conda env - we must install there
+RUN /bin/bash -c "source activate isles_ensemble && pip install --no-cache-dir -r requirements.txt"
 
 # Copy application source code and package files
 COPY --chown=1000:1000 pyproject.toml /home/user/demo/pyproject.toml
@@ -40,9 +41,9 @@ COPY --chown=1000:1000 README.md /home/user/demo/README.md
 COPY --chown=1000:1000 src/ /home/user/demo/src/
 COPY --chown=1000:1000 app.py /home/user/demo/app.py
 
-# Install the package itself (makes stroke_deepisles_demo importable)
+# Install the package itself INTO THE CONDA ENVIRONMENT
 # Using --no-deps since requirements.txt already installed dependencies
-RUN pip install --no-cache-dir --no-deps -e .
+RUN /bin/bash -c "source activate isles_ensemble && pip install --no-cache-dir --no-deps -e ."
 
 # Set environment variable to indicate we're running in HF Spaces
 # This allows the app to detect runtime environment and use direct invocation
@@ -66,9 +67,10 @@ USER user
 # Expose the Gradio port
 EXPOSE 7860
 
-# IMPORTANT: Reset ENTRYPOINT from base image (DeepISLES sets ENTRYPOINT to main.py)
-# Without this, our CMD gets passed as arguments to DeepISLES's main.py
+# IMPORTANT: DeepISLES uses a conda environment called 'isles_ensemble'
+# All PyTorch/nnU-Net dependencies are ONLY available in that conda env
+# We must run our app inside that environment to access DeepISLES imports
 ENTRYPOINT []
 
-# Set the default command to run our Gradio app
-CMD ["python", "-m", "stroke_deepisles_demo.ui.app"]
+# Run our Gradio app inside the isles_ensemble conda environment
+CMD ["/bin/bash", "-c", "source activate isles_ensemble && python -m stroke_deepisles_demo.ui.app"]
