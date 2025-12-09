@@ -1,10 +1,18 @@
 # Bug #10: NiiVue 3D Viewer Renders Black Screen on HF Spaces
 
-## Status: OPEN (P2)
+## Status: OPEN (P2) - ROOT CAUSE CONFIRMED
 
 **Date:** 2025-12-09
 **Branch:** `debug/niivue-viewer-black-screen`
 **Discovered:** After fixing Bug #9 (DeepISLES subprocess bridge)
+
+---
+
+## TL;DR - ROOT CAUSE
+
+**Gradio's `gr.HTML` component does NOT execute `<script>` tags (including `type="module"`).**
+
+Our code embeds NiiVue initialization JavaScript inside `<script type="module">` tags within the HTML value. Gradio intentionally ignores these for security reasons. The canvas renders but NiiVue never initializes → black screen.
 
 ---
 
@@ -24,86 +32,95 @@ After successful DeepISLES inference on HF Spaces, the NiiVue 3D viewer componen
 - No error message displayed in the viewer area
 - No visible WebGL error fallback message
 
+**What SHOULD appear:**
+- Multi-planar view (axial/coronal/sagittal slices)
+- Optional 3D volume rendering
+- Interactive crosshairs for navigation
+- DWI volume as grayscale background
+- Prediction mask as semi-transparent red overlay
+
 ---
 
-## Technical Analysis
+## Root Cause Analysis
 
-### Component Architecture
+### Evidence Chain
 
-The NiiVue viewer is implemented in `src/stroke_deepisles_demo/ui/viewer.py`:
+1. **[HuggingFace Forum](https://discuss.huggingface.co/t/gradio-html-component-with-javascript-code-dont-work/37316)**:
+   > "You can't load scripts via `gr.HTML`"
+
+2. **[Gradio Official Docs](https://www.gradio.app/docs/gradio/html)**:
+   > "Only static HTML is rendered (e.g., no JavaScript). To render JavaScript, use the `js` or `head` parameters"
+
+3. **[Gradio 6 Migration Guide](https://www.gradio.app/main/guides/gradio-6-migration-guide)**:
+   > The `js` and `head` parameters moved from `gr.Blocks()` to `launch()` in Gradio 6
+
+4. **[GitHub Issue #10250](https://github.com/gradio-app/gradio/issues/10250)**:
+   > Known issue with JavaScript in `head` param not executing reliably
+
+### Our Code (BROKEN)
 
 ```python
-# viewer.py:277-385
+# viewer.py:324-385 - Returns HTML with embedded script tags
 def create_niivue_html(volume_url, mask_url, height=400) -> str:
-    # Returns HTML with embedded JavaScript that:
-    # 1. Creates a canvas element
-    # 2. Dynamically imports NiiVue from CDN
-    # 3. Loads base64-encoded NIfTI files
-    # 4. Renders via WebGL2
+    return f"""
+    <div id="{container_id}" style="...">
+        <canvas id="{canvas_id}" style="..."></canvas>
+    </div>
+    <script type="module">
+        // THIS ENTIRE BLOCK IS IGNORED BY GRADIO!
+        (async function() {{
+            const niivueModule = await import('{NIIVUE_CDN_URL}');
+            const Niivue = niivueModule.Niivue;
+            const nv = new Niivue({{...}});
+            await nv.attachToCanvas(document.getElementById('{canvas_id}'));
+            await nv.loadVolumes([{{ url: {volume_url_js} }}]);
+            // ... more initialization
+        }})();
+    </script>
+    """
+
+# components.py:42 - Basic HTML component without js_on_load
+niivue_viewer = gr.HTML(label="Interactive 3D Viewer")  # No js_on_load!
 ```
 
-**Key configurations:**
-- NiiVue version: `0.65.0`
-- CDN URL: `https://unpkg.com/@niivue/niivue@0.65.0/dist/index.js`
-- Container: `gr.HTML` Gradio component
-- Data format: Base64 data URLs for NIfTI files
+### Why It Fails
 
-### Hypothesis 1: Data URL Size (LIKELY)
+1. `gr.HTML` receives our HTML string as `value`
+2. Gradio renders the `<div>` and `<canvas>` elements (static HTML)
+3. Gradio **strips or ignores** the `<script>` tags for security
+4. NiiVue JavaScript never executes
+5. Canvas remains empty → black screen
+6. Our try/catch error handling never runs (script doesn't execute at all)
 
-**Evidence:**
-- DWI file: 30.1MB → ~40MB as base64
-- ADC file: 17.7MB → ~24MB as base64
-- Total data passed to HTML component: ~65MB+ per inference
+---
 
-**Problem:**
-- Gradio's `gr.HTML` component may have payload size limits
-- Base64 encoding adds 33% overhead
-- Large strings may cause JavaScript memory issues
-- Dynamic module import may fail silently with large data URLs
+## Secondary Issues
 
-**Test:** Check browser console for memory/payload errors
+### Issue 1: Base64 Payload Size (~65MB)
 
-### Hypothesis 2: CDN Accessibility (POSSIBLE)
+Even if JavaScript executed, we're passing massive base64-encoded NIfTI data:
 
-**Evidence:**
-- NiiVue loaded from `unpkg.com` CDN
-- HF Spaces may have network restrictions or high latency
-- Dynamic `import()` may timeout silently
+| File | Raw Size | Base64 Size |
+|------|----------|-------------|
+| DWI | 30.1 MB | ~40 MB |
+| ADC | 17.7 MB | ~24 MB |
+| **Total** | ~48 MB | **~65 MB** |
 
-**Problem:**
-- CDN may be blocked or slow on HF Spaces infrastructure
-- No timeout handling in the JavaScript code
-- Error caught but container innerHTML update may not render
+This could cause:
+- Browser memory issues
+- Gradio payload limits
+- Slow/failed rendering
 
-**Test:** Check browser Network tab for CDN requests
+### Issue 2: Gradio 6 Breaking Changes
 
-### Hypothesis 3: WebGL2 Context Limitations (POSSIBLE)
+Our code uses Gradio 5.x patterns. In Gradio 6.x:
+- `js`, `head`, `head_paths` moved from `gr.Blocks()` to `launch()`
+- `padding` default changed from `True` to `False`
+- `js_on_load` is now the proper way for component-level JavaScript
 
-**Evidence:**
-- HF Spaces runs in sandboxed iframe
-- WebGL2 contexts may be restricted or limited
-- Canvas size (500px height) should be reasonable
+### Issue 3: No Error Visibility
 
-**Problem:**
-- WebGL2 may be available but context creation fails
-- Multiple WebGL contexts may exhaust GPU memory
-- HF Spaces may have security restrictions on WebGL
-
-**Test:** Check browser console for WebGL errors
-
-### Hypothesis 4: Gradio HTML Component Script Execution (POSSIBLE)
-
-**Evidence:**
-- Using `<script type="module">` with dynamic import
-- Gradio may sanitize or restrict script execution in HTML components
-- IIFE pattern may not execute in Gradio's rendering context
-
-**Problem:**
-- Gradio 6.x may have changed HTML component behavior
-- Script may not execute after DOM update
-- Module scripts may be blocked by CSP
-
-**Test:** Add console.log at script start to verify execution
+Our JavaScript has try/catch that should display errors in the container, but since the script never executes, the error handling never runs. The canvas just stays black with no feedback to the user.
 
 ---
 
@@ -111,155 +128,216 @@ def create_niivue_html(volume_url, mask_url, height=400) -> str:
 
 | File | Lines | Description |
 |------|-------|-------------|
-| `src/stroke_deepisles_demo/ui/viewer.py` | 277-385 | `create_niivue_html()` function |
-| `src/stroke_deepisles_demo/ui/viewer.py` | 34-51 | `nifti_to_data_url()` base64 encoding |
+| `src/stroke_deepisles_demo/ui/viewer.py` | 277-385 | `create_niivue_html()` - generates broken HTML |
+| `src/stroke_deepisles_demo/ui/viewer.py` | 34-51 | `nifti_to_data_url()` - base64 encoding |
 | `src/stroke_deepisles_demo/ui/app.py` | 101-117 | NiiVue HTML generation in `run_segmentation()` |
-| `src/stroke_deepisles_demo/ui/components.py` | 41-42 | `gr.HTML` component creation |
+| `src/stroke_deepisles_demo/ui/components.py` | 41-42 | `gr.HTML` component creation (missing js_on_load) |
 
 ---
 
-## Proposed Solutions
+## Proposed Solutions (Ranked)
 
-### Solution A: Server-Side File Serving (Recommended)
+### Solution 1: Use `js_on_load` Parameter (Recommended)
 
-Instead of base64 data URLs, serve NIfTI files via Gradio's file serving:
-
-```python
-# Use Gradio's file URL system instead of data URLs
-file_url = gr.File(value=dwi_path, visible=False).value
-niivue_html = create_niivue_html(file_url, mask_url)
-```
-
-**Pros:**
-- Avoids massive base64 payloads
-- Better memory efficiency
-- Streaming support
-
-**Cons:**
-- Requires refactoring data flow
-- May have CORS issues
-
-### Solution B: Fallback to Static Images
-
-If WebGL fails, render server-side images:
+Gradio 6's `gr.HTML` supports `js_on_load` for component-level JavaScript:
 
 ```python
-def create_niivue_html_with_fallback(volume_url, mask_url, fallback_img):
-    # Try NiiVue, fallback to static image
-    return f"""
-    <div id="viewer">
-        <img src="{fallback_img}" id="fallback" style="display:none;">
-        <canvas id="niivue"></canvas>
-    </div>
-    <script>
-        // On error, show fallback image
-    </script>
+def create_niivue_component(volume_url, mask_url, height=400):
+    container_id = f"nv-{uuid.uuid4().hex[:8]}"
+
+    html_content = f'<div id="{container_id}" style="height:{height}px;background:#000;"><canvas></canvas></div>'
+
+    js_code = f"""
+        (async () => {{
+            try {{
+                const {{ Niivue }} = await import('https://unpkg.com/@niivue/niivue@0.65.0/dist/index.js');
+                const nv = new Niivue({{ logging: false, backColor: [0,0,0,1] }});
+                await nv.attachToCanvas(element.querySelector('canvas'));
+                await nv.loadVolumes([{{ url: {json.dumps(volume_url)} }}]);
+                nv.setSliceType(nv.sliceTypeMultiplanar);
+            }} catch (e) {{
+                element.innerHTML = '<div style="color:#fff;padding:20px;">Error: ' + e.message + '</div>';
+            }}
+        }})();
     """
+
+    return gr.HTML(
+        value=html_content,
+        js_on_load=js_code,
+        label="Interactive 3D Viewer"
+    )
 ```
 
-**Pros:**
-- Graceful degradation
-- Always shows something
+**Pros:** Native Gradio 6 approach, component-scoped
+**Cons:** May have issues with dynamic import in js_on_load context
 
-**Cons:**
-- Loses interactivity
-- Two rendering paths to maintain
+### Solution 2: Use `head` Parameter in `launch()`
 
-### Solution C: Chunk/Stream Data Loading
-
-Load NIfTI files in chunks rather than single base64 blob:
-
-```javascript
-// Load file via fetch with streaming
-const response = await fetch(niftiUrl);
-const reader = response.body.getReader();
-// Stream chunks to NiiVue
-```
-
-**Pros:**
-- Better memory management
-- Progress indication possible
-
-**Cons:**
-- Complex implementation
-- NiiVue may not support streaming input
-
-### Solution D: Remove NiiVue (Simplest)
-
-Remove the 3D viewer entirely, rely on matplotlib 2D slices:
+Load NiiVue globally via the `head` parameter:
 
 ```python
-# components.py - remove niivue_viewer
+# app.py
+NIIVUE_HEAD = '''
+<script type="module">
+    import { Niivue } from 'https://unpkg.com/@niivue/niivue@0.65.0/dist/index.js';
+    window.Niivue = Niivue;
+</script>
+'''
+
+demo.launch(
+    head=NIIVUE_HEAD,
+    server_name="0.0.0.0",
+    server_port=7860
+)
+```
+
+**Pros:** Loads library once, available globally
+**Cons:** GitHub Issue #10250 reports unreliable execution
+
+### Solution 3: Server-Side File Serving
+
+Instead of base64 data URLs, serve NIfTI files via Gradio's file system:
+
+```python
+# Use Gradio's file URL instead of data URLs
+from gradio import FileData
+file_data = FileData(path=str(dwi_path))
+# Pass file_data.url to NiiVue instead of base64
+```
+
+**Pros:** Avoids 65MB payload, better memory efficiency
+**Cons:** Requires refactoring data flow, CORS considerations
+
+### Solution 4: Custom Gradio Component
+
+Build a proper `gradio_niivue` package:
+
+```bash
+gradio cc create NiiVue --template HTML
+# Implement Svelte frontend with NiiVue
+# Publish to PyPI
+```
+
+**Pros:** Most robust, reusable, proper architecture
+**Cons:** Significant development effort
+
+### Solution 5: Enhanced 2D Fallback (Simplest)
+
+Remove NiiVue entirely, enhance matplotlib visualization:
+
+```python
 def create_results_display():
     with gr.Group():
         # Remove: niivue_viewer = gr.HTML(...)
-        slice_plot = gr.Plot(label="Slice Comparison")
-        # Add more 2D views if needed
+
+        # Enhanced 2D visualization
+        slice_plot = gr.Plot(label="Multi-View Comparison")
+        slice_slider = gr.Slider(label="Slice", minimum=0, maximum=100)
+
+        # Add orthogonal views
+        with gr.Row():
+            axial_plot = gr.Plot(label="Axial")
+            coronal_plot = gr.Plot(label="Coronal")
+            sagittal_plot = gr.Plot(label="Sagittal")
 ```
 
-**Pros:**
-- Eliminates complexity
-- Matplotlib works reliably
-- Faster page load
-
-**Cons:**
-- Loses 3D interactivity
-- Less impressive demo
+**Pros:** Eliminates WebGL complexity, works reliably
+**Cons:** Loses 3D interactivity, less impressive demo
 
 ---
 
 ## Investigation Steps
 
-### Step 1: Browser Console Analysis
-1. Open HF Spaces demo in browser
-2. Open Developer Tools (F12)
-3. Run inference
-4. Check Console tab for errors
-5. Check Network tab for CDN requests
+### Step 1: Verify js_on_load Works
+Create minimal test:
+```python
+import gradio as gr
 
-### Step 2: Add Debug Logging
-```javascript
-// In create_niivue_html()
-console.log('NiiVue script starting...');
-console.log('Volume URL length:', volume_url.length);
-// Add more checkpoints
+def test():
+    return gr.HTML(
+        value="<div id='test'>Click me</div>",
+        js_on_load="element.style.background='green'; element.innerText='JS Works!';"
+    )
+
+with gr.Blocks() as demo:
+    btn = gr.Button("Test")
+    html = gr.HTML()
+    btn.click(test, outputs=html)
+
+demo.launch()
 ```
 
-### Step 3: Test with Smaller Files
-- Create test case with downsampled NIfTI
-- Check if smaller files render
+### Step 2: Test Dynamic Import in js_on_load
+```python
+js_on_load="""
+    (async () => {
+        const mod = await import('https://unpkg.com/@niivue/niivue@0.65.0/dist/index.js');
+        console.log('NiiVue loaded:', mod);
+        element.innerText = 'Import succeeded!';
+    })();
+"""
+```
 
-### Step 4: Test NiiVue Standalone
-- Create minimal HTML page with NiiVue
-- Host on HF Spaces to test WebGL
+### Step 3: Check Browser Console
+1. Open HF Spaces demo
+2. Open DevTools (F12) → Console
+3. Look for errors related to:
+   - Module loading failures
+   - WebGL context issues
+   - CORS errors
+   - Memory errors
+
+### Step 4: Test with Smaller Files
+Create downsampled test NIfTI (~1MB) to isolate size vs JS issues.
 
 ---
 
 ## Related Issues
 
-- Bug #9: DeepISLES modules not found (FIXED)
-- Bug #8: HF Spaces streaming hang (FIXED)
-- Technical Debt: NiiVue memory overhead (P2)
+- **Bug #9**: DeepISLES modules not found (FIXED - subprocess bridge)
+- **Bug #8**: HF Spaces streaming hang (FIXED)
+- **Technical Debt**: NiiVue memory overhead (P2)
+- **[Gradio #4511](https://github.com/gradio-app/gradio/issues/4511)**: 3D medical image support request (closed, not planned)
+- **[Gradio #10250](https://github.com/gradio-app/gradio/issues/10250)**: JS in head param issues (open)
 
 ---
 
 ## Priority Assessment
 
 **Severity:** P2 (Medium)
-- Core inference works correctly
-- 2D visualization works as fallback
+- Core inference pipeline works correctly
+- 2D visualization provides adequate fallback
 - No data loss or security impact
+- Demo is functional for evaluation purposes
 
 **Impact:**
-- Demo less impressive without 3D viewer
+- Less impressive without 3D viewer
 - Users can still evaluate predictions via 2D slices
 - Download functionality unaffected
 
-**Recommendation:** Fix after validating inference accuracy across more cases. Consider Solution D (remove NiiVue) if fix is complex, since 2D slices already provide adequate visualization.
+**Recommendation:**
+1. First, validate inference accuracy across multiple cases
+2. Then attempt Solution 1 (js_on_load) as quick fix
+3. If that fails, implement Solution 5 (enhanced 2D) for reliability
+4. Consider Solution 4 (custom component) for future enhancement
 
 ---
 
-## Appendix: HF Spaces Logs (Relevant Excerpt)
+## References
+
+- [Gradio HTML Docs](https://www.gradio.app/docs/gradio/html)
+- [Gradio Custom HTML Components Guide](https://www.gradio.app/guides/custom_HTML_components)
+- [Gradio 6 Migration Guide](https://www.gradio.app/main/guides/gradio-6-migration-guide)
+- [HuggingFace Forum: JS doesn't work in gr.HTML](https://discuss.huggingface.co/t/gradio-html-component-with-javascript-code-dont-work/37316)
+- [GitHub Issue #10250: JS in head param](https://github.com/gradio-app/gradio/issues/10250)
+- [GitHub Issue #4511: 3D Medical Images](https://github.com/gradio-app/gradio/issues/4511)
+- [NiiVue GitHub](https://github.com/niivue/niivue)
+- [ipyniivue (Jupyter Widget)](https://github.com/niivue/ipyniivue)
+- [Gradio 6 Announcement](https://alternativeto.net/news/2025/11/gradio-6-released-with-faster-performance-for-creating-machine-learning-apps-in-python/)
+
+---
+
+## Appendix: HF Spaces Logs
 
 ```
 INFO: Running segmentation for sub-stroke0002
