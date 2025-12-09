@@ -19,7 +19,10 @@ from pathlib import Path
 import numpy as np
 from matplotlib.figure import Figure
 
+from stroke_deepisles_demo.core.logging import get_logger
 from stroke_deepisles_demo.metrics import load_nifti_as_array
+
+logger = get_logger(__name__)
 
 # NiiVue version - updated to latest stable (Dec 2025)
 # Switched to local vendoring to avoid CSP issues on HuggingFace Spaces (Issue #24)
@@ -75,10 +78,15 @@ def get_niivue_loader_path() -> Path:
                 return loader_path
 
         loader_path.write_text(loader_content)
-    except OSError:
+        logger.debug("Generated NiiVue loader at %s", loader_path)
+    except OSError as e:
         # If we can't write (e.g., read-only filesystem), the file should
         # already exist from the build process
-        pass
+        logger.warning("Could not write loader file at %s: %s", loader_path, e)
+        if not loader_path.exists():
+            raise RuntimeError(
+                f"NiiVue loader file not found and cannot be created: {loader_path}"
+            ) from e
 
     return loader_path
 
