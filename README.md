@@ -7,7 +7,7 @@ sdk: docker
 app_port: 7860
 suggested_hardware: t4-small
 pinned: false
-license: mit
+license: apache-2.0
 short_description: Ischemic stroke lesion segmentation using DeepISLES
 models:
   - isleschallenge/deepisles
@@ -24,7 +24,7 @@ tags:
 
 # Stroke DeepISLES Demo
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/release/python-3110/)
 [![Code style: ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
@@ -108,7 +108,7 @@ graph TD
 
 ## License
 
-MIT License. See [LICENSE](LICENSE) for details.
+Apache License 2.0. See [LICENSE](LICENSE) for details.
 
 ## Acknowledgements
 

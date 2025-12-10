@@ -3,7 +3,7 @@ name = "stroke-deepisles-demo"
 version = "0.1.0"
 description = "Demo: HF datasets + DeepISLES stroke segmentation + Gradio visualization"
 readme = "README.md"
-license = { text = "MIT" }
+license = { text = "Apache-2.0" }
 requires-python = ">=3.11"
 authors = [
     { name = "stroke-deepisles-demo contributors" }
@@ -11,7 +11,7 @@ authors = [
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Topic :: Scientific/Engineering :: Medical Science Apps.",
