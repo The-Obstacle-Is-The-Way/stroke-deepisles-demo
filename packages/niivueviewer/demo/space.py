@@ -9,7 +9,7 @@ _docs = {
         "members": {
             "__init__": {
                 "value": {
-                    "type": "NiiVueViewerData | dict | None",
+                    "type": "NiiVueViewerData | dict[str, typing.Any] | None",
                     "default": "None",
                     "description": None,
                 },
@@ -78,7 +78,7 @@ with gr.Blocks(
 <img alt="Static Badge" src="https://img.shields.io/badge/version%20-%200.0.1%20-%20orange">
 </div>
 
-Python library for easily interacting with trained machine learning models
+A Gradio custom component for 3D medical imaging visualization using NiiVue (WebGL).
 """,
         elem_classes=["md-custom"],
         header_links=True,
@@ -95,15 +95,13 @@ pip install gradio_niivueviewer
 ## Usage
 
 ```python
-
 import gradio as gr
 from gradio_niivueviewer import NiiVueViewer
-
 
 example = NiiVueViewer().example_value()
 
 demo = gr.Interface(
-    lambda x:x,
+    lambda x: x,
     NiiVueViewer(),  # interactive version of your component
     NiiVueViewer(),  # static version of your component
     # examples=[[example]],  # uncomment this line to view the "example version" of your component

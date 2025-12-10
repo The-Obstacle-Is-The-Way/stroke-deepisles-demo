@@ -12,7 +12,7 @@ app_file: space.py
 # `gradio_niivueviewer`
 <img alt="Static Badge" src="https://img.shields.io/badge/version%20-%200.0.1%20-%20orange">
 
-Python library for easily interacting with trained machine learning models
+A Gradio custom component for 3D medical imaging visualization using NiiVue (WebGL).
 
 ## Installation
 
@@ -23,15 +23,13 @@ pip install gradio_niivueviewer
 ## Usage
 
 ```python
-
 import gradio as gr
 from gradio_niivueviewer import NiiVueViewer
-
 
 example = NiiVueViewer().example_value()
 
 demo = gr.Interface(
-    lambda x:x,
+    lambda x: x,
     NiiVueViewer(),  # interactive version of your component
     NiiVueViewer(),  # static version of your component
     # examples=[[example]],  # uncomment this line to view the "example version" of your component
@@ -62,7 +60,7 @@ if __name__ == "__main__":
 <td align="left" style="width: 25%;">
 
 ```python
-NiiVueViewerData | dict | None
+NiiVueViewerData | dict[str, typing.Any] | None
 ```
 
 </td>
