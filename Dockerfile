@@ -31,6 +31,10 @@ WORKDIR /home/user/demo
 # Copy requirements first for better layer caching
 COPY --chown=1000:1000 requirements.txt /home/user/demo/requirements.txt
 
+# Copy local packages (Custom Components) BEFORE pip install
+# This is required because requirements.txt refers to ./packages/niivueviewer
+COPY --chown=1000:1000 packages/ /home/user/demo/packages/
+
 # Install Python dependencies into SYSTEM Python (NOT conda env)
 # DeepISLES conda env is Python 3.8, but Gradio 6 needs Python 3.10+
 # We'll shell out to conda env for inference only
