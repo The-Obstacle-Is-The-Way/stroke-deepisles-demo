@@ -152,3 +152,79 @@ if (!Niivue) {
 | `src/stroke_deepisles_demo/ui/viewer.py` | Remove `import()` from js_on_load, use `window.Niivue` directly |
 | `src/stroke_deepisles_demo/ui/app.py` | Add `head=get_niivue_head_html()` to launch() |
 | `app.py` | Same as above for local dev |
+
+---
+
+## Update (2025-12-10): Web Research Findings
+
+### Critical Discovery: The Issue is Gradio, NOT HuggingFace Spaces
+
+**Web search confirmed:**
+- HF Spaces DOES support JavaScript, WebGL, ES modules
+- Working examples: Unity WebGL, Three.js games, Gaussian Splat Viewer
+- The issue is specifically **Gradio's handling of custom JavaScript**
+
+**Sources:**
+- [HF Unity WebGL Template](https://github.com/huggingface/Unity-WebGL-template-for-Hugging-Face-Spaces)
+- [WebGL Gaussian Splat Viewer on HF](https://huggingface.co/spaces/cakewalk/splat)
+- [HF Forum: Gradio HTML with JS doesn't work](https://discuss.huggingface.co/t/gradio-html-component-with-javascript-code-dont-work/37316)
+
+### Known Gradio Limitations
+
+1. **`gr.HTML()` cannot load `<script>` tags** - They're stripped for security
+2. **postMessage origin mismatch bug** (Gradio Issue #10893) - Causes SyntaxError
+3. **`js_on_load` with dynamic `import()`** - Can block Svelte hydration
+
+### Alternative Approaches NOT YET TRIED
+
+#### Option 1: `demo.load(_js=...)` with globalThis
+
+```python
+scripts = """
+async () => {
+    const script = document.createElement("script");
+    script.src = "/gradio_api/file=.../niivue.js";
+    script.type = "module";
+    document.head.appendChild(script);
+    await new Promise(resolve => script.onload = resolve);
+    globalThis.Niivue = window.Niivue;
+}
+"""
+demo.load(None, None, None, _js=scripts)
+```
+
+Source: [HF Forum workaround](https://discuss.huggingface.co/t/gradio-html-component-with-javascript-code-dont-work/37316)
+
+#### Option 2: `gr.Blocks(js=...)` parameter
+
+```python
+with gr.Blocks(js="() => { /* load NiiVue */ }") as demo:
+    ...
+```
+
+Source: [Gradio Custom CSS/JS Guide](https://www.gradio.app/guides/custom-CSS-and-JS)
+
+#### Option 3: Static HTML Space (Nuclear Option)
+
+If all Gradio approaches fail, create a **Static HTML Space** with pure JS/HTML/CSS.
+NiiVue would definitely work since WebGL examples exist on HF Spaces.
+
+Would require rebuilding the UI without Gradio.
+
+### Decision Tree
+
+```
+PR #28 (head= approach) works? ──YES──> Done!
+        │
+        NO
+        ↓
+Try demo.load(_js=...) works? ──YES──> Done!
+        │
+        NO
+        ↓
+Try gr.Blocks(js=...) works? ──YES──> Done!
+        │
+        NO
+        ↓
+Static HTML Space (rebuild UI without Gradio)
+```
