@@ -102,8 +102,8 @@ graph TD
     Loader -->|Stage Files| Staging[Staging Dir]
     Staging -->|Mount Volume| Docker[DeepISLES Container]
     Docker -->|Inference| Results[Prediction Mask]
-    Results -->|Load| Metrics[Metrics (Dice)]
-    Results -->|Render| UI[Gradio UI / NiiVue]
+    Results -->|Load| Metrics["Metrics (Dice)"]
+    Results -->|Render| UI["Gradio UI / NiiVue"]
 ```
 
 ## License
