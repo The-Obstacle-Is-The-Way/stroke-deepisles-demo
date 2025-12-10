@@ -3,8 +3,9 @@
 **Date:** 2025-12-10
 **Status:** REQUIRED - All gr.HTML hacks have failed (confirmed Dec 10)
 **Blocks:** Issue #24 (HF Spaces "Loading..." forever)
-**Effort:** Medium (2-3 days)
+**Effort:** Medium (2-3 days + 0.5-1 day buffer for HF Spaces quirks)
 **Success Probability:** 90%
+**Audited:** AUDIT_REPORT_2025_12_10.md - GO recommendation
 
 ---
 
@@ -76,6 +77,58 @@ gradio-niivue-viewer/
 
 ---
 
+## Prerequisites
+
+### Build Tooling Requirements
+
+| Tool | Version | Purpose |
+|------|---------|---------|
+| Node.js | >= 18.x | Required by `gradio cc build` |
+| npm | >= 9.x | Package management for Svelte frontend |
+| Python | >= 3.10 | Backend component |
+| Gradio | >= 5.0 | Custom component framework |
+
+Verify installation:
+```bash
+node --version  # v18.x or higher
+npm --version   # 9.x or higher
+gradio --version  # 5.x or higher
+```
+
+### Packaging Plan
+
+**Location:** Monorepo subdirectory at `packages/gradio-niivue-viewer/`
+
+This approach:
+- Keeps component close to main app for easy iteration
+- Allows `pip install -e packages/gradio-niivue-viewer` for local development
+- No PyPI publishing required initially (can add later)
+
+---
+
+## Value Schema
+
+The component uses Gradio's file serving URLs (not base64) per Issue #19 optimization:
+
+```typescript
+// Frontend (Svelte)
+interface NiiVueViewerValue {
+  background_url: string | null;  // e.g., "/gradio_api/file=/tmp/.../dwi.nii.gz"
+  overlay_url: string | null;     // e.g., "/gradio_api/file=/tmp/.../mask.nii.gz"
+}
+```
+
+```python
+# Backend (Python)
+class NiiVueViewerData(GradioModel):
+    background_url: str | None = None  # Gradio file URL
+    overlay_url: str | None = None     # Gradio file URL
+```
+
+**Critical:** URLs must use `/gradio_api/file=` format, NOT base64. This reduces payload from ~65MB to <1KB.
+
+---
+
 ## Technical Approach
 
 ### Phase 1: Scaffold Component (1 hour)
@@ -83,6 +136,10 @@ gradio-niivue-viewer/
 Use Gradio's CLI to create the component:
 
 ```bash
+# From repository root
+mkdir -p packages
+cd packages
+
 gradio cc create NiiVueViewer \
   --template Image \
   --overwrite
@@ -92,58 +149,138 @@ This creates the basic structure with Svelte frontend and Python backend.
 
 ### Phase 2: Implement Svelte Frontend (4-6 hours)
 
-Modify `frontend/Index.svelte`:
+#### 2a. Configure package.json with pinned NiiVue version
+
+```json
+{
+  "name": "gradio-niivue-viewer",
+  "version": "0.1.0",
+  "dependencies": {
+    "@niivue/niivue": "0.65.0"
+  }
+}
+```
+
+**Important:** Pin exact version `0.65.0` to match our tested vendored copy.
+
+#### 2b. Modify `frontend/Index.svelte`:
 
 ```svelte
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
   import { Niivue } from '@niivue/niivue';
-  import type { FileData } from '@gradio/client';
 
+  // Value schema: Gradio file URLs (not base64)
   export let value: {
     background_url: string | null;
     overlay_url: string | null;
   } | null = null;
 
   let container: HTMLDivElement;
+  let canvas: HTMLCanvasElement;
   let nv: Niivue | null = null;
+  let error: string | null = null;
+  let loading: boolean = true;
+
+  // WebGL2 capability check
+  function checkWebGL2(): boolean {
+    const testCanvas = document.createElement('canvas');
+    const gl = testCanvas.getContext('webgl2');
+    return gl !== null;
+  }
 
   onMount(async () => {
-    nv = new Niivue({
-      backColor: [0, 0, 0, 1],
-      show3Dcrosshair: true,
-    });
-    await nv.attachToCanvas(container.querySelector('canvas'));
-    await loadVolumes();
+    // Check WebGL2 support first
+    if (!checkWebGL2()) {
+      error = 'WebGL2 is not supported in this browser. Please use Chrome, Firefox, or Edge.';
+      loading = false;
+      return;
+    }
+
+    try {
+      nv = new Niivue({
+        backColor: [0, 0, 0, 1],
+        show3Dcrosshair: true,
+        logging: false,
+      });
+      await nv.attachToCanvas(canvas);
+
+      // Handle WebGL context loss
+      canvas.addEventListener('webglcontextlost', handleContextLost);
+      canvas.addEventListener('webglcontextrestored', handleContextRestored);
+
+      await loadVolumes();
+      loading = false;
+    } catch (e) {
+      error = `Failed to initialize viewer: ${e instanceof Error ? e.message : 'Unknown error'}`;
+      loading = false;
+    }
   });
 
   onDestroy(() => {
+    if (canvas) {
+      canvas.removeEventListener('webglcontextlost', handleContextLost);
+      canvas.removeEventListener('webglcontextrestored', handleContextRestored);
+    }
     if (nv) nv.dispose();
   });
 
+  function handleContextLost(event: Event) {
+    event.preventDefault();
+    error = 'WebGL context lost. Please refresh the page.';
+  }
+
+  function handleContextRestored() {
+    error = null;
+    if (nv && value) loadVolumes();
+  }
+
   async function loadVolumes() {
     if (!nv || !value) return;
-    const volumes = [];
-    if (value.background_url) {
-      volumes.push({ url: value.background_url });
-    }
-    if (value.overlay_url) {
-      volumes.push({
-        url: value.overlay_url,
-        colormap: 'red',
-        opacity: 0.5,
-      });
-    }
-    if (volumes.length > 0) {
-      await nv.loadVolumes(volumes);
+
+    try {
+      loading = true;
+      error = null;
+
+      const volumes = [];
+      if (value.background_url) {
+        volumes.push({ url: value.background_url, name: 'background.nii.gz' });
+      }
+      if (value.overlay_url) {
+        volumes.push({
+          url: value.overlay_url,
+          name: 'overlay.nii.gz',
+          colorMap: 'red',
+          opacity: 0.5,
+        });
+      }
+
+      if (volumes.length > 0) {
+        await nv.loadVolumes(volumes);
+        // Configure view after loading
+        nv.setSliceType(nv.sliceTypeMultiplanar);
+        nv.setRenderAzimuthElevation(120, 10);
+        nv.drawScene();
+      }
+
+      loading = false;
+    } catch (e) {
+      error = `Failed to load volumes: ${e instanceof Error ? e.message : 'Unknown error'}`;
+      loading = false;
     }
   }
 
-  $: if (value && nv) loadVolumes();
+  // Reactive: reload when value changes
+  $: if (value && nv && !loading) loadVolumes();
 </script>
 
 <div bind:this={container} class="niivue-container">
-  <canvas></canvas>
+  {#if error}
+    <div class="error-message">{error}</div>
+  {:else if loading}
+    <div class="loading-message">Loading viewer...</div>
+  {/if}
+  <canvas bind:this={canvas} class:hidden={!!error}></canvas>
 </div>
 
 <style>
@@ -151,13 +288,44 @@ Modify `frontend/Index.svelte`:
     width: 100%;
     height: 500px;
     background: #000;
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
   }
   canvas {
     width: 100%;
     height: 100%;
   }
+  canvas.hidden {
+    display: none;
+  }
+  .error-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #f66;
+    text-align: center;
+    padding: 20px;
+    max-width: 80%;
+  }
+  .loading-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #888;
+    text-align: center;
+  }
 </style>
 ```
+
+**Key improvements from audit feedback:**
+- WebGL2 capability check before initialization
+- WebGL context loss/restore handlers
+- Proper error UI states
+- Loading state management
+- Reactive update when value changes
 
 ### Phase 3: Implement Python Backend (2-3 hours)
 
@@ -324,17 +492,109 @@ This is the official Gradio-recommended solution. It's more work than hacking `g
 
 ---
 
+## Testing Matrix
+
+### Level 1: Local Build Verification
+
+```bash
+cd packages/gradio-niivue-viewer
+
+# Build component
+gradio cc build
+
+# Install locally
+pip install -e .
+
+# Run demo app
+python demo/app.py
+# → Verify: App loads, no console errors, viewer renders
+```
+
+**Pass criteria:**
+- [ ] `gradio cc build` completes without errors
+- [ ] Demo app launches at localhost:7860
+- [ ] No JavaScript console errors
+- [ ] Canvas renders (black background visible)
+
+### Level 2: Volume Loading Test
+
+```python
+# demo/app.py
+import gradio as gr
+from gradio_niivue_viewer import NiiVueViewer
+
+def load_sample():
+    # Use a known good NIfTI file
+    return {
+        "background_url": "/gradio_api/file=/path/to/sample.nii.gz",
+        "overlay_url": None
+    }
+
+with gr.Blocks() as demo:
+    viewer = NiiVueViewer()
+    btn = gr.Button("Load Sample")
+    btn.click(load_sample, outputs=viewer)
+
+demo.launch()
+```
+
+**Pass criteria:**
+- [ ] NIfTI file loads without errors
+- [ ] Multiplanar view displays correctly
+- [ ] Overlay mask renders with red colormap (when provided)
+
+### Level 3: HF Spaces Dry Run
+
+Deploy to a **private/throwaway Space** before production:
+
+```bash
+# Create test space
+huggingface-cli repo create test-niivue-viewer --type space --private
+
+# Push and test
+git push hf-test main
+```
+
+**Pass criteria:**
+- [ ] Space shows "Running" (not stuck on "Loading...")
+- [ ] Viewer initializes (no hydration deadlock)
+- [ ] Volume loading works via Gradio file serving
+- [ ] WebGL2 error shown gracefully if unsupported
+
+### Level 4: Integration Test
+
+Replace `gr.HTML` in stroke-deepisles-demo:
+
+```python
+# src/stroke_deepisles_demo/ui/components.py
+from gradio_niivue_viewer import NiiVueViewer
+
+def create_results_display():
+    # ...
+    niivue_viewer = NiiVueViewer(label="Interactive 3D Viewer")
+    # ...
+```
+
+**Pass criteria:**
+- [ ] Existing 136 tests still pass
+- [ ] Segmentation pipeline works end-to-end
+- [ ] Viewer displays DWI + mask overlay
+- [ ] No "Loading..." hang on HF Spaces
+
+---
+
 ## Next Steps
 
-1. [ ] Senior review of this spec
-2. [ ] Create `gradio-niivue-viewer` repository (or subdirectory)
+1. [x] Senior review of this spec (AUDIT_REPORT_2025_12_10.md)
+2. [ ] Create `packages/gradio-niivue-viewer/` subdirectory
 3. [ ] Scaffold component with `gradio cc create`
-4. [ ] Implement Svelte frontend
+4. [ ] Implement Svelte frontend (with WebGL2 checks)
 5. [ ] Implement Python backend
-6. [ ] Test locally
-7. [ ] Test on HF Spaces
-8. [ ] Integrate into stroke-deepisles-demo
-9. [ ] (Optional) Publish to PyPI
+6. [ ] Level 1 test: Local build verification
+7. [ ] Level 2 test: Volume loading
+8. [ ] Level 3 test: HF Spaces dry run
+9. [ ] Level 4 test: Integration
+10. [ ] (Optional) Publish to PyPI
 
 ---
 
