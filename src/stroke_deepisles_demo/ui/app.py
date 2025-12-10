@@ -281,9 +281,6 @@ if __name__ == "__main__":
     settings = get_settings()
     setup_logging(settings.log_level, format_style=settings.log_format)
 
-    # Allow access to local assets (e.g., niivue.js)
-    assets_dir = Path(__file__).parent / "assets"
-
     # Generate the NiiVue loader HTML file (creates if needed)
     niivue_loader = get_niivue_loader_path()
 
@@ -294,6 +291,6 @@ if __name__ == "__main__":
         theme=gr.themes.Soft(),
         css="footer {visibility: hidden}",
         show_error=True,  # Show full Python tracebacks in UI for debugging
-        allowed_paths=[str(assets_dir)],
+        allowed_paths=[str(_ASSETS_DIR)],
         head_paths=[str(niivue_loader)],  # Official Gradio approach (Issue #11649)
     )

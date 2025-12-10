@@ -38,10 +38,6 @@ if __name__ == "__main__":
     # - theme: Gradio 6 uses launch() for theme
     # - css: Hide footer for cleaner look
 
-    # Allow access to local assets (e.g., niivue.js)
-    # Assets are located in src/stroke_deepisles_demo/ui/assets
-    assets_dir = Path(__file__).parent / "src" / "stroke_deepisles_demo" / "ui" / "assets"
-
     # Generate the NiiVue loader HTML file (creates if needed)
     niivue_loader = get_niivue_loader_path()
 
@@ -51,6 +47,6 @@ if __name__ == "__main__":
         share=settings.gradio_share,
         theme=gr.themes.Soft(),
         css="footer {visibility: hidden}",
-        allowed_paths=[str(assets_dir)],
+        allowed_paths=[str(_ASSETS_DIR)],
         head_paths=[str(niivue_loader)],  # Official Gradio approach (Issue #11649)
     )

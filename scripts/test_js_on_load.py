@@ -126,7 +126,7 @@ with gr.Blocks(title="js_on_load Test Suite") as demo:
 
     1. **Basic execution** - Does js_on_load run at all?
     2. **Async IIFE** - Does `(async () => { await ... })()` work?
-    3. **Dynamic import** - Can we `await import()` from CDN?
+    3. **Dynamic import** - Can we `await import()` from local assets?
     4. **Canvas + NiiVue** - Can we attach NiiVue to a canvas?
     5. **Props access** - Can we read `props.value`?
 

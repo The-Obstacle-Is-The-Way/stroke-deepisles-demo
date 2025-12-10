@@ -420,6 +420,10 @@ def create_niivue_html(
 # IMPORTANT: This code uses window.Niivue which must be loaded via
 # head_paths with niivue-loader.html. Do NOT use dynamic import()
 # as it breaks Gradio on HF Spaces.
+#
+# NOTE: waitForNiivue() is duplicated in NIIVUE_UPDATE_JS below. This is
+# intentional - extracting to a shared constant would require complex f-string
+# escaping of all JS braces. The 6-line duplication is acceptable for readability.
 NIIVUE_ON_LOAD_JS = """
 (async () => {
     const container = element.querySelector('.niivue-viewer') || element;
@@ -522,6 +526,10 @@ NIIVUE_ON_LOAD_JS = """
 # IMPORTANT: This code uses window.Niivue which must be loaded via
 # head_paths with niivue-loader.html. Do NOT use dynamic import()
 # as it breaks Gradio on HF Spaces.
+#
+# NOTE: waitForNiivue() is duplicated from NIIVUE_ON_LOAD_JS above. This is
+# intentional - extracting to a shared constant would require complex f-string
+# escaping of all JS braces. The 6-line duplication is acceptable for readability.
 NIIVUE_UPDATE_JS = """
 (async () => {
     // We must find the container globally since 'element' is not available in event handlers

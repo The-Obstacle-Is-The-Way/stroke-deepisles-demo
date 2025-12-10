@@ -153,7 +153,7 @@ def get_niivue_loader_path() -> Path:
 ```
 
 **Gitignored at:** `.gitignore:219`
-```
+```text
 src/stroke_deepisles_demo/ui/assets/niivue-loader.html
 ```
 
@@ -230,7 +230,7 @@ src/stroke_deepisles_demo/ui/assets/niivue-loader.html
 
 ### HuggingFace Spaces CSP Headers (Suspected)
 
-```
+```text
 Content-Security-Policy:
   script-src 'self' 'unsafe-inline' 'unsafe-eval';
   connect-src 'self' ...;
@@ -249,7 +249,7 @@ Content-Security-Policy:
 
 ## TIMING DIAGRAM: What SHOULD Happen
 
-```
+```text
 1. Gradio loads HTML page
 2. <head> includes niivue-loader.html via head_paths
 3. Module script in loader imports niivue.js
@@ -261,7 +261,7 @@ Content-Security-Policy:
 
 ## TIMING DIAGRAM: What MAY Be Happening
 
-```
+```text
 1. Gradio loads HTML page
 2. <head> includes niivue-loader.html via head_paths
 3. Module script DEFERRED (not executed yet)
@@ -708,7 +708,7 @@ gr.set_static_paths(paths=[str(_ASSETS_DIR)])
 **Why:** Gradio 6.x has a known bug where `allowed_paths` doesn't properly enable file serving. The official workaround is `gr.set_static_paths()`.
 
 **Chain of failure:**
-```
+```text
 Missing gr.set_static_paths()
     ↓
 /gradio_api/file=.../niivue.js returns 404
@@ -766,7 +766,7 @@ Gradio frontend may hang on "Loading..."
 | 6 | MEDIUM | `viewer.py` | 95-109 | Deprecated `get_niivue_head_script()` still exists | Remove or clearly mark |
 | 7 | LOW | `test_js_on_load.py` | 38, 76 | Uses CDN imports (blocked by CSP) | Update to use local NiiVue |
 
-### CONFIRMED NOT ISSUES
+### CONFIRMED NON-ISSUES
 
 These were investigated and confirmed NOT to be problems:
 
