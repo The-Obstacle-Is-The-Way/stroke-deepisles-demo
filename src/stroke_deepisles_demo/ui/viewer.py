@@ -91,24 +91,6 @@ def get_niivue_loader_path() -> Path:
     return loader_path
 
 
-# Legacy function for backward compatibility
-def get_niivue_head_script() -> str:
-    """
-    Get HTML script tag for loading NiiVue in Gradio's head.
-
-    DEPRECATED: Use get_niivue_loader_path() with head_paths instead.
-    This function is kept for backward compatibility only.
-
-    Returns:
-        HTML string with script tag
-    """
-    return f"""<script type="module">
-    import {{ Niivue }} from '{NIIVUE_JS_URL}';
-    window.Niivue = Niivue;
-    console.log('NiiVue loaded globally:', typeof window.Niivue);
-</script>"""
-
-
 def nifti_to_gradio_url(nifti_path: Path) -> str:
     """
     Get Gradio file URL for a NIfTI file.
@@ -436,7 +418,7 @@ def create_niivue_html(
 # Variables available: element, props, trigger
 #
 # IMPORTANT: This code uses window.Niivue which must be loaded via
-# gr.Blocks(head=get_niivue_head_script()). Do NOT use dynamic import()
+# head_paths with niivue-loader.html. Do NOT use dynamic import()
 # as it breaks Gradio on HF Spaces.
 NIIVUE_ON_LOAD_JS = """
 (async () => {
@@ -467,10 +449,18 @@ NIIVUE_ON_LOAD_JS = """
         if (status) status.innerText = 'Loading NiiVue...';
 
         // Use globally loaded NiiVue (from head script)
-        // Do NOT use dynamic import() - it breaks Gradio on HF Spaces
-        const Niivue = window.Niivue;
+        // Poll for it to handle race conditions (Fixes P0 Loading Bug)
+        const waitForNiivue = async () => {
+            for (let i = 0; i < 50; i++) {
+                if (window.Niivue) return window.Niivue;
+                await new Promise(r => setTimeout(r, 100));
+            }
+            return null;
+        };
+
+        const Niivue = await waitForNiivue();
         if (!Niivue) {
-            throw new Error('NiiVue not loaded. Ensure head script is included via gr.Blocks(head=...)');
+            throw new Error('NiiVue not loaded after 5s. Ensure head_paths includes niivue-loader.html and gr.set_static_paths is called.');
         }
 
         // Initialize NiiVue
@@ -565,10 +555,18 @@ NIIVUE_UPDATE_JS = """
         }
 
         // Use globally loaded NiiVue (from head script)
-        // Do NOT use dynamic import() - it breaks Gradio on HF Spaces
-        const Niivue = window.Niivue;
+        // Poll for it to handle race conditions (Fixes P0 Loading Bug)
+        const waitForNiivue = async () => {
+            for (let i = 0; i < 50; i++) {
+                if (window.Niivue) return window.Niivue;
+                await new Promise(r => setTimeout(r, 100));
+            }
+            return null;
+        };
+
+        const Niivue = await waitForNiivue();
         if (!Niivue) {
-            throw new Error('NiiVue not loaded. Ensure head_paths includes niivue-loader.html');
+            throw new Error('NiiVue not loaded after 5s. Ensure head_paths includes niivue-loader.html and gr.set_static_paths is called.');
         }
 
         // Initialize NiiVue

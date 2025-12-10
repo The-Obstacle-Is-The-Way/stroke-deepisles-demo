@@ -9,16 +9,22 @@ from typing import Any
 import gradio as gr
 from matplotlib.figure import Figure  # noqa: TC002
 
-from stroke_deepisles_demo.core.logging import get_logger
-from stroke_deepisles_demo.data import list_case_ids
-from stroke_deepisles_demo.metrics import compute_volume_ml
-from stroke_deepisles_demo.pipeline import run_pipeline_on_case
-from stroke_deepisles_demo.ui.components import (
+# CRITICAL: Allow direct file serving for local assets (niivue.js)
+# This fixes the P0 "Loading..." bug on HF Spaces (Issue #11649)
+# Must be called BEFORE creating any Blocks - hence imports after this call
+_ASSETS_DIR = Path(__file__).parent / "assets"
+gr.set_static_paths(paths=[str(_ASSETS_DIR)])
+
+from stroke_deepisles_demo.core.logging import get_logger  # noqa: E402
+from stroke_deepisles_demo.data import list_case_ids  # noqa: E402
+from stroke_deepisles_demo.metrics import compute_volume_ml  # noqa: E402
+from stroke_deepisles_demo.pipeline import run_pipeline_on_case  # noqa: E402
+from stroke_deepisles_demo.ui.components import (  # noqa: E402
     create_case_selector,
     create_results_display,
     create_settings_accordion,
 )
-from stroke_deepisles_demo.ui.viewer import (
+from stroke_deepisles_demo.ui.viewer import (  # noqa: E402
     NIIVUE_UPDATE_JS,
     create_niivue_html,
     get_niivue_loader_path,

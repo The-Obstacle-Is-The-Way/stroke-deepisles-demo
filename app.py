@@ -13,10 +13,16 @@ from pathlib import Path
 
 import gradio as gr
 
-from stroke_deepisles_demo.core.config import get_settings
-from stroke_deepisles_demo.core.logging import setup_logging
-from stroke_deepisles_demo.ui.app import get_demo
-from stroke_deepisles_demo.ui.viewer import get_niivue_loader_path
+# CRITICAL: Allow direct file serving for local assets (niivue.js)
+# This fixes the P0 "Loading..." bug on HF Spaces (Issue #11649)
+# Must be called BEFORE creating any Blocks
+_ASSETS_DIR = Path(__file__).parent / "src" / "stroke_deepisles_demo" / "ui" / "assets"
+gr.set_static_paths(paths=[str(_ASSETS_DIR)])
+
+from stroke_deepisles_demo.core.config import get_settings  # noqa: E402
+from stroke_deepisles_demo.core.logging import setup_logging  # noqa: E402
+from stroke_deepisles_demo.ui.app import get_demo  # noqa: E402
+from stroke_deepisles_demo.ui.viewer import get_niivue_loader_path  # noqa: E402
 
 # Initialize logging
 settings = get_settings()
