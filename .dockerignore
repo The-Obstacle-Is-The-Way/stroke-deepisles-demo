@@ -1,0 +1,33 @@
+# Docker ignore file
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+.git/
+.github/
+.vscode/
+.idea/
+.DS_Store
+*.egg-info/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+dist/
+build/
+site/
+docs/_build/
+
+# Ignore local data and test artifacts
+data/
+results/
+tests/
+# NOTE: Do NOT ignore scripts/ - deepisles_adapter.py is needed by Dockerfile
+
+# Ignore node_modules in custom components to keep build context small
+**/node_modules/
