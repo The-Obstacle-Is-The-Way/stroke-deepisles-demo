@@ -8,9 +8,9 @@ For HF Spaces deployment, see: src/stroke_deepisles_demo/ui/app.py
 
 import gradio as gr
 
-from stroke_deepisles_demo.core.config import get_settings  # noqa: E402
-from stroke_deepisles_demo.core.logging import get_logger, setup_logging  # noqa: E402
-from stroke_deepisles_demo.ui.app import get_demo  # noqa: E402
+from stroke_deepisles_demo.core.config import get_settings
+from stroke_deepisles_demo.core.logging import get_logger, setup_logging
+from stroke_deepisles_demo.ui.app import get_demo
 
 logger = get_logger(__name__)
 

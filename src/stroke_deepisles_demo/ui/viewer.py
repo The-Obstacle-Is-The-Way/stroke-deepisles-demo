@@ -11,9 +11,13 @@ See:
 
 from __future__ import annotations
 
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import numpy as np
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
 from matplotlib.figure import Figure
 
 from stroke_deepisles_demo.core.logging import get_logger
