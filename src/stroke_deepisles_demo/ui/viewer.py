@@ -390,15 +390,14 @@ def create_niivue_html(
     Create HTML for NiiVue viewer (static content only).
 
     This function generates an HTML snippet with data attributes containing
-    volume URLs AND the NiiVue library URL. The actual NiiVue initialization
-    is handled by js_on_load in the gr.HTML component (see NIIVUE_ON_LOAD_JS).
+    volume URLs. The actual NiiVue initialization is handled by js_on_load
+    in the gr.HTML component (see NIIVUE_ON_LOAD_JS).
 
-    IMPORTANT: Gradio's gr.HTML strips <script> tags for security.
-    JavaScript must be passed via the js_on_load parameter instead.
-
-    The NiiVue library URL is embedded in data-niivue-url so that js_on_load
-    can load the library on-demand. This removes the dependency on the `head=`
-    parameter working correctly, which has been problematic on HF Spaces.
+    IMPORTANT (Issue #24):
+    - Gradio's gr.HTML strips <script> tags for security
+    - NiiVue library is loaded via `head=` parameter (see get_niivue_head_html())
+    - js_on_load just USES window.Niivue - NO dynamic imports
+    - This prevents Gradio's Svelte hydration from being blocked on HF Spaces
 
     Args:
         volume_url: Gradio file URL (e.g., /gradio_api/file=/path/to/file.nii.gz)
@@ -420,16 +419,12 @@ def create_niivue_html(
     # Using json.dumps ensures proper escaping
     volume_attr = f"data-volume-url={json.dumps(volume_url)}"
     mask_attr = f"data-mask-url={json.dumps(mask_url)}" if mask_url else 'data-mask-url=""'
-    # Embed NiiVue library URL so js_on_load can load it directly
-    # This removes dependency on head= script working on HF Spaces
-    niivue_url_attr = f"data-niivue-url={json.dumps(NIIVUE_JS_URL)}"
 
     return f"""<div
     id="niivue-container-{viewer_id}"
     class="niivue-viewer"
     {volume_attr}
     {mask_attr}
-    {niivue_url_attr}
     style="width:100%; height:{height}px; background:#000; border-radius:8px; position:relative;"
 >
     <canvas style="width:100%; height:100%;"></canvas>
@@ -443,12 +438,14 @@ def create_niivue_html(
 # This runs when the gr.HTML component FIRST loads (mounts)
 # Variables available: element, props, trigger
 #
-# CRITICAL FIX (Issue #24): This code loads NiiVue DIRECTLY via dynamic import()
-# from the data-niivue-url attribute. This removes the dependency on the `head=`
-# parameter which was blocking Gradio initialization on HF Spaces.
+# CRITICAL FIX (Issue #24): This code MUST NOT use dynamic import()!
+# Dynamic import() inside js_on_load blocks Gradio's Svelte hydration on HF Spaces.
 #
-# The old approach used window.Niivue from a head script, but ES module failures
-# in <head> can prevent Gradio's Svelte app from hydrating, causing "Loading..." forever.
+# Solution: NiiVue is loaded via `head=` parameter (see get_niivue_head_html()).
+# This js_on_load handler just USES window.Niivue - no imports.
+#
+# Evidence: A/B test in docs/specs/24-bug-hf-spaces-loading-forever.md proved
+# that disabling js_on_load makes the app load. The issue is import() in js_on_load.
 NIIVUE_ON_LOAD_JS = """
 (async () => {
     const container = element.querySelector('.niivue-viewer') || element;
@@ -458,7 +455,6 @@ NIIVUE_ON_LOAD_JS = """
     // Get URLs from data attributes
     const volumeUrl = container.dataset.volumeUrl;
     const maskUrl = container.dataset.maskUrl;
-    const niivueUrl = container.dataset.niivueUrl;
 
     // Skip if no volume URL (initial empty state)
     if (!volumeUrl) {
@@ -476,36 +472,19 @@ NIIVUE_ON_LOAD_JS = """
             return;
         }
 
-        if (status) status.innerText = 'Loading NiiVue library...';
+        if (status) status.innerText = 'Initializing NiiVue...';
 
-        // Load NiiVue directly (self-sufficient, no head= dependency)
-        // This fixes the HF Spaces "Loading..." forever bug (Issue #24)
-        const loadNiivue = async () => {
-            // Return cached if already loaded
-            if (window.Niivue) {
-                console.log('[NiiVue] Using cached window.Niivue');
-                return window.Niivue;
-            }
+        // Use window.Niivue loaded by head= script (NO dynamic import!)
+        // The head= parameter in launch() loads NiiVue BEFORE Gradio hydrates.
+        // This is critical for HF Spaces compatibility (Issue #24).
+        const Niivue = window.Niivue;
+        if (!Niivue) {
+            console.error('[NiiVue] window.Niivue not found - head= script may have failed');
+            container.innerHTML = '<div style="color:#f66;padding:20px;text-align:center;">NiiVue library failed to load. Check browser console for errors.</div>';
+            return;
+        }
 
-            // Load directly from the URL embedded in data attribute
-            if (!niivueUrl) {
-                throw new Error('No NiiVue URL provided in data-niivue-url attribute');
-            }
-
-            console.log('[NiiVue] Loading from:', niivueUrl);
-            try {
-                const module = await import(niivueUrl);
-                window.Niivue = module.Niivue;
-                console.log('[NiiVue] Successfully loaded and cached');
-                return module.Niivue;
-            } catch (e) {
-                // Provide detailed error for debugging
-                console.error('[NiiVue] Import failed:', e);
-                throw new Error('Failed to load NiiVue from ' + niivueUrl + ': ' + e.message);
-            }
-        };
-
-        const Niivue = await loadNiivue();
+        console.log('[NiiVue] Using window.Niivue from head= script');
 
         // Initialize NiiVue
         const nv = new Niivue({
@@ -563,8 +542,7 @@ NIIVUE_ON_LOAD_JS = """
 # This runs after Python updates the HTML value.
 # ⚠️ CRITICAL: 'element' is NOT available here! Must use document.querySelector
 #
-# CRITICAL FIX (Issue #24): This code loads NiiVue DIRECTLY via dynamic import()
-# from the data-niivue-url attribute. Same pattern as NIIVUE_ON_LOAD_JS.
+# CRITICAL FIX (Issue #24): NO dynamic import()! Use window.Niivue from head= script.
 NIIVUE_UPDATE_JS = """
 (async () => {
     // We must find the container globally since 'element' is not available in event handlers
@@ -581,7 +559,6 @@ NIIVUE_UPDATE_JS = """
     // Get URLs from data attributes
     const volumeUrl = container.dataset.volumeUrl;
     const maskUrl = container.dataset.maskUrl;
-    const niivueUrl = container.dataset.niivueUrl;
 
     // Skip if no volume URL
     if (!volumeUrl) {
@@ -601,32 +578,15 @@ NIIVUE_UPDATE_JS = """
             return;
         }
 
-        // Load NiiVue directly (self-sufficient, no head= dependency)
-        const loadNiivue = async () => {
-            // Return cached if already loaded
-            if (window.Niivue) {
-                console.log('[NiiVue] Using cached window.Niivue');
-                return window.Niivue;
-            }
+        // Use window.Niivue loaded by head= script (NO dynamic import!)
+        const Niivue = window.Niivue;
+        if (!Niivue) {
+            console.error('[NiiVue] window.Niivue not found - head= script may have failed');
+            container.innerHTML = '<div style="color:#f66;padding:20px;text-align:center;">NiiVue library failed to load. Check browser console for errors.</div>';
+            return;
+        }
 
-            // Load directly from the URL embedded in data attribute
-            if (!niivueUrl) {
-                throw new Error('No NiiVue URL provided in data-niivue-url attribute');
-            }
-
-            console.log('[NiiVue] Loading from:', niivueUrl);
-            try {
-                const module = await import(niivueUrl);
-                window.Niivue = module.Niivue;
-                console.log('[NiiVue] Successfully loaded and cached');
-                return module.Niivue;
-            } catch (e) {
-                console.error('[NiiVue] Import failed:', e);
-                throw new Error('Failed to load NiiVue from ' + niivueUrl + ': ' + e.message);
-            }
-        };
-
-        const Niivue = await loadNiivue();
+        console.log('[NiiVue] Using window.Niivue from head= script');
 
         // Initialize NiiVue
         const nv = new Niivue({
