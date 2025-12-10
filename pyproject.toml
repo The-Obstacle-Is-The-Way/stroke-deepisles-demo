@@ -111,6 +111,7 @@ module = [
     "datasets.*",
     "niivue.*",
     "numpy.*",
+    "pyarrow.*",
     "pytest.*",
     # DeepISLES modules (only available in DeepISLES Docker image)
     "src.isles22_ensemble",
