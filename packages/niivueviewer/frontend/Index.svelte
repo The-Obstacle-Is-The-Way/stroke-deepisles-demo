@@ -50,7 +50,11 @@
   });
 
   onDestroy(() => {
-    // Cleanup if needed
+    // Release WebGL resources and event listeners
+    if (nv) {
+      nv.cleanup();
+      nv = null;
+    }
   });
 
   async function loadVolumes() {

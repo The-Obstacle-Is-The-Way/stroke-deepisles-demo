@@ -37024,6 +37024,7 @@ function _1(i, e) {
       // Reduce noise
     }), yield d.attachToCanvas(f), yield g();
   })), Fa(() => {
+    d && (d.cleanup(), d = null);
   });
   function g() {
     return t(this, void 0, void 0, function* () {

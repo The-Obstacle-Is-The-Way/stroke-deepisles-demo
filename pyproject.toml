@@ -111,6 +111,8 @@ warn_return_any = true
 warn_unused_ignores = true
 disallow_untyped_defs = true
 plugins = ["pydantic.mypy"]
+# Exclude auto-generated Gradio custom component demo files
+exclude = "packages/niivueviewer/"
 
 [[tool.mypy.overrides]]
 module = [
