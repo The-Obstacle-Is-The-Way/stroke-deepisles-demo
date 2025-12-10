@@ -1,7 +1,23 @@
-# Gradio + WebGL/NiiVue Analysis
+# Bug #24: Gradio + WebGL/NiiVue Root Cause Analysis
 
 **Date:** 2025-12-10
-**Context:** Understanding why NiiVue (WebGL) doesn't work in Gradio on HF Spaces
+**Status:** ALL HACKS FAILED - Custom Component Required
+**Issue:** HF Spaces stuck on "Loading..." forever
+**Root Cause:** Gradio does not natively support custom WebGL content
+**Solution:** Build Gradio Custom Component (see spec #28)
+
+---
+
+## CONFIRMED: All gr.HTML Hacks Have Failed
+
+| Attempt | Date | Result |
+|---------|------|--------|
+| CDN import in js_on_load | Dec 9 | FAILED - CSP blocks external imports |
+| Vendored + dynamic import() in js_on_load | Dec 9 | FAILED - Blocks Svelte hydration |
+| head_paths with loader HTML | Dec 9 | FAILED - Same hydration issue |
+| head= with inline import() | Dec 10 | **FAILED** - Confirmed DOA |
+
+**There is no hack that works.** The only path forward is spec #28 (Gradio Custom Component).
 
 ---
 

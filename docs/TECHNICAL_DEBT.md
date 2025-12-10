@@ -1,18 +1,52 @@
 # Technical Debt and Known Issues
 
-> **Last Audit**: December 2025 (Revision 5)
+> **Last Audit**: December 2025 (Revision 6)
 > **Auditor**: Claude Code + External Senior Review
-> **Status**: Ironclad / Production-Ready (Google DeepMind level)
+> **Status**: P0 BLOCKER - NiiVue/WebGL integration broken on HF Spaces
 
 ## Summary
 
-Full architectural review completed. All critical and major technical debt items have been **resolved** via TDD.
+**CRITICAL ISSUE**: The NiiVue 3D viewer does not work on HuggingFace Spaces due to Gradio architecture limitations. See Issue #24.
 
 | Severity | Count | Description | Status |
 |----------|-------|-------------|--------|
+| **P0 (Critical)** | 1 | NiiVue/WebGL on HF Spaces | **BLOCKED** |
 | P2 (Medium) | 0 | Temp dir leak, silent empty dataset, brittle git dep | **All Fixed** |
 | P3 (Low) | 0 | SSRF vector, float64 memory, base64 overhead | **All Fixed** |
 | P3 (Low) | 1 | Type ignores | **Acceptable** |
+
+---
+
+## P0 BLOCKER: NiiVue/WebGL on HuggingFace Spaces (Issue #24)
+
+### Problem
+
+The Interactive 3D Viewer (NiiVue) causes the entire HF Spaces app to hang on "Loading..." forever.
+
+### Root Cause
+
+**Gradio does not natively support custom WebGL content.** All hack attempts have **FAILED** (confirmed Dec 10, 2025):
+
+| Attempt | Date | Result |
+|---------|------|--------|
+| CDN import in js_on_load | Dec 9 | FAILED - CSP blocked |
+| Vendored + import() in js_on_load | Dec 9 | FAILED - Blocks Svelte hydration |
+| head_paths with loader HTML | Dec 9 | FAILED - Same issue |
+| head= with inline import() | Dec 10 | **FAILED** - Confirmed DOA |
+
+Gradio maintainers explicitly closed Issues #4511 (NIfTI support) and #7649 (WebGL canvas) as "not planned", recommending Custom Components instead.
+
+**There is no gr.HTML hack that works. The only path forward is a Gradio Custom Component.**
+
+### Solution
+
+Build a **Gradio Custom Component** that properly wraps NiiVue using Svelte.
+
+See: `docs/specs/28-gradio-custom-component-niivue.md`
+
+### Workaround (Current)
+
+The "Static Report" tab (Matplotlib 2D slices) works correctly. Only the "Interactive 3D" tab is broken.
 
 ---
 
@@ -58,4 +92,6 @@ See: `docs/specs/19-perf-base64-to-file-urls.md`
 
 ## Conclusion
 
-The codebase has been hardened to a high standard of quality ("Ironclad"). All failure modes identified in the audit are now covered by regression tests and fixed in the implementation.
+The codebase is **production-ready for all features EXCEPT the Interactive 3D Viewer (NiiVue)**. All other technical debt items are resolved.
+
+**Next step:** Implement Gradio Custom Component per spec #28 to fix the P0 blocker.

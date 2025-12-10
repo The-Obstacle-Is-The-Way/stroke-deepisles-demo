@@ -1,7 +1,7 @@
 # Spec #28: Gradio Custom Component for NiiVue
 
 **Date:** 2025-12-10
-**Status:** PROPOSED
+**Status:** REQUIRED - All gr.HTML hacks have failed (confirmed Dec 10)
 **Blocks:** Issue #24 (HF Spaces "Loading..." forever)
 **Effort:** Medium (2-3 days)
 **Success Probability:** 90%
@@ -10,7 +10,7 @@
 
 ## Executive Summary
 
-**The current `gr.HTML` + JavaScript approach will not work reliably.**
+**All `gr.HTML` + JavaScript approaches have FAILED. This is the only path forward.**
 
 Gradio maintainers have explicitly closed both:
 - [Issue #4511](https://github.com/gradio-app/gradio/issues/4511) - NIfTI/medical imaging support → "Not planned"
@@ -301,8 +301,8 @@ viewer = NiiVueViewer(label="Interactive 3D Viewer")
 
 ### Alternative 1: Keep Hacking gr.HTML
 - **Effort:** Low
-- **Success probability:** 30%
-- **Why rejected:** We've tried 5+ approaches, all failed. Gradio architecture doesn't support this.
+- **Success probability:** 0% (CONFIRMED FAILED)
+- **Why rejected:** We tried 6 approaches over 2 days. ALL failed. This is not a viable path.
 
 ### Alternative 2: Static HTML Space (No Gradio)
 - **Effort:** High (rebuild entire UI)
