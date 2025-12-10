@@ -18,6 +18,7 @@ gr.set_static_paths(paths=[str(_ASSETS_DIR)])
 from stroke_deepisles_demo.core.config import get_settings  # noqa: E402
 from stroke_deepisles_demo.core.logging import get_logger, setup_logging  # noqa: E402
 from stroke_deepisles_demo.ui.app import get_demo  # noqa: E402
+from stroke_deepisles_demo.ui.viewer import get_niivue_head_html  # noqa: E402
 
 logger = get_logger(__name__)
 
@@ -36,9 +37,17 @@ if __name__ == "__main__":
     logger.info("Assets exists: %s", _ASSETS_DIR.exists())
     logger.info("=" * 60)
 
-    # NOTE: No `head=` parameter needed!
-    # NiiVue is loaded directly by js_on_load from data-niivue-url attribute.
-    # This fixes the HF Spaces "Loading..." forever bug (Issue #24).
+    # CRITICAL FIX (Issue #24): Load NiiVue via head= parameter
+    #
+    # The head= parameter injects a <script type="module"> into <head> that loads
+    # NiiVue BEFORE Gradio's Svelte app hydrates. This is critical because:
+    #
+    # 1. Dynamic import() inside js_on_load blocks Svelte hydration on HF Spaces
+    # 2. head= scripts run BEFORE Gradio mounts, so failures don't block the app
+    # 3. js_on_load then just USES window.Niivue (no imports)
+    #
+    # Evidence: A/B test in docs/specs/24-bug-hf-spaces-loading-forever.md showed
+    # disabling js_on_load makes the app load. The fix is head= for loading.
 
     demo.launch(
         server_name=settings.gradio_server_name,
@@ -46,5 +55,6 @@ if __name__ == "__main__":
         share=settings.gradio_share,
         theme=gr.themes.Soft(),
         css="footer {visibility: hidden}",
+        head=get_niivue_head_html(),  # Load NiiVue before Gradio hydrates
         allowed_paths=[str(_ASSETS_DIR)],
     )
