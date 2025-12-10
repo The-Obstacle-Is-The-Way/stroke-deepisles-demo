@@ -1,321 +1,329 @@
-# HF Spaces UI Completely Broken - Deep Audit
+# HF Spaces UI Completely Broken - Consolidated Audit
 
 **Date:** 2025-12-10
 **Branch:** `debug/hf-spaces-ui-completely-broken`
-**Status:** P0 CRITICAL - App loads but UI is completely frozen
+**Status:** P0 CRITICAL - ROOT CAUSE IDENTIFIED
 
 ---
 
-## Observed Symptoms (from screenshot)
+## TL;DR - THE FIX
 
-1. **Two loading indicators showing simultaneously:**
-   - "loading ..." (NiiVue's internal loading text, white text on black canvas)
-   - "Loading..." (Gradio StatusTracker spinner, dark overlay)
+Our custom component is missing the **`gradio` prop** which provides `i18n` and `autoscroll`. This is 100% required for StatusTracker to work.
 
-2. **Nothing is clickable:**
-   - Dropdown doesn't open
-   - Buttons don't respond
-   - Entire UI is frozen
+**Current broken code:**
+```svelte
+// WRONG - missing gradio prop
+let { value, loading_status, ... }: Props = $props();
 
-3. **UI renders but is non-interactive:**
-   - Layout appears correct
-   - Components are visible
-   - But no interaction possible
+<StatusTracker {...loading_status} />  // CRASHES - no i18n!
+```
+
+**Correct pattern (from Gradio docs):**
+```svelte
+// CORRECT - includes gradio prop
+export let gradio: Gradio<{ change: never }>;
+export let loading_status: LoadingStatus;
+
+<StatusTracker
+    autoscroll={gradio.autoscroll}
+    i18n={gradio.i18n}
+    {...loading_status}
+/>
+```
 
 ---
 
-## Root Cause Analysis
+## Root Cause (CONFIRMED)
 
-### Issue 1: StatusTracker Missing Required `i18n` Prop
+### Primary Issue: Missing `gradio` Prop
 
-**Location:** `packages/niivueviewer/frontend/Index.svelte:119-124`
+The custom component **does not declare the `gradio` prop**, which is injected by the parent Gradio application and contains:
+- `gradio.i18n` - **REQUIRED** by StatusTracker for text formatting
+- `gradio.autoscroll` - Controls scroll behavior
+- `gradio.dispatch()` - For emitting events
+
+**Evidence:**
+- [Gradio Frontend Guide](https://www.gradio.app/guides/frontend) explicitly shows `gradio` prop is required
+- [PDF Component Example](https://www.gradio.app/guides/pdf-component-example) shows working pattern
+- [StatusTracker npm](https://www.npmjs.com/package/@gradio/statustracker) confirms `i18n` is required
+
+### Secondary Issue: Svelte 5 Runes vs Svelte 4 Syntax
+
+Our component uses **Svelte 5 runes** (`$props()`, `$effect()`), but all Gradio documentation examples use **Svelte 4 syntax** (`export let`).
+
+| File | Syntax | Status |
+|------|--------|--------|
+| Index.svelte | `$props()` (Svelte 5) | **WRONG** |
+| Example.svelte | `export let` (Svelte 4) | Correct |
+| Gradio PDF example | `export let` (Svelte 4) | Reference |
+
+While Svelte 5 is backwards compatible, mixing paradigms in a Gradio custom component is risky and undocumented.
+
+---
+
+## All Issues Found (Priority Order)
+
+### Critical (Will Definitely Break)
+
+| # | Issue | File:Line | Fix |
+|---|-------|-----------|-----|
+| 1 | **Missing `gradio` prop** | Index.svelte:8-20 | Add `export let gradio: Gradio<{...}>` |
+| 2 | **Missing `i18n` to StatusTracker** | Index.svelte:121 | Add `i18n={gradio.i18n}` |
+| 3 | **Missing `autoscroll` to StatusTracker** | Index.svelte:120 | Add `autoscroll={gradio.autoscroll}` |
+
+### Likely Breaking
+
+| # | Issue | File:Line | Fix |
+|---|-------|-----------|-----|
+| 4 | Svelte 5 `$props()` instead of `export let` | Index.svelte:22-34 | Rewrite to Svelte 4 syntax |
+| 5 | Svelte 5 `$effect()` instead of `$:` | Index.svelte:98-103 | Rewrite to reactive statement |
+| 6 | No EVENTS defined in Python backend | niivueviewer.py | Add `EVENTS = [Events.change]` |
+
+### Possibly Contributing
+
+| # | Issue | File:Line | Fix |
+|---|-------|-----------|-----|
+| 7 | No error boundary in onMount | Index.svelte:40-50 | Add try/catch |
+| 8 | Double loadVolumes call (onMount + $effect) | Index.svelte:40,98 | Remove redundant call |
+| 9 | NiiVue shows "loading..." forever on null value | Index.svelte:73-76 | Better empty state |
+
+---
+
+## Correct Index.svelte Pattern
+
+Based on [Gradio's PDF Component Example](https://www.gradio.app/guides/pdf-component-example):
 
 ```svelte
-{#if loading_status}
-    <StatusTracker
-        autoscroll={false}
-        {...loading_status}
-    />
-{/if}
-```
+<script lang="ts">
+    import { onMount, onDestroy } from 'svelte';
+    import { Niivue } from '@niivue/niivue';
+    import { Block } from "@gradio/atoms";
+    import { StatusTracker } from "@gradio/statustracker";
+    import type { LoadingStatus } from "@gradio/statustracker";
+    import type { Gradio } from "@gradio/utils";
 
-**Problem:** StatusTracker REQUIRES an `i18n` prop (I18nFormatter) with no default value:
+    // Props - using Svelte 4 syntax (export let)
+    export let value: { background_url: string | null; overlay_url: string | null } | null = null;
+    export let label: string | undefined = undefined;
+    export let show_label = true;
+    export let loading_status: LoadingStatus | undefined = undefined;
+    export let elem_id = "";
+    export let elem_classes: string[] = [];
+    export let visible = true;
+    export let height = 500;
+    export let container = true;
+    export let scale: number | null = null;
+    export let min_width: number | undefined = undefined;
 
-```typescript
-// From @gradio/statustracker/static/index.svelte:61
-interface Props {
-    i18n: I18nFormatter;  // REQUIRED - no default!
-    eta?: number | null;
-    // ...
-}
-```
+    // CRITICAL: The gradio prop provides i18n, autoscroll, and dispatch
+    export let gradio: Gradio<{
+        change: never;
+    }>;
 
-**Impact:** Without `i18n`, StatusTracker throws a runtime error that may be blocking Svelte hydration.
+    let canvas: HTMLCanvasElement;
+    let nv: Niivue | null = null;
 
-### Issue 2: Svelte 5 Runes in Component, Unclear Gradio Compatibility
+    onMount(async () => {
+        try {
+            nv = new Niivue({
+                backColor: [0, 0, 0, 1],
+                show3Dcrosshair: true,
+                logging: false
+            });
+            await nv.attachToCanvas(canvas);
+            await loadVolumes();
+        } catch (error) {
+            console.error('[NiiVue] Initialization failed:', error);
+        }
+    });
 
-**Location:** `packages/niivueviewer/frontend/Index.svelte`
+    onDestroy(() => {
+        if (nv) {
+            nv.cleanup();
+            nv = null;
+        }
+    });
 
-```svelte
-let {
-    value = null,
-    // ...
-}: Props = $props();  // Svelte 5 rune
+    async function loadVolumes() {
+        if (!nv) return;
 
-$effect(() => {  // Svelte 5 rune
-    if (value || value === null) {
+        while (nv.volumes.length > 0) {
+            nv.removeVolume(nv.volumes[0]);
+        }
+
+        if (!value) {
+            nv.drawScene();
+            return;
+        }
+
+        const volumes = [];
+        if (value.background_url) {
+            volumes.push({ url: value.background_url });
+        }
+        if (value.overlay_url) {
+            volumes.push({
+                url: value.overlay_url,
+                colormap: 'red',
+                opacity: 0.5,
+            });
+        }
+
+        if (volumes.length > 0) {
+            await nv.loadVolumes(volumes);
+        } else {
+            nv.drawScene();
+        }
+    }
+
+    // Reactive statement (Svelte 4 syntax)
+    $: if (value !== undefined) {
         loadVolumes();
     }
-});
+</script>
+
+<Block
+    {visible}
+    variant="solid"
+    padding={false}
+    {elem_id}
+    {elem_classes}
+    {height}
+    allow_overflow={false}
+    {container}
+    {scale}
+    {min_width}
+>
+    {#if loading_status}
+        <StatusTracker
+            autoscroll={gradio.autoscroll}
+            i18n={gradio.i18n}
+            {...loading_status}
+        />
+    {/if}
+
+    <div class="niivue-container" style="height: {height}px;">
+        <canvas bind:this={canvas}></canvas>
+    </div>
+</Block>
+
+<style>
+    .niivue-container {
+        width: 100%;
+        background: #000;
+        position: relative;
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+    }
+    canvas {
+        width: 100%;
+        height: 100%;
+        outline: none;
+        display: block;
+    }
+</style>
 ```
 
-**Problem:** The component uses Svelte 5 runes (`$props`, `$effect`), but there may be compatibility issues with how Gradio passes props to custom components.
+---
 
-**Evidence:** The compiled index.js imports from:
-```javascript
-import * as y from "../../../../../assets/svelte/svelte_internal_client.js";
-```
-This relative path expects Gradio's bundled Svelte. If there's any version mismatch, hydration fails.
+## Python Backend Fix
 
-### Issue 3: Loading Status Never Transitions to "complete"
-
-**Location:** `packages/niivueviewer/backend/gradio_niivueviewer/niivueviewer.py`
-
-**Problem:** The NiiVueViewer Python backend doesn't implement proper loading state management. Gradio components need to signal when they're done processing.
-
-**Evidence:** The component class has no:
-- `EVENTS` class attribute
-- Loading state management
-- Event dispatching
-
-Compare to other Gradio components that properly manage loading states.
-
-### Issue 4: NiiVue Canvas Shows "loading ..." Forever
-
-**Location:** `packages/niivueviewer/frontend/Index.svelte:40-50`
-
-```svelte
-onMount(async () => {
-    nv = new Niivue({...});
-    await nv.attachToCanvas(canvas);
-    await loadVolumes();
-});
-```
-
-**Problem:** NiiVue initializes and shows "loading ..." while waiting for volumes. But `value` starts as `null`, so `loadVolumes()` just calls `nv.drawScene()` which keeps the "loading" text.
-
-NiiVue's `drawLoadingText()` is called during initialization and stays until volumes are loaded.
-
-### Issue 5: Dropdown Shows "Initializing dataset... please wait"
-
-**Location:** `src/stroke_deepisles_demo/ui/components.py:27`
+Add EVENTS to enable event dispatching:
 
 ```python
-return gr.Dropdown(
-    choices=[],
-    value=None,
-    label="Select Case",
-    info="Initializing dataset... please wait.",
-    # ...
-)
-```
+from gradio.events import Events
 
-**Coupled with:** `src/stroke_deepisles_demo/ui/app.py:253`
+class NiiVueViewer(Component):
+    """WebGL NIfTI viewer using NiiVue."""
 
-```python
-demo.load(initialize_case_selector, outputs=[case_selector])
-```
+    EVENTS = [Events.change]  # ADD THIS
 
-**Problem:** `demo.load()` triggers AFTER Svelte hydration. If hydration is blocked (by Issues 1-2), the dropdown initialization never completes.
-
-### Issue 6: Potential WebGL Context Loss
-
-**Location:** `packages/niivueviewer/frontend/Index.svelte:40-49`
-
-**Problem:** NiiVue creates a WebGL2 context during `onMount`. If:
-1. The component mounts
-2. StatusTracker throws an error
-3. Svelte tries to unmount/remount
-4. WebGL context gets lost
-
-The canvas becomes unresponsive.
-
----
-
-## Component Architecture Problems
-
-### Python Backend (niivueviewer.py)
-
-| Issue | Description | Impact |
-|-------|-------------|--------|
-| No EVENTS | Component doesn't define events like `change`, `input` | Gradio can't track state changes |
-| No Streamable | Not marked as streamable component | May cause loading state issues |
-| Simple data model | Just URLs, no loading state | Can't signal "done loading" |
-
-### Svelte Frontend (Index.svelte)
-
-| Issue | Description | Impact |
-|-------|-------------|--------|
-| Missing i18n | StatusTracker needs i18n prop | Runtime error |
-| Svelte 5 runes | Modern syntax may have edge cases | Potential hydration issues |
-| No error boundaries | JS errors propagate up | Entire UI breaks |
-| Async onMount | loadVolumes() is async but errors not caught | Silent failures |
-
----
-
-## Files Involved
-
-| File | Lines | Issues |
-|------|-------|--------|
-| `packages/niivueviewer/frontend/Index.svelte` | 146 | StatusTracker i18n, Svelte 5, error handling |
-| `packages/niivueviewer/backend/gradio_niivueviewer/niivueviewer.py` | 78 | Missing events, loading state |
-| `src/stroke_deepisles_demo/ui/components.py` | 93 | NiiVueViewer integration |
-| `src/stroke_deepisles_demo/ui/app.py` | 290 | demo.load timing |
-
----
-
-## Hypotheses to Test
-
-### Hypothesis A: StatusTracker i18n Error (HIGH CONFIDENCE)
-**Test:** Remove StatusTracker from Index.svelte entirely
-**Expected:** UI becomes interactive (even if loading indicator is missing)
-
-### Hypothesis B: Svelte Hydration Blocked (MEDIUM CONFIDENCE)
-**Test:** Check browser console for Svelte errors
-**Expected:** See "Cannot read property of undefined" or similar
-
-### Hypothesis C: demo.load() Timing Issue (MEDIUM CONFIDENCE)
-**Test:** Remove demo.load() call, hardcode dropdown choices
-**Expected:** Dropdown works immediately
-
-### Hypothesis D: WebGL Context Issue (LOW CONFIDENCE)
-**Test:** Replace NiiVue canvas with static div
-**Expected:** UI works, only viewer broken
-
----
-
-## Recommended Fixes (Priority Order)
-
-### Fix 1: Remove StatusTracker (IMMEDIATE)
-
-```svelte
-<!-- REMOVE THIS BLOCK -->
-{#if loading_status}
-    <StatusTracker
-        autoscroll={false}
-        {...loading_status}
-    />
-{/if}
-```
-
-NiiVue has its own loading indicator. We don't need Gradio's.
-
-### Fix 2: Add Error Boundary in onMount
-
-```svelte
-onMount(async () => {
-    try {
-        nv = new Niivue({...});
-        await nv.attachToCanvas(canvas);
-        await loadVolumes();
-    } catch (error) {
-        console.error('[NiiVue] Initialization failed:', error);
-        // Show fallback UI
-    }
-});
-```
-
-### Fix 3: Handle Empty Value State
-
-```svelte
-async function loadVolumes() {
-    if (!nv) return;
-
-    // Clear existing volumes
-    while (nv.volumes.length > 0) {
-        nv.removeVolume(nv.volumes[0]);
-    }
-
-    if (!value || (!value.background_url && !value.overlay_url)) {
-        // Show placeholder instead of "loading ..."
-        nv.drawScene();
-        return;
-    }
-    // ...
-}
-```
-
-### Fix 4: Remove Loading Status Prop
-
-If we don't need StatusTracker, remove the prop entirely:
-
-```svelte
-interface Props {
-    value?: { background_url: string | null; overlay_url: string | null } | null;
-    label?: string;
-    show_label?: boolean;
-    // loading_status?: LoadingStatus;  // REMOVE
-    // ...
-}
+    data_model = NiiVueViewerData
+    # ... rest unchanged
 ```
 
 ---
 
-## Questions for Further Investigation
+## Validation Checklist
 
-1. **Why does Example.svelte use Svelte 4 syntax (`export let`) while Index.svelte uses Svelte 5 (`$props`)?**
-   - Are they supposed to match?
-   - Was this an incomplete migration?
+### Before Fix
+- [ ] `gradio` prop declared? **NO**
+- [ ] `i18n` passed to StatusTracker? **NO**
+- [ ] `autoscroll` passed to StatusTracker? **NO**
+- [ ] Using Svelte 4 syntax? **NO** (using Svelte 5 runes)
+- [ ] EVENTS defined in Python? **NO**
 
-2. **How do other Gradio custom components handle StatusTracker?**
-   - Do they pass `i18n`?
-   - Or do they skip StatusTracker entirely?
-
-3. **What exactly does Gradio pass as `loading_status`?**
-   - Does it include `i18n`?
-   - Or is it expected to be provided separately?
-
-4. **Is the component even receiving props correctly?**
-   - Add console.log in onMount to verify
+### After Fix (Target)
+- [ ] `gradio` prop declared? YES
+- [ ] `i18n` passed to StatusTracker? YES
+- [ ] `autoscroll` passed to StatusTracker? YES
+- [ ] Using Svelte 4 syntax? YES
+- [ ] EVENTS defined in Python? YES
 
 ---
 
-## Browser Console Commands to Debug
+## Test Plan
 
-```javascript
-// Check if Gradio app is properly initialized
-console.log(window.gradio_config);
+### Step 1: Local Test
+```bash
+cd /Users/ray/Desktop/CLARITY-DIGITAL-TWIN/stroke-deepisles-demo
+uv run python -m stroke_deepisles_demo.ui.app
+```
+Open http://localhost:7860 and verify:
+- [ ] Page loads without freezing
+- [ ] Dropdown is clickable
+- [ ] Buttons respond
+- [ ] NiiVue canvas initializes (shows black, not "loading...")
 
-// Check for Svelte errors
-// Look for errors containing "props", "undefined", "i18n"
-
-// Check NiiVue state
-// Find the canvas element and check its WebGL context
-const canvas = document.querySelector('canvas');
-const gl = canvas?.getContext('webgl2');
-console.log('WebGL2 context:', gl ? 'available' : 'LOST');
-
-// Check if StatusTracker is blocking
-document.querySelectorAll('[data-testid="status-tracker"]').forEach(el => {
-    console.log('StatusTracker:', el.className);
-});
+### Step 2: Rebuild Component
+```bash
+cd packages/niivueviewer
+gradio cc build
 ```
 
+### Step 3: HF Spaces Deploy
+Push to HF Spaces only after local test passes.
+
 ---
 
-## Next Steps
+## External Audit Validation
 
-1. [ ] Test Hypothesis A: Remove StatusTracker
-2. [ ] Check browser console for JS errors
-3. [ ] Add diagnostic logging to component
-4. [ ] Compare with working Gradio custom components
-5. [ ] Consider simplifying to just canvas (no StatusTracker, no loading_status)
+| Claim | Validated | Evidence |
+|-------|-----------|----------|
+| StatusTracker requires `i18n` | **TRUE** | [Gradio docs](https://www.gradio.app/guides/frontend), [npm package](https://www.npmjs.com/package/@gradio/statustracker) |
+| `gradio` prop provides `i18n` | **TRUE** | [PDF example](https://www.gradio.app/guides/pdf-component-example) shows `gradio.i18n` |
+| Svelte 5 runes may cause issues | **LIKELY** | All Gradio examples use Svelte 4 `export let` |
+| Missing EVENTS in Python | **TRUE** | [Backend guide](https://www.gradio.app/guides/backend) shows EVENTS required for events |
+| `demo.load()` blocking | **FALSE** | Runs after render, not the cause |
 
 ---
 
 ## References
 
-- [Gradio Custom Components Guide](https://www.gradio.app/guides/custom-components-in-five-minutes)
-- [Gradio Issue #11881: Upgrade to Svelte 5](https://github.com/gradio-app/gradio/issues/11881)
-- [StatusTracker Source](packages/niivueviewer/frontend/node_modules/@gradio/statustracker/static/index.svelte)
-- [NiiVue Documentation](https://niivue.com/docs/)
+- [Gradio Frontend Guide](https://www.gradio.app/guides/frontend) - Shows `gradio` prop pattern
+- [Gradio PDF Component Example](https://www.gradio.app/guides/pdf-component-example) - Complete working example
+- [Gradio Backend Guide](https://www.gradio.app/guides/backend) - EVENTS documentation
+- [Gradio StatusTracker npm](https://www.npmjs.com/package/@gradio/statustracker) - Package details
+- [Gradio Custom Components](https://www.gradio.app/guides/custom-components-in-five-minutes) - Getting started
+- [Gradio i18n](https://www.gradio.app/guides/internationalization) - Internationalization docs
+
+---
+
+## Files to Modify
+
+| File | Change |
+|------|--------|
+| `packages/niivueviewer/frontend/Index.svelte` | Rewrite with `gradio` prop, Svelte 4 syntax |
+| `packages/niivueviewer/backend/gradio_niivueviewer/niivueviewer.py` | Add `EVENTS = [Events.change]` |
+
+---
+
+## Summary
+
+**The UI freeze is caused by StatusTracker crashing due to missing `i18n` prop.** The `i18n` is provided by the `gradio` prop, which our component never declares. This is a fundamental implementation error - we didn't follow the Gradio custom component pattern correctly.
+
+The fix is straightforward:
+1. Add `export let gradio: Gradio<{...}>` to Index.svelte
+2. Pass `gradio.i18n` and `gradio.autoscroll` to StatusTracker
+3. Convert from Svelte 5 runes to Svelte 4 syntax for safety
+4. Add EVENTS to Python backend
+5. Rebuild with `gradio cc build`
