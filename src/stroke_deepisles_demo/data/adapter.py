@@ -269,7 +269,7 @@ class HuggingFaceDataset:
         Returns:
             Dict with dwi_bytes, adc_bytes, and optionally mask_bytes
         """
-        import pyarrow.parquet as pq  # type: ignore[import-untyped]
+        import pyarrow.parquet as pq
         from huggingface_hub import HfFileSystem
 
         from stroke_deepisles_demo.data.constants import ISLES24_NUM_FILES
