@@ -3,8 +3,9 @@
 **Date:** 2025-12-10
 **Status:** REQUIRED - All gr.HTML hacks have failed (confirmed Dec 10)
 **Blocks:** Issue #24 (HF Spaces "Loading..." forever)
-**Effort:** Medium (2-3 days)
+**Effort:** Medium (2-3 days + 0.5-1 day buffer for HF Spaces quirks)
 **Success Probability:** 90%
+**Audited:** AUDIT_REPORT_2025_12_10.md - GO recommendation
 
 ---
 
@@ -36,13 +37,13 @@ This spec documents what we need to build to properly integrate NiiVue (WebGL2 m
 
 ### Root Cause
 
-**We're fighting Gradio's architecture.** Gradio is built with Svelte and has specific lifecycle expectations:
+**We're fighting `gr.HTML`'s limitations, not Gradio itself.** Gradio CAN do WebGL (proven by `gradio-litmodel3d`), but NOT via `gr.HTML`:
 
 1. `gr.HTML` strips `<script>` tags (security)
-2. `js_on_load` runs during component mount - async operations can block hydration
-3. ES module `import()` in any lifecycle hook can hang the entire app
+2. `js_on_load` runs during component mount - **async `import()` blocks Svelte hydration**
+3. Our A/B test proved: disabling `js_on_load` makes the app load perfectly
 
-**Gradio was not designed for custom WebGL content in `gr.HTML`.**
+**The `gr.HTML` + `js_on_load` + `import()` pattern is the blocker.** Custom Components solve this by using Svelte's proper `onMount` lifecycle.
 
 ---
 
@@ -76,6 +77,58 @@ gradio-niivue-viewer/
 
 ---
 
+## Prerequisites
+
+### Build Tooling Requirements
+
+| Tool | Version | Purpose |
+|------|---------|---------|
+| Node.js | >= 18.x | Required by `gradio cc build` |
+| npm | >= 9.x | Package management for Svelte frontend |
+| Python | >= 3.10 | Backend component |
+| Gradio | >= 5.0 | Custom component framework |
+
+Verify installation:
+```bash
+node --version  # v18.x or higher
+npm --version   # 9.x or higher
+gradio --version  # 5.x or higher
+```
+
+### Packaging Plan
+
+**Location:** Monorepo subdirectory at `packages/gradio-niivue-viewer/`
+
+This approach:
+- Keeps component close to main app for easy iteration
+- Allows `pip install -e packages/gradio-niivue-viewer` for local development
+- No PyPI publishing required initially (can add later)
+
+---
+
+## Value Schema
+
+The component uses Gradio's file serving URLs (not base64) per Issue #19 optimization:
+
+```typescript
+// Frontend (Svelte)
+interface NiiVueViewerValue {
+  background_url: string | null;  // e.g., "/gradio_api/file=/tmp/.../dwi.nii.gz"
+  overlay_url: string | null;     // e.g., "/gradio_api/file=/tmp/.../mask.nii.gz"
+}
+```
+
+```python
+# Backend (Python)
+class NiiVueViewerData(GradioModel):
+    background_url: str | None = None  # Gradio file URL
+    overlay_url: str | None = None     # Gradio file URL
+```
+
+**Critical:** URLs must use `/gradio_api/file=` format, NOT base64. This reduces payload from ~65MB to <1KB.
+
+---
+
 ## Technical Approach
 
 ### Phase 1: Scaffold Component (1 hour)
@@ -83,6 +136,10 @@ gradio-niivue-viewer/
 Use Gradio's CLI to create the component:
 
 ```bash
+# From repository root
+mkdir -p packages
+cd packages
+
 gradio cc create NiiVueViewer \
   --template Image \
   --overwrite
@@ -92,58 +149,159 @@ This creates the basic structure with Svelte frontend and Python backend.
 
 ### Phase 2: Implement Svelte Frontend (4-6 hours)
 
-Modify `frontend/Index.svelte`:
+#### 2a. Install NiiVue dependency
+
+```bash
+cd packages/gradio-niivue-viewer/frontend
+npm install @niivue/niivue@0.65.0 --save-exact
+```
+
+This pins the exact version `0.65.0` to match our tested vendored copy.
+
+#### 2b. Verify package.json
+
+```json
+{
+  "name": "gradio-niivue-viewer",
+  "version": "0.1.0",
+  "dependencies": {
+    "@niivue/niivue": "0.65.0"
+  }
+}
+```
+
+#### 2c. Modify `frontend/Index.svelte`:
 
 ```svelte
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
   import { Niivue } from '@niivue/niivue';
-  import type { FileData } from '@gradio/client';
 
+  // Value schema: Gradio file URLs (not base64)
   export let value: {
     background_url: string | null;
     overlay_url: string | null;
   } | null = null;
 
   let container: HTMLDivElement;
+  let canvas: HTMLCanvasElement;
   let nv: Niivue | null = null;
+  let error: string | null = null;
+  let loading: boolean = true;
+
+  // WebGL2 capability check
+  function checkWebGL2(): boolean {
+    const testCanvas = document.createElement('canvas');
+    const gl = testCanvas.getContext('webgl2');
+    return gl !== null;
+  }
 
   onMount(async () => {
-    nv = new Niivue({
-      backColor: [0, 0, 0, 1],
-      show3Dcrosshair: true,
-    });
-    await nv.attachToCanvas(container.querySelector('canvas'));
-    await loadVolumes();
+    // Check WebGL2 support first
+    if (!checkWebGL2()) {
+      error = 'WebGL2 is not supported in this browser. Please use Chrome, Firefox, or Edge.';
+      loading = false;
+      return;
+    }
+
+    try {
+      nv = new Niivue({
+        backColor: [0, 0, 0, 1],
+        show3Dcrosshair: true,
+        logging: false,
+      });
+      await nv.attachToCanvas(canvas);
+
+      // Handle WebGL context loss
+      canvas.addEventListener('webglcontextlost', handleContextLost);
+      canvas.addEventListener('webglcontextrestored', handleContextRestored);
+
+      await loadVolumes();
+      loading = false;
+    } catch (e) {
+      error = `Failed to initialize viewer: ${e instanceof Error ? e.message : 'Unknown error'}`;
+      loading = false;
+    }
   });
 
   onDestroy(() => {
+    if (canvas) {
+      canvas.removeEventListener('webglcontextlost', handleContextLost);
+      canvas.removeEventListener('webglcontextrestored', handleContextRestored);
+    }
     if (nv) nv.dispose();
   });
 
+  function handleContextLost(event: Event) {
+    event.preventDefault();
+    error = 'WebGL context lost. Please refresh the page.';
+  }
+
+  function handleContextRestored() {
+    error = null;
+    if (nv && value) loadVolumes();
+  }
+
   async function loadVolumes() {
-    if (!nv || !value) return;
-    const volumes = [];
-    if (value.background_url) {
-      volumes.push({ url: value.background_url });
+    if (!nv) return;
+
+    // Handle null/cleared value: clear the viewer
+    if (!value || (!value.background_url && !value.overlay_url)) {
+      try {
+        // Clear all loaded volumes
+        while (nv.volumes.length > 0) {
+          nv.removeVolumeByIndex(0);
+        }
+        nv.drawScene();
+      } catch (e) {
+        console.warn('Failed to clear volumes:', e);
+      }
+      return;
     }
-    if (value.overlay_url) {
-      volumes.push({
-        url: value.overlay_url,
-        colormap: 'red',
-        opacity: 0.5,
-      });
-    }
-    if (volumes.length > 0) {
-      await nv.loadVolumes(volumes);
+
+    try {
+      loading = true;
+      error = null;
+
+      const volumes = [];
+      if (value.background_url) {
+        volumes.push({ url: value.background_url, name: 'background.nii.gz' });
+      }
+      if (value.overlay_url) {
+        volumes.push({
+          url: value.overlay_url,
+          name: 'overlay.nii.gz',
+          colorMap: 'red',
+          opacity: 0.5,
+        });
+      }
+
+      if (volumes.length > 0) {
+        await nv.loadVolumes(volumes);
+        // Configure view after loading
+        nv.setSliceType(nv.sliceTypeMultiplanar);
+        nv.setRenderAzimuthElevation(120, 10);
+        nv.drawScene();
+      }
+
+      loading = false;
+    } catch (e) {
+      error = `Failed to load volumes: ${e instanceof Error ? e.message : 'Unknown error'}`;
+      loading = false;
     }
   }
 
-  $: if (value && nv) loadVolumes();
+  // Reactive: reload when value changes (including null to clear)
+  $: if (nv && !loading) loadVolumes();
 </script>
 
 <div bind:this={container} class="niivue-container">
-  <canvas></canvas>
+  {#if error}
+    <div class="error-message">{error}</div>
+  {:else if loading}
+    <div class="loading-message">Loading viewer...</div>
+  {/if}
+  <canvas bind:this={canvas} class:hidden={!!error}></canvas>
 </div>
 
 <style>
@@ -151,13 +309,44 @@ Modify `frontend/Index.svelte`:
     width: 100%;
     height: 500px;
     background: #000;
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
   }
   canvas {
     width: 100%;
     height: 100%;
   }
+  canvas.hidden {
+    display: none;
+  }
+  .error-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #f66;
+    text-align: center;
+    padding: 20px;
+    max-width: 80%;
+  }
+  .loading-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #888;
+    text-align: center;
+  }
 </style>
 ```
+
+**Key improvements from audit feedback:**
+- WebGL2 capability check before initialization
+- WebGL context loss/restore handlers
+- Proper error UI states
+- Loading state management
+- Reactive update when value changes
 
 ### Phase 3: Implement Python Backend (2-3 hours)
 
@@ -235,6 +424,67 @@ viewer = NiiVueViewer(label="Interactive 3D Viewer")
 # ... then set viewer.value = {"background_url": dwi_url, "overlay_url": mask_url}
 ```
 
+### Phase 6: HF Spaces Deployment (CRITICAL)
+
+**This phase is essential.** HF Spaces runs `pip install` only - it does NOT run `npm` or `gradio cc build`.
+
+#### 6a. Commit build artifacts to git
+
+```bash
+cd packages/gradio-niivue-viewer
+
+# Build the component (generates frontend/dist/ or templates/)
+gradio cc build
+
+# Force-add build artifacts (they may be gitignored by default)
+git add -f gradio_niivue_viewer/templates/
+# Or wherever the build output lands - check with:
+# find . -name "*.js" -path "*/dist/*" -o -name "*.css" -path "*/dist/*"
+
+git commit -m "chore: add compiled frontend assets for HF Spaces deployment"
+```
+
+**Why:** HF Spaces won't run npm/node build steps. The compiled JS/CSS must be in the repo.
+
+#### 6b. Update requirements.txt
+
+Add the local component to the main `requirements.txt`:
+
+```text
+# requirements.txt
+gradio>=5.0
+# ... other deps ...
+
+# Local custom component (editable install)
+-e ./packages/gradio-niivue-viewer
+```
+
+**Alternative:** If the component is at repo root:
+```text
+-e .
+```
+
+#### 6c. Verify .gitignore doesn't exclude build artifacts
+
+Check that `packages/gradio-niivue-viewer/.gitignore` doesn't exclude:
+- `gradio_niivue_viewer/templates/`
+- `frontend/dist/`
+- Any compiled `.js` or `.css` files needed at runtime
+
+If they're excluded, either:
+1. Remove those lines from `.gitignore`, OR
+2. Use `git add -f` to force-add them
+
+#### 6d. Test deployment flow
+
+```bash
+# Simulate what HF Spaces does
+pip install -r requirements.txt
+python -m stroke_deepisles_demo.ui.app
+
+# Should work WITHOUT running gradio cc build
+```
+
 ---
 
 ## Existing References
@@ -291,9 +541,11 @@ viewer = NiiVueViewer(label="Interactive 3D Viewer")
 | Risk | Mitigation |
 |------|------------|
 | Svelte/TypeScript learning curve | Follow gradio-litmodel3d example closely |
-| NiiVue WebGL2 browser support | NiiVue handles fallbacks internally |
+| NiiVue WebGL2 browser support | Explicit WebGL2 check in Svelte + graceful error UI |
 | Build system complexity | Use gradio cc tooling, don't customize |
 | HF Spaces static file serving | Component bundles NiiVue, no external deps |
+| **Build artifacts not in git** | Phase 6a: Force-add compiled assets with `git add -f` |
+| **requirements.txt missing component** | Phase 6b: Add `-e ./packages/gradio-niivue-viewer` |
 
 ---
 
@@ -324,29 +576,127 @@ This is the official Gradio-recommended solution. It's more work than hacking `g
 
 ---
 
-## Next Steps
+## Testing Matrix
 
-1. [ ] Senior review of this spec
-2. [ ] Create `gradio-niivue-viewer` repository (or subdirectory)
-3. [ ] Scaffold component with `gradio cc create`
-4. [ ] Implement Svelte frontend
-5. [ ] Implement Python backend
-6. [ ] Test locally
-7. [ ] Test on HF Spaces
-8. [ ] Integrate into stroke-deepisles-demo
-9. [ ] (Optional) Publish to PyPI
+### Level 1: Local Build Verification
+
+```bash
+cd packages/gradio-niivue-viewer
+
+# Build component
+gradio cc build
+
+# Install locally
+pip install -e .
+
+# Run demo app
+python demo/app.py
+# → Verify: App loads, no console errors, viewer renders
+```
+
+**Pass criteria:**
+- [ ] `gradio cc build` completes without errors
+- [ ] Demo app launches at localhost:7860
+- [ ] No JavaScript console errors
+- [ ] Canvas renders (black background visible)
+
+### Level 2: Volume Loading Test
+
+```python
+# demo/app.py
+import gradio as gr
+from gradio_niivue_viewer import NiiVueViewer
+
+def load_sample():
+    # Use a known good NIfTI file
+    return {
+        "background_url": "/gradio_api/file=/path/to/sample.nii.gz",
+        "overlay_url": None
+    }
+
+with gr.Blocks() as demo:
+    viewer = NiiVueViewer()
+    btn = gr.Button("Load Sample")
+    btn.click(load_sample, outputs=viewer)
+
+demo.launch()
+```
+
+**Pass criteria:**
+- [ ] NIfTI file loads without errors
+- [ ] Multiplanar view displays correctly
+- [ ] Overlay mask renders with red colormap (when provided)
+
+### Level 3: HF Spaces Dry Run
+
+Deploy to a **private/throwaway Space** before production:
+
+```bash
+# Create test space
+huggingface-cli repo create test-niivue-viewer --type space --private
+
+# Push and test
+git push hf-test main
+```
+
+**Pass criteria:**
+- [ ] Space shows "Running" (not stuck on "Loading...")
+- [ ] Viewer initializes (no hydration deadlock)
+- [ ] Volume loading works via Gradio file serving
+- [ ] WebGL2 error shown gracefully if unsupported
+
+### Level 4: Integration Test
+
+Replace `gr.HTML` in stroke-deepisles-demo:
+
+```python
+# src/stroke_deepisles_demo/ui/components.py
+from gradio_niivue_viewer import NiiVueViewer
+
+def create_results_display():
+    # ...
+    niivue_viewer = NiiVueViewer(label="Interactive 3D Viewer")
+    # ...
+```
+
+**Pass criteria:**
+- [ ] Existing 136 tests still pass
+- [ ] Segmentation pipeline works end-to-end
+- [ ] Viewer displays DWI + mask overlay
+- [ ] No "Loading..." hang on HF Spaces
 
 ---
 
-## Appendix: Why WebGL + Gradio is Hard
+## Next Steps
+
+1. [x] Senior review of this spec (AUDIT_REPORT_2025_12_10.md)
+2. [x] Red team review - all gaps addressed (build artifacts, npm install, null handling)
+3. [ ] Create `packages/gradio-niivue-viewer/` subdirectory
+4. [ ] Scaffold component with `gradio cc create`
+5. [ ] Install NiiVue: `cd frontend && npm install @niivue/niivue@0.65.0`
+6. [ ] Implement Svelte frontend (with WebGL2 checks + null value handling)
+7. [ ] Implement Python backend
+8. [ ] Level 1 test: Local build verification
+9. [ ] Level 2 test: Volume loading
+10. [ ] Level 3 test: HF Spaces dry run
+11. [ ] Level 4 test: Integration
+12. [ ] **CRITICAL**: Commit build artifacts to git
+13. [ ] **CRITICAL**: Update requirements.txt with `-e ./packages/gradio-niivue-viewer`
+14. [ ] (Optional) Publish to PyPI
+
+---
+
+## Appendix: Why WebGL + `gr.HTML` Doesn't Work
 
 From the ROOT_CAUSE_ANALYSIS.md and GRADIO_WEBGL_ANALYSIS.md research:
 
-1. **Gradio closed NIfTI support** (Issue #4511) - "Not planned"
-2. **Gradio closed WebGL canvas** (Issue #7649) - "Not planned"
-3. **gr.HTML strips script tags** - Security feature
-4. **js_on_load + import() blocks hydration** - Proven by A/B test
-5. **HF Spaces CSP blocks external CDNs** - No workaround for cdn imports
-6. **Gradio maintainer recommendation**: Custom Components
+1. **Gradio CAN do WebGL** - proven by `gradio-litmodel3d` custom component
+2. **But NOT via `gr.HTML`** - the `js_on_load` + `import()` pattern blocks Svelte hydration
+3. **Our A/B test proved it** - disabling `js_on_load` makes the app load perfectly
+4. **Gradio closed NIfTI support** (Issue #4511) - "Not planned for core"
+5. **Gradio closed WebGL canvas** (Issue #7649) - "Not planned for core"
+6. **gr.HTML strips script tags** - Security feature, can't bypass
+7. **HF Spaces CSP blocks external CDNs** - Must vendor or bundle dependencies
+8. **Gradio maintainer recommendation**: Custom Components
 
-The pattern is clear: **Gradio doesn't natively support custom WebGL in gr.HTML.** The Custom Component is the only officially supported path.
+The pattern is clear: **The `gr.HTML` + `js_on_load` + async `import()` pattern is fundamentally broken.** The Custom Component is the officially supported path for WebGL content.

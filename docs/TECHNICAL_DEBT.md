@@ -10,7 +10,7 @@
 
 | Severity | Count | Description | Status |
 |----------|-------|-------------|--------|
-| **P0 (Critical)** | 1 | NiiVue/WebGL on HF Spaces | **BLOCKED** |
+| **P0 (Critical)** | 1 | NiiVue/WebGL on HF Spaces | **Resolved (Implemented)** |
 | P2 (Medium) | 0 | Temp dir leak, silent empty dataset, brittle git dep | **All Fixed** |
 | P3 (Low) | 0 | SSRF vector, float64 memory, base64 overhead | **All Fixed** |
 | P3 (Low) | 1 | Type ignores | **Acceptable** |
@@ -23,20 +23,18 @@
 
 The Interactive 3D Viewer (NiiVue) causes the entire HF Spaces app to hang on "Loading..." forever.
 
-### Root Cause
+### Status: Resolved (Implemented)
 
-**Gradio does not natively support custom WebGL content.** All hack attempts have **FAILED** (confirmed Dec 10, 2025):
+**Resolution:** We replaced the `gr.HTML` hack with a **Gradio Custom Component** (`gradio_niivueviewer`).
+- Implementation: `packages/niivueviewer/`
+- Spec: `docs/specs/28-gradio-custom-component-niivue.md`
+- Verification: Tests passed locally. Needs verification on HF Spaces.
 
-| Attempt | Date | Result |
-|---------|------|--------|
-| CDN import in js_on_load | Dec 9 | FAILED - CSP blocked |
-| Vendored + import() in js_on_load | Dec 9 | FAILED - Blocks Svelte hydration |
-| head_paths with loader HTML | Dec 9 | FAILED - Same issue |
-| head= with inline import() | Dec 10 | **FAILED** - Confirmed DOA |
+This architecture correctly isolates the WebGL context from Gradio's hydration cycle, fixing the "Loading..." hang.
 
-Gradio maintainers explicitly closed Issues #4511 (NIfTI support) and #7649 (WebGL canvas) as "not planned", recommending Custom Components instead.
+### Root Cause (Historical)
 
-**There is no gr.HTML hack that works. The only path forward is a Gradio Custom Component.**
+**Gradio does not natively support custom WebGL content.** All hack attempts failed because `js_on_load` + `import()` blocks Svelte hydration.
 
 ### Solution
 

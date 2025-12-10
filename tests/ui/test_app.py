@@ -32,7 +32,7 @@ def test_viewer_module_imports() -> None:
     from stroke_deepisles_demo.ui import viewer
 
     assert hasattr(viewer, "render_3panel_view")
-    assert hasattr(viewer, "create_niivue_html")
+    # create_niivue_html was removed
 
 
 def test_components_module_imports() -> None:
@@ -58,6 +58,9 @@ def test_run_segmentation_logic() -> None:
         elapsed_seconds=10.5,
     )
 
+    # prediction_mask.exists() needs to be True for mask_url to be generated
+    mock_result.prediction_mask.exists.return_value = True  # type: ignore[attr-defined]
+
     # Mock everything that touches files/network
     with (
         patch("stroke_deepisles_demo.ui.app.run_pipeline_on_case", return_value=mock_result),
@@ -65,19 +68,23 @@ def test_run_segmentation_logic() -> None:
             "stroke_deepisles_demo.ui.app.nifti_to_gradio_url",
             return_value="/gradio_api/file=/tmp/test.nii.gz",
         ),
-        patch("stroke_deepisles_demo.ui.app.create_niivue_html", return_value="<div></div>"),
+        # create_niivue_html mock removed
         patch("stroke_deepisles_demo.ui.app.render_slice_comparison", return_value=MagicMock()),
         patch("stroke_deepisles_demo.ui.app.render_3panel_view", return_value=MagicMock()),
         patch("stroke_deepisles_demo.ui.app.compute_volume_ml", return_value=15.5),
     ):
-        html, _fig, _ortho, metrics, _dl_path, status, _new_results_dir = run_segmentation(
+        niivue_data, _fig, _ortho, metrics, _dl_path, status, _new_results_dir = run_segmentation(
             "sub-001",
             fast_mode=True,
             show_ground_truth=True,
             previous_results_dir=None,  # No previous results in test
         )
 
-        assert html == "<div></div>"
+        # Assertion updated for Custom Component dictionary output
+        assert niivue_data == {
+            "background_url": "/gradio_api/file=/tmp/test.nii.gz",
+            "overlay_url": "/gradio_api/file=/tmp/test.nii.gz",
+        }
         assert metrics["case_id"] == "sub-001"
         assert metrics["dice_score"] == 0.85
         assert "volume_ml" in metrics  # New metric added

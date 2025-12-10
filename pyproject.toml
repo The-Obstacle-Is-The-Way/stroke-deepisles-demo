@@ -35,6 +35,9 @@ dependencies = [
     "gradio>=6.0.0,<7.0.0",
     "matplotlib>=3.8.0",
 
+    # Custom component for NiiVue WebGL viewer (local package)
+    "gradio_niivueviewer",
+
     # Networking
     "requests>=2.0.0",
 ]
@@ -65,6 +68,9 @@ allow-direct-references = true
 [tool.hatch.build.targets.wheel]
 packages = ["src/stroke_deepisles_demo"]
 
+[tool.uv.sources]
+gradio_niivueviewer = { path = "packages/niivueviewer", editable = true }
+
 # ─────────────────────────────────────────────────────────────────
 # Tool configurations
 # ─────────────────────────────────────────────────────────────────
@@ -73,6 +79,8 @@ packages = ["src/stroke_deepisles_demo"]
 target-version = "py312"
 line-length = 100
 src = ["src", "tests"]
+# Exclude auto-generated files from Gradio custom component
+exclude = ["packages/niivueviewer/demo/space.py"]
 
 [tool.ruff.lint]
 select = [
@@ -103,11 +111,14 @@ warn_return_any = true
 warn_unused_ignores = true
 disallow_untyped_defs = true
 plugins = ["pydantic.mypy"]
+# Exclude auto-generated Gradio custom component demo files
+exclude = "packages/niivueviewer/"
 
 [[tool.mypy.overrides]]
 module = [
     "nibabel.*",
     "gradio.*",
+    "gradio_niivueviewer.*",
     "datasets.*",
     "niivue.*",
     "numpy.*",
