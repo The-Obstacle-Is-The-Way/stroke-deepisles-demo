@@ -13,10 +13,16 @@ from pathlib import Path
 
 import gradio as gr
 
-from stroke_deepisles_demo.core.config import get_settings
-from stroke_deepisles_demo.core.logging import setup_logging
-from stroke_deepisles_demo.ui.app import get_demo
-from stroke_deepisles_demo.ui.viewer import get_niivue_loader_path
+# CRITICAL: Allow direct file serving for local assets (niivue.js)
+# This fixes the P0 "Loading..." bug on HF Spaces (Issue #11649)
+# Must be called BEFORE creating any Blocks
+_ASSETS_DIR = Path(__file__).parent / "src" / "stroke_deepisles_demo" / "ui" / "assets"
+gr.set_static_paths(paths=[str(_ASSETS_DIR)])
+
+from stroke_deepisles_demo.core.config import get_settings  # noqa: E402
+from stroke_deepisles_demo.core.logging import setup_logging  # noqa: E402
+from stroke_deepisles_demo.ui.app import get_demo  # noqa: E402
+from stroke_deepisles_demo.ui.viewer import get_niivue_loader_path  # noqa: E402
 
 # Initialize logging
 settings = get_settings()
@@ -32,10 +38,6 @@ if __name__ == "__main__":
     # - theme: Gradio 6 uses launch() for theme
     # - css: Hide footer for cleaner look
 
-    # Allow access to local assets (e.g., niivue.js)
-    # Assets are located in src/stroke_deepisles_demo/ui/assets
-    assets_dir = Path(__file__).parent / "src" / "stroke_deepisles_demo" / "ui" / "assets"
-
     # Generate the NiiVue loader HTML file (creates if needed)
     niivue_loader = get_niivue_loader_path()
 
@@ -45,6 +47,6 @@ if __name__ == "__main__":
         share=settings.gradio_share,
         theme=gr.themes.Soft(),
         css="footer {visibility: hidden}",
-        allowed_paths=[str(assets_dir)],
+        allowed_paths=[str(_ASSETS_DIR)],
         head_paths=[str(niivue_loader)],  # Official Gradio approach (Issue #11649)
     )

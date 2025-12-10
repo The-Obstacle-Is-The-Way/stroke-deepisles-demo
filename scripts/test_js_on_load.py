@@ -9,7 +9,15 @@ Run:
 Then open http://localhost:7860 and check if the tests pass.
 """
 
+from pathlib import Path
+
 import gradio as gr
+
+# Setup local assets for testing
+# This mirrors the fix in the main app
+ASSETS_DIR = Path(__file__).parent.parent / "src" / "stroke_deepisles_demo" / "ui" / "assets"
+gr.set_static_paths(paths=[str(ASSETS_DIR)])
+NIIVUE_JS_URL = f"/gradio_api/file={ASSETS_DIR / 'niivue.js'}"
 
 # Test 1: Basic js_on_load execution
 TEST1_HTML = '<div id="test1" style="padding:20px;background:#333;color:#fff;margin:10px;border-radius:8px;">Test 1: Waiting...</div>'
@@ -29,25 +37,25 @@ TEST2_JS = """
     })();
 """
 
-# Test 3: Dynamic import from CDN
+# Test 3: Dynamic import from Local (was CDN)
 TEST3_HTML = '<div id="test3" style="padding:20px;background:#333;color:#fff;margin:10px;border-radius:8px;">Test 3: Waiting...</div>'
-TEST3_JS = """
-    (async () => {
-        element.innerText = 'Test 3: Loading NiiVue from CDN...';
-        try {
-            const mod = await import('https://unpkg.com/@niivue/niivue@0.65.0/dist/index.js');
-            if (mod.Niivue) {
+TEST3_JS = f"""
+    (async () => {{
+        element.innerText = 'Test 3: Loading NiiVue from Local...';
+        try {{
+            const mod = await import('{NIIVUE_JS_URL}');
+            if (mod.Niivue) {{
                 element.innerText = 'Test 3: PASS - NiiVue loaded! Niivue class available.';
                 element.style.background = '#228B22';
-            } else {
+            }} else {{
                 element.innerText = 'Test 3: PARTIAL - Module loaded but no Niivue class';
                 element.style.background = '#FFA500';
-            }
-        } catch(e) {
+            }}
+        }} catch(e) {{
             element.innerText = 'Test 3: FAIL - ' + e.message;
             element.style.background = '#DC143C';
-        }
-    })();
+        }}
+    }})();
 """
 
 # Test 4: Canvas + WebGL2 check
@@ -57,34 +65,34 @@ TEST4_HTML = """
     <canvas id="test4-canvas" style="width:200px;height:100px;background:#000;margin-top:10px;"></canvas>
 </div>
 """
-TEST4_JS = """
-    (async () => {
+TEST4_JS = f"""
+    (async () => {{
         const status = element.querySelector('#test4-status');
         const canvas = element.querySelector('#test4-canvas');
 
         status.innerText = 'Test 4: Checking WebGL2...';
 
         const gl = canvas.getContext('webgl2');
-        if (!gl) {
+        if (!gl) {{
             status.innerText = 'Test 4: FAIL - WebGL2 not supported';
             element.style.background = '#DC143C';
             return;
-        }
+        }}
 
         status.innerText = 'Test 4: Loading NiiVue...';
-        try {
-            const { Niivue } = await import('https://unpkg.com/@niivue/niivue@0.65.0/dist/index.js');
-            const nv = new Niivue({ logging: false, backColor: [0.2, 0.2, 0.3, 1] });
+        try {{
+            const {{ Niivue }} = await import('{NIIVUE_JS_URL}');
+            const nv = new Niivue({{ logging: false, backColor: [0.2, 0.2, 0.3, 1] }});
             await nv.attachToCanvas(canvas);
             nv.drawScene();
 
             status.innerText = 'Test 4: PASS - NiiVue attached to canvas!';
             status.style.color = '#90EE90';
-        } catch(e) {
+        }} catch(e) {{
             status.innerText = 'Test 4: FAIL - ' + e.message;
             element.style.background = '#DC143C';
-        }
-    })();
+        }}
+    }})();
 """
 
 # Test 5: Full integration with props.value
@@ -118,7 +126,7 @@ with gr.Blocks(title="js_on_load Test Suite") as demo:
 
     1. **Basic execution** - Does js_on_load run at all?
     2. **Async IIFE** - Does `(async () => { await ... })()` work?
-    3. **Dynamic import** - Can we `await import()` from CDN?
+    3. **Dynamic import** - Can we `await import()` from local assets?
     4. **Canvas + NiiVue** - Can we attach NiiVue to a canvas?
     5. **Props access** - Can we read `props.value`?
 
