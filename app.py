@@ -18,7 +18,6 @@ gr.set_static_paths(paths=[str(_ASSETS_DIR)])
 from stroke_deepisles_demo.core.config import get_settings  # noqa: E402
 from stroke_deepisles_demo.core.logging import get_logger, setup_logging  # noqa: E402
 from stroke_deepisles_demo.ui.app import get_demo  # noqa: E402
-from stroke_deepisles_demo.ui.viewer import get_niivue_head_html  # noqa: E402
 
 logger = get_logger(__name__)
 
@@ -37,8 +36,9 @@ if __name__ == "__main__":
     logger.info("Assets exists: %s", _ASSETS_DIR.exists())
     logger.info("=" * 60)
 
-    # Get the NiiVue loader HTML (inline script, no file I/O needed)
-    niivue_head = get_niivue_head_html()
+    # NOTE: No `head=` parameter needed!
+    # NiiVue is loaded directly by js_on_load from data-niivue-url attribute.
+    # This fixes the HF Spaces "Loading..." forever bug (Issue #24).
 
     demo.launch(
         server_name=settings.gradio_server_name,
@@ -47,5 +47,4 @@ if __name__ == "__main__":
         theme=gr.themes.Soft(),
         css="footer {visibility: hidden}",
         allowed_paths=[str(_ASSETS_DIR)],
-        head=niivue_head,  # Inject NiiVue loader directly
     )

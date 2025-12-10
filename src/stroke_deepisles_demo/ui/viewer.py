@@ -390,11 +390,15 @@ def create_niivue_html(
     Create HTML for NiiVue viewer (static content only).
 
     This function generates an HTML snippet with data attributes containing
-    volume URLs. The actual NiiVue initialization is handled by js_on_load
-    in the gr.HTML component (see NIIVUE_ON_LOAD_JS).
+    volume URLs AND the NiiVue library URL. The actual NiiVue initialization
+    is handled by js_on_load in the gr.HTML component (see NIIVUE_ON_LOAD_JS).
 
     IMPORTANT: Gradio's gr.HTML strips <script> tags for security.
     JavaScript must be passed via the js_on_load parameter instead.
+
+    The NiiVue library URL is embedded in data-niivue-url so that js_on_load
+    can load the library on-demand. This removes the dependency on the `head=`
+    parameter working correctly, which has been problematic on HF Spaces.
 
     Args:
         volume_url: Gradio file URL (e.g., /gradio_api/file=/path/to/file.nii.gz)
@@ -416,12 +420,16 @@ def create_niivue_html(
     # Using json.dumps ensures proper escaping
     volume_attr = f"data-volume-url={json.dumps(volume_url)}"
     mask_attr = f"data-mask-url={json.dumps(mask_url)}" if mask_url else 'data-mask-url=""'
+    # Embed NiiVue library URL so js_on_load can load it directly
+    # This removes dependency on head= script working on HF Spaces
+    niivue_url_attr = f"data-niivue-url={json.dumps(NIIVUE_JS_URL)}"
 
     return f"""<div
     id="niivue-container-{viewer_id}"
     class="niivue-viewer"
     {volume_attr}
     {mask_attr}
+    {niivue_url_attr}
     style="width:100%; height:{height}px; background:#000; border-radius:8px; position:relative;"
 >
     <canvas style="width:100%; height:100%;"></canvas>
@@ -435,13 +443,12 @@ def create_niivue_html(
 # This runs when the gr.HTML component FIRST loads (mounts)
 # Variables available: element, props, trigger
 #
-# IMPORTANT: This code uses window.Niivue which must be loaded via
-# head_paths with niivue-loader.html. Do NOT use dynamic import()
-# as it breaks Gradio on HF Spaces.
+# CRITICAL FIX (Issue #24): This code loads NiiVue DIRECTLY via dynamic import()
+# from the data-niivue-url attribute. This removes the dependency on the `head=`
+# parameter which was blocking Gradio initialization on HF Spaces.
 #
-# NOTE: waitForNiivue() is duplicated in NIIVUE_UPDATE_JS below. This is
-# intentional - extracting to a shared constant would require complex f-string
-# escaping of all JS braces. The 6-line duplication is acceptable for readability.
+# The old approach used window.Niivue from a head script, but ES module failures
+# in <head> can prevent Gradio's Svelte app from hydrating, causing "Loading..." forever.
 NIIVUE_ON_LOAD_JS = """
 (async () => {
     const container = element.querySelector('.niivue-viewer') || element;
@@ -451,6 +458,7 @@ NIIVUE_ON_LOAD_JS = """
     // Get URLs from data attributes
     const volumeUrl = container.dataset.volumeUrl;
     const maskUrl = container.dataset.maskUrl;
+    const niivueUrl = container.dataset.niivueUrl;
 
     // Skip if no volume URL (initial empty state)
     if (!volumeUrl) {
@@ -468,28 +476,36 @@ NIIVUE_ON_LOAD_JS = """
             return;
         }
 
-        if (status) status.innerText = 'Loading NiiVue...';
+        if (status) status.innerText = 'Loading NiiVue library...';
 
-        // Use globally loaded NiiVue (from head script)
-        // Poll for it to handle race conditions (Fixes P0 Loading Bug)
-        const waitForNiivue = async () => {
-            for (let i = 0; i < 50; i++) {
-                if (window.Niivue) return window.Niivue;
-                // Check if loader script failed (error stored in global)
-                if (window.NIIVUE_LOAD_ERROR) {
-                    throw new Error('NiiVue loader failed: ' + window.NIIVUE_LOAD_ERROR);
-                }
-                await new Promise(r => setTimeout(r, 100));
+        // Load NiiVue directly (self-sufficient, no head= dependency)
+        // This fixes the HF Spaces "Loading..." forever bug (Issue #24)
+        const loadNiivue = async () => {
+            // Return cached if already loaded
+            if (window.Niivue) {
+                console.log('[NiiVue] Using cached window.Niivue');
+                return window.Niivue;
             }
-            return null;
+
+            // Load directly from the URL embedded in data attribute
+            if (!niivueUrl) {
+                throw new Error('No NiiVue URL provided in data-niivue-url attribute');
+            }
+
+            console.log('[NiiVue] Loading from:', niivueUrl);
+            try {
+                const module = await import(niivueUrl);
+                window.Niivue = module.Niivue;
+                console.log('[NiiVue] Successfully loaded and cached');
+                return module.Niivue;
+            } catch (e) {
+                // Provide detailed error for debugging
+                console.error('[NiiVue] Import failed:', e);
+                throw new Error('Failed to load NiiVue from ' + niivueUrl + ': ' + e.message);
+            }
         };
 
-        const Niivue = await waitForNiivue();
-        if (!Niivue) {
-            // Provide diagnostic info about what might be wrong
-            const loadErr = window.NIIVUE_LOAD_ERROR || 'unknown';
-            throw new Error('NiiVue not loaded after 5s. Check browser console for errors. Load error: ' + loadErr);
-        }
+        const Niivue = await loadNiivue();
 
         // Initialize NiiVue
         const nv = new Niivue({
@@ -529,10 +545,10 @@ NIIVUE_ON_LOAD_JS = """
         nv.setRenderAzimuthElevation(120, 10);
         nv.drawScene();
 
-        console.log('NiiVue viewer initialized successfully');
+        console.log('[NiiVue] Viewer initialized successfully');
 
     } catch (error) {
-        console.error('NiiVue initialization error:', error);
+        console.error('[NiiVue] Initialization error:', error);
         // Use textContent instead of innerHTML to prevent XSS
         const errorDiv = document.createElement('div');
         errorDiv.style.cssText = 'color:#f66;padding:20px;text-align:center;';
@@ -547,20 +563,15 @@ NIIVUE_ON_LOAD_JS = """
 # This runs after Python updates the HTML value.
 # ⚠️ CRITICAL: 'element' is NOT available here! Must use document.querySelector
 #
-# IMPORTANT: This code uses window.Niivue which must be loaded via
-# head_paths with niivue-loader.html. Do NOT use dynamic import()
-# as it breaks Gradio on HF Spaces.
-#
-# NOTE: waitForNiivue() is duplicated from NIIVUE_ON_LOAD_JS above. This is
-# intentional - extracting to a shared constant would require complex f-string
-# escaping of all JS braces. The 6-line duplication is acceptable for readability.
+# CRITICAL FIX (Issue #24): This code loads NiiVue DIRECTLY via dynamic import()
+# from the data-niivue-url attribute. Same pattern as NIIVUE_ON_LOAD_JS.
 NIIVUE_UPDATE_JS = """
 (async () => {
     // We must find the container globally since 'element' is not available in event handlers
     const container = document.querySelector('.niivue-viewer');
 
     if (!container) {
-        console.error('NiiVue container not found');
+        console.error('[NiiVue] Container not found');
         return;
     }
 
@@ -570,6 +581,7 @@ NIIVUE_UPDATE_JS = """
     // Get URLs from data attributes
     const volumeUrl = container.dataset.volumeUrl;
     const maskUrl = container.dataset.maskUrl;
+    const niivueUrl = container.dataset.niivueUrl;
 
     // Skip if no volume URL
     if (!volumeUrl) {
@@ -577,7 +589,10 @@ NIIVUE_UPDATE_JS = """
     }
 
     try {
-        if (status) status.innerText = 'Reloading NiiVue...';
+        if (status) {
+            status.style.display = 'block';
+            status.innerText = 'Reloading viewer...';
+        }
 
         // Check WebGL2 support
         const gl = canvas.getContext('webgl2');
@@ -586,26 +601,32 @@ NIIVUE_UPDATE_JS = """
             return;
         }
 
-        // Use globally loaded NiiVue (from head script)
-        // Poll for it to handle race conditions (Fixes P0 Loading Bug)
-        const waitForNiivue = async () => {
-            for (let i = 0; i < 50; i++) {
-                if (window.Niivue) return window.Niivue;
-                // Check if loader script failed (error stored in global)
-                if (window.NIIVUE_LOAD_ERROR) {
-                    throw new Error('NiiVue loader failed: ' + window.NIIVUE_LOAD_ERROR);
-                }
-                await new Promise(r => setTimeout(r, 100));
+        // Load NiiVue directly (self-sufficient, no head= dependency)
+        const loadNiivue = async () => {
+            // Return cached if already loaded
+            if (window.Niivue) {
+                console.log('[NiiVue] Using cached window.Niivue');
+                return window.Niivue;
             }
-            return null;
+
+            // Load directly from the URL embedded in data attribute
+            if (!niivueUrl) {
+                throw new Error('No NiiVue URL provided in data-niivue-url attribute');
+            }
+
+            console.log('[NiiVue] Loading from:', niivueUrl);
+            try {
+                const module = await import(niivueUrl);
+                window.Niivue = module.Niivue;
+                console.log('[NiiVue] Successfully loaded and cached');
+                return module.Niivue;
+            } catch (e) {
+                console.error('[NiiVue] Import failed:', e);
+                throw new Error('Failed to load NiiVue from ' + niivueUrl + ': ' + e.message);
+            }
         };
 
-        const Niivue = await waitForNiivue();
-        if (!Niivue) {
-            // Provide diagnostic info about what might be wrong
-            const loadErr = window.NIIVUE_LOAD_ERROR || 'unknown';
-            throw new Error('NiiVue not loaded after 5s. Check browser console for errors. Load error: ' + loadErr);
-        }
+        const Niivue = await loadNiivue();
 
         // Initialize NiiVue
         const nv = new Niivue({
@@ -645,10 +666,10 @@ NIIVUE_UPDATE_JS = """
         nv.setRenderAzimuthElevation(120, 10);
         nv.drawScene();
 
-        console.log('NiiVue viewer re-initialized successfully via event handler');
+        console.log('[NiiVue] Viewer re-initialized successfully via event handler');
 
     } catch (error) {
-        console.error('NiiVue re-initialization error:', error);
+        console.error('[NiiVue] Re-initialization error:', error);
         const errorDiv = document.createElement('div');
         errorDiv.style.cssText = 'color:#f66;padding:20px;text-align:center;';
         errorDiv.textContent = 'Error reloading viewer: ' + error.message;
