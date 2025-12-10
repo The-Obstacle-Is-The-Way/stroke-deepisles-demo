@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 import gradio as gr
+from gradio_niivueviewer import NiiVueViewer
 
 from stroke_deepisles_demo.core.config import get_settings
 from stroke_deepisles_demo.core.logging import get_logger
-from stroke_deepisles_demo.ui.viewer import NIIVUE_ON_LOAD_JS
 
 logger = get_logger(__name__)
 
@@ -41,12 +41,11 @@ def create_results_display() -> dict[str, gr.components.Component]:
     with gr.Group():
         with gr.Tabs():
             with gr.Tab("Interactive 3D"):
-                # NiiVue 3D viewer - uses js_on_load to initialize after HTML renders
-                # The NiiVue library is loaded globally via head_paths (see app.py)
-                # This handler accesses window.Niivue set by the loader script
-                niivue_viewer = gr.HTML(
+                # NiiVue 3D viewer Custom Component
+                # See: docs/specs/28-gradio-custom-component-niivue.md
+                niivue_viewer = NiiVueViewer(
                     label="Interactive 3D Viewer",
-                    js_on_load=NIIVUE_ON_LOAD_JS,
+                    height=500,
                 )
 
             with gr.Tab("Static Report"):

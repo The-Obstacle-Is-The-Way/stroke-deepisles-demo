@@ -1,7 +1,24 @@
-# Gradio + WebGL/NiiVue Analysis
+# Bug #24: Gradio + WebGL/NiiVue Root Cause Analysis
 
 **Date:** 2025-12-10
-**Context:** Understanding why NiiVue (WebGL) doesn't work in Gradio on HF Spaces
+**Status:** ALL `gr.HTML` HACKS FAILED - Custom Component Required
+**Issue:** HF Spaces stuck on "Loading..." forever
+**Root Cause:** The `gr.HTML` + `js_on_load` + async `import()` pattern blocks Svelte hydration
+**Note:** Gradio CAN do WebGL via Custom Components (proven by gradio-litmodel3d)
+**Solution:** Build Gradio Custom Component (see spec #28)
+
+---
+
+## CONFIRMED: All gr.HTML Hacks Have Failed
+
+| Attempt | Date | Result |
+|---------|------|--------|
+| CDN import in js_on_load | Dec 9 | FAILED - CSP blocks external imports |
+| Vendored + dynamic import() in js_on_load | Dec 9 | FAILED - Blocks Svelte hydration |
+| head_paths with loader HTML | Dec 9 | FAILED - Same hydration issue |
+| head= with inline import() | Dec 10 | **FAILED** - Confirmed DOA |
+
+**There is no hack that works.** The only path forward is spec #28 (Gradio Custom Component).
 
 ---
 
@@ -20,18 +37,24 @@
 
 ---
 
-## The Root Cause: We're Fighting Gradio's Architecture
+## The Root Cause: We're Fighting `gr.HTML`, Not Gradio
 
 ### What We're Trying To Do
 Embed NiiVue (a WebGL2 library) into `gr.HTML` using JavaScript.
 
-### Why It Doesn't Work
+### Why `gr.HTML` + JavaScript Doesn't Work
 1. **`gr.HTML` strips `<script>` tags** - Security feature
-2. **`js_on_load` with `import()` blocks Svelte hydration** - Our proven root cause
-3. **`head=` parameter still uses ES module import** - May have same issue
+2. **`js_on_load` with async `import()` blocks Svelte hydration** - **PROVEN** by A/B test
+3. **Our A/B test confirmed**: Disabling `js_on_load` makes the app load perfectly
+4. **`head=` parameter with `import()`** - Same hydration blocking issue
+
+### Gradio CAN Do WebGL
+**Important clarification:** Gradio supports WebGL via Custom Components. `gradio-litmodel3d` proves this.
+
+The issue is specifically the `gr.HTML` + `js_on_load` + `import()` pattern, NOT Gradio itself.
 
 ### Gradio's Official Stance
-From Gradio maintainer Abubakar Abid on both issues:
+From Gradio maintainer Abubakar Abid on Issues #4511 and #7649:
 > "We are not planning to include this in the core Gradio library."
 > "We've now made it possible for Gradio users to create their own custom components."
 

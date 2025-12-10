@@ -14,6 +14,8 @@ repos:
         language: system
         types: [python]
         require_serial: true
+        # Exclude auto-generated Gradio custom component files
+        exclude: ^packages/niivueviewer/
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
