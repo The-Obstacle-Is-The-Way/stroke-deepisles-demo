@@ -317,13 +317,134 @@ Push to HF Spaces only after local test passes.
 
 ---
 
+## WHY WAS THIS MISSED? (Root Cause of Root Cause)
+
+### The Spec Itself Was Incomplete
+
+**Spec #28** (`docs/specs/28-gradio-custom-component-niivue.md`) provided implementation guidance that **did not include the `gradio` prop**. Looking at lines 176-296 of the spec:
+
+```svelte
+// What the spec showed (WRONG):
+export let value: {...} | null = null;
+// ... custom loading/error divs
+// NO gradio prop
+// NO StatusTracker
+```
+
+The spec **did NOT read the official Gradio Frontend Guide thoroughly**. It showed custom loading/error handling instead of using Gradio's official `StatusTracker` component.
+
+### The Implementation Improved On The Spec (But Still Wrong)
+
+The actual implementation in `Index.svelte` **correctly** chose to use:
+- `Block` component wrapper (correct)
+- `StatusTracker` component (correct approach)
+
+But then **didn't research what StatusTracker requires**:
+- Missing `gradio` prop declaration
+- Missing `i18n={gradio.i18n}`
+- Missing `autoscroll={gradio.autoscroll}`
+
+### The Fundamental Failure
+
+| Stage | What Happened | What Should Have Happened |
+|-------|---------------|---------------------------|
+| Spec Writing | Read "Custom Components in 5 Minutes" | Read FULL Frontend Guide + PDF Example |
+| Spec Review | Focused on NiiVue/WebGL integration | Verified against working Gradio components |
+| Implementation | Used StatusTracker without research | Checked StatusTracker npm package requirements |
+| Testing | Tested locally (worked) | Should have checked browser console for errors |
+
+---
+
+## The Correct Prompting Approach (For Future Reference)
+
+### What We Asked
+```
+Create a Gradio Custom Component for NiiVue WebGL viewer
+```
+
+### What We Should Have Asked
+
+```markdown
+## Task: Create a Gradio Custom Component for NiiVue
+
+### BEFORE writing ANY code:
+
+1. **READ these official Gradio docs IN FULL** (not skimming):
+   - https://www.gradio.app/guides/frontend (CRITICAL - shows gradio prop)
+   - https://www.gradio.app/guides/pdf-component-example (working reference)
+   - https://www.gradio.app/guides/backend (EVENTS documentation)
+
+2. **IDENTIFY all required props** that Gradio passes to components:
+   - `value` - component's data
+   - `loading_status` - if using StatusTracker
+   - `gradio` - **CRITICAL**: provides i18n, autoscroll, dispatch()
+   - Other props: elem_id, elem_classes, visible, etc.
+
+3. **If using StatusTracker**, VERIFY what props it requires:
+   - Check @gradio/statustracker npm package
+   - Confirm `i18n` is REQUIRED (no default value)
+   - Confirm `autoscroll` is expected
+
+4. **Use Svelte 4 syntax** (`export let`) NOT Svelte 5 runes (`$props`, `$effect`)
+   - ALL Gradio examples use Svelte 4
+   - Svelte 5 runes are undocumented with Gradio components
+
+5. **For Python backend**, check if EVENTS are needed:
+   - Components that emit events need `EVENTS = [Events.change]`
+
+### VERIFICATION before claiming "done":
+- [ ] Compare Index.svelte line-by-line against PDF Component Example
+- [ ] Confirm gradio prop is declared
+- [ ] Confirm i18n is passed to StatusTracker
+- [ ] Check browser console for JavaScript errors
+- [ ] Test on fresh browser (not cached)
+```
+
+---
+
+## Lessons Learned
+
+### 1. Official Documentation Is Not Optional
+
+The agent assumed it knew Gradio patterns from general knowledge. It did NOT thoroughly read the official docs. **The `gradio` prop is clearly documented** in the Frontend Guide.
+
+### 2. "Works Locally" ≠ "Works Correctly"
+
+The component loaded locally because the browser cached state or errors were swallowed. A fresh test or HF Spaces deployment revealed the crash.
+
+### 3. Using Components Requires Understanding Their Contracts
+
+`StatusTracker` is a black box. The agent used it without checking:
+- What props it requires
+- What happens if `i18n` is undefined
+- Whether it has default values
+
+### 4. Spec Review Must Validate Against Official Examples
+
+The spec was reviewed for:
+- ✅ File structure
+- ✅ Build process
+- ✅ HF Spaces deployment
+- ❌ **Component prop requirements** (MISSED)
+- ❌ **StatusTracker requirements** (MISSED)
+
+### 5. Svelte 5 Runes Are Risky With Gradio
+
+Gradio's documentation and all examples use Svelte 4. Using Svelte 5 runes introduces untested behavior. **Follow the documented pattern.**
+
+---
+
 ## Summary
 
 **The UI freeze is caused by StatusTracker crashing due to missing `i18n` prop.** The `i18n` is provided by the `gradio` prop, which our component never declares. This is a fundamental implementation error - we didn't follow the Gradio custom component pattern correctly.
 
-The fix is straightforward:
+**Why it was missed:** The spec didn't thoroughly read official Gradio documentation. It focused on NiiVue/WebGL integration and assumed Gradio component patterns, rather than verifying against working examples.
+
+**The fix is straightforward:**
 1. Add `export let gradio: Gradio<{...}>` to Index.svelte
 2. Pass `gradio.i18n` and `gradio.autoscroll` to StatusTracker
 3. Convert from Svelte 5 runes to Svelte 4 syntax for safety
 4. Add EVENTS to Python backend
 5. Rebuild with `gradio cc build`
+
+**For future custom components:** Always read the official Frontend Guide and PDF Component Example FIRST, then verify your implementation matches line-by-line.
