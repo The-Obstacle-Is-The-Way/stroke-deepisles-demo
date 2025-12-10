@@ -27,7 +27,7 @@ from stroke_deepisles_demo.ui.components import (  # noqa: E402
 from stroke_deepisles_demo.ui.viewer import (  # noqa: E402
     NIIVUE_UPDATE_JS,
     create_niivue_html,
-    get_niivue_loader_path,
+    get_niivue_head_html,
     nifti_to_gradio_url,
     render_3panel_view,
     render_slice_comparison,
@@ -281,8 +281,16 @@ if __name__ == "__main__":
     settings = get_settings()
     setup_logging(settings.log_level, format_style=settings.log_format)
 
-    # Generate the NiiVue loader HTML file (creates if needed)
-    niivue_loader = get_niivue_loader_path()
+    # Log startup info for debugging HF Spaces issues
+    logger.info("=" * 60)
+    logger.info("STARTUP: stroke-deepisles-demo")
+    logger.info("Assets directory: %s", _ASSETS_DIR.resolve())
+    logger.info("Assets exists: %s", _ASSETS_DIR.exists())
+    logger.info("=" * 60)
+
+    # Get the NiiVue loader HTML (inline script, no file I/O needed)
+    # Using `head` param directly is simpler than `head_paths` with file generation
+    niivue_head = get_niivue_head_html()
 
     get_demo().launch(
         server_name=settings.gradio_server_name,
@@ -292,5 +300,5 @@ if __name__ == "__main__":
         css="footer {visibility: hidden}",
         show_error=True,  # Show full Python tracebacks in UI for debugging
         allowed_paths=[str(_ASSETS_DIR)],
-        head_paths=[str(niivue_loader)],  # Official Gradio approach (Issue #11649)
+        head=niivue_head,  # Inject NiiVue loader directly (simpler than head_paths)
     )

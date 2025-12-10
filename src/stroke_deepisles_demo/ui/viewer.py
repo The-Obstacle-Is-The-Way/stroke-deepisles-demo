@@ -32,46 +32,66 @@ _ASSET_DIR = Path(__file__).parent / "assets"
 _NIIVUE_JS_PATH = _ASSET_DIR / "niivue.js"
 
 # Ensure absolute path for Gradio serving
-# NOTE: This path must be added to allowed_paths in demo.launch()
+# NOTE: This path must be added to allowed_paths AND set_static_paths in demo.launch()
 NIIVUE_JS_URL = f"/gradio_api/file={_NIIVUE_JS_PATH.resolve()}"
+
+# Log the computed paths at module load time for debugging HF Spaces issues
+logger.info("NiiVue assets directory: %s", _ASSET_DIR.resolve())
+logger.info("NiiVue JS path: %s", _NIIVUE_JS_PATH.resolve())
+logger.info("NiiVue JS URL: %s", NIIVUE_JS_URL)
+logger.info("NiiVue JS exists: %s", _NIIVUE_JS_PATH.exists())
+
+
+def get_niivue_head_html() -> str:
+    """
+    Get HTML content to inject into page <head> for NiiVue loading.
+
+    This returns an inline script that loads NiiVue as a global variable.
+    Using the `head` parameter directly (instead of `head_paths` with a file)
+    is simpler and avoids file I/O issues on HF Spaces.
+
+    Returns:
+        HTML string containing the NiiVue loader script
+
+    Note:
+        The niivue.js path must be registered with gr.set_static_paths()
+        and included in allowed_paths during launch().
+    """
+    # Log for debugging path resolution issues on HF Spaces
+    logger.info("Generating NiiVue head HTML with URL: %s", NIIVUE_JS_URL)
+
+    return f"""<!-- NiiVue Loader: Exposes window.Niivue for js_on_load handlers -->
+<script type="module">
+    try {{
+        const niivueUrl = '{NIIVUE_JS_URL}';
+        console.log('[NiiVue Loader] Attempting to load from:', niivueUrl);
+        const {{ Niivue }} = await import(niivueUrl);
+        window.Niivue = Niivue;
+        console.log('[NiiVue Loader] Successfully loaded, window.Niivue:', typeof window.Niivue);
+    }} catch (error) {{
+        console.error('[NiiVue Loader] FAILED to load:', error);
+        // Surface the error visibly so we can debug on HF Spaces
+        window.NIIVUE_LOAD_ERROR = error.message;
+    }}
+</script>
+"""
 
 
 def get_niivue_loader_path() -> Path:
     """
+    DEPRECATED: Use get_niivue_head_html() with the `head` parameter instead.
+
     Get path to the NiiVue loader HTML file, creating it if needed.
-
-    This function generates an HTML file that loads NiiVue as a global.
-    Using head_paths with a file is the official Gradio-recommended approach
-    for loading custom JavaScript (see GitHub issue #11649).
-
-    The HTML file is generated at runtime because the niivue.js path
-    is dynamic (depends on installation location).
+    This file-based approach is kept for backwards compatibility but
+    the direct `head` parameter approach is preferred.
 
     Returns:
         Path to the niivue-loader.html file
-
-    Note:
-        The returned path must be included in allowed_paths during launch().
     """
     loader_path = _ASSET_DIR / "niivue-loader.html"
+    loader_content = get_niivue_head_html()
 
-    # Generate the loader HTML with the correct absolute path
-    loader_content = f"""<!--
-    NiiVue Loader for Gradio (auto-generated)
-    Loads NiiVue library and exposes it globally for js_on_load handlers.
-    See: docs/specs/24-bug-hf-spaces-loading-forever.md
--->
-<script type="module">
-    import {{ Niivue }} from '{NIIVUE_JS_URL}';
-    window.Niivue = Niivue;
-    console.log('[NiiVue Loader] Loaded globally:', typeof window.Niivue);
-</script>
-"""
-
-    # Write/update the loader file (idempotent)
-    # This ensures the path is always correct for the current installation
     try:
-        # Check if file exists and has correct content
         if loader_path.exists():
             existing_content = loader_path.read_text()
             if existing_content == loader_content:
@@ -80,8 +100,6 @@ def get_niivue_loader_path() -> Path:
         loader_path.write_text(loader_content)
         logger.debug("Generated NiiVue loader at %s", loader_path)
     except OSError as e:
-        # If we can't write (e.g., read-only filesystem), the file should
-        # already exist from the build process
         logger.warning("Could not write loader file at %s: %s", loader_path, e)
         if not loader_path.exists():
             raise RuntimeError(
@@ -457,6 +475,10 @@ NIIVUE_ON_LOAD_JS = """
         const waitForNiivue = async () => {
             for (let i = 0; i < 50; i++) {
                 if (window.Niivue) return window.Niivue;
+                // Check if loader script failed (error stored in global)
+                if (window.NIIVUE_LOAD_ERROR) {
+                    throw new Error('NiiVue loader failed: ' + window.NIIVUE_LOAD_ERROR);
+                }
                 await new Promise(r => setTimeout(r, 100));
             }
             return null;
@@ -464,7 +486,9 @@ NIIVUE_ON_LOAD_JS = """
 
         const Niivue = await waitForNiivue();
         if (!Niivue) {
-            throw new Error('NiiVue not loaded after 5s. Ensure head_paths includes niivue-loader.html and gr.set_static_paths is called.');
+            // Provide diagnostic info about what might be wrong
+            const loadErr = window.NIIVUE_LOAD_ERROR || 'unknown';
+            throw new Error('NiiVue not loaded after 5s. Check browser console for errors. Load error: ' + loadErr);
         }
 
         // Initialize NiiVue
@@ -567,6 +591,10 @@ NIIVUE_UPDATE_JS = """
         const waitForNiivue = async () => {
             for (let i = 0; i < 50; i++) {
                 if (window.Niivue) return window.Niivue;
+                // Check if loader script failed (error stored in global)
+                if (window.NIIVUE_LOAD_ERROR) {
+                    throw new Error('NiiVue loader failed: ' + window.NIIVUE_LOAD_ERROR);
+                }
                 await new Promise(r => setTimeout(r, 100));
             }
             return null;
@@ -574,7 +602,9 @@ NIIVUE_UPDATE_JS = """
 
         const Niivue = await waitForNiivue();
         if (!Niivue) {
-            throw new Error('NiiVue not loaded after 5s. Ensure head_paths includes niivue-loader.html and gr.set_static_paths is called.');
+            // Provide diagnostic info about what might be wrong
+            const loadErr = window.NIIVUE_LOAD_ERROR || 'unknown';
+            throw new Error('NiiVue not loaded after 5s. Check browser console for errors. Load error: ' + loadErr);
         }
 
         // Initialize NiiVue

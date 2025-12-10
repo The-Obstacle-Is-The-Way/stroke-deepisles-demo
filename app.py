@@ -1,12 +1,9 @@
-"""Entry point for Hugging Face Spaces deployment.
+"""Alternative entry point for local development.
 
-This module provides the entry point for deploying the stroke-deepisles-demo
-application to Hugging Face Spaces. It handles environment detection and
-configures Gradio appropriately for the deployment environment.
+NOTE: HuggingFace Spaces Docker deployment uses `python -m stroke_deepisles_demo.ui.app`
+(see Dockerfile CMD). This file is for local development convenience only.
 
-See:
-    - docs/specs/07-hf-spaces-deployment.md
-    - https://huggingface.co/docs/hub/spaces-sdks-docker
+For HF Spaces deployment, see: src/stroke_deepisles_demo/ui/app.py
 """
 
 from pathlib import Path
@@ -14,15 +11,16 @@ from pathlib import Path
 import gradio as gr
 
 # CRITICAL: Allow direct file serving for local assets (niivue.js)
-# This fixes the P0 "Loading..." bug on HF Spaces (Issue #11649)
 # Must be called BEFORE creating any Blocks
 _ASSETS_DIR = Path(__file__).parent / "src" / "stroke_deepisles_demo" / "ui" / "assets"
 gr.set_static_paths(paths=[str(_ASSETS_DIR)])
 
 from stroke_deepisles_demo.core.config import get_settings  # noqa: E402
-from stroke_deepisles_demo.core.logging import setup_logging  # noqa: E402
+from stroke_deepisles_demo.core.logging import get_logger, setup_logging  # noqa: E402
 from stroke_deepisles_demo.ui.app import get_demo  # noqa: E402
-from stroke_deepisles_demo.ui.viewer import get_niivue_loader_path  # noqa: E402
+from stroke_deepisles_demo.ui.viewer import get_niivue_head_html  # noqa: E402
+
+logger = get_logger(__name__)
 
 # Initialize logging
 settings = get_settings()
@@ -32,14 +30,15 @@ setup_logging(settings.log_level, format_style=settings.log_format)
 demo = get_demo()
 
 if __name__ == "__main__":
-    # Launch configuration
-    # - server_name: 0.0.0.0 required for HF Spaces (Docker)
-    # - server_port: 7860 is HF Spaces default
-    # - theme: Gradio 6 uses launch() for theme
-    # - css: Hide footer for cleaner look
+    # Log startup info for debugging
+    logger.info("=" * 60)
+    logger.info("STARTUP: stroke-deepisles-demo (root app.py)")
+    logger.info("Assets directory: %s", _ASSETS_DIR.resolve())
+    logger.info("Assets exists: %s", _ASSETS_DIR.exists())
+    logger.info("=" * 60)
 
-    # Generate the NiiVue loader HTML file (creates if needed)
-    niivue_loader = get_niivue_loader_path()
+    # Get the NiiVue loader HTML (inline script, no file I/O needed)
+    niivue_head = get_niivue_head_html()
 
     demo.launch(
         server_name=settings.gradio_server_name,
@@ -48,5 +47,5 @@ if __name__ == "__main__":
         theme=gr.themes.Soft(),
         css="footer {visibility: hidden}",
         allowed_paths=[str(_ASSETS_DIR)],
-        head_paths=[str(niivue_loader)],  # Official Gradio approach (Issue #11649)
+        head=niivue_head,  # Inject NiiVue loader directly
     )
