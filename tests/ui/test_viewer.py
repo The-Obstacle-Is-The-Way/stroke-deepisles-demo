@@ -14,7 +14,6 @@ import numpy as np
 from matplotlib.figure import Figure
 
 from stroke_deepisles_demo.ui.viewer import (
-    create_niivue_html,
     get_slice_at_max_lesion,
     nifti_to_gradio_url,
     render_3panel_view,
@@ -241,31 +240,3 @@ class TestRenderSliceComparisonProbabilityMask:
 
         plt.close(fig_binary)
         plt.close(fig_prob)
-
-
-class TestCreateNiivueHtml:
-    """Tests for create_niivue_html."""
-
-    def test_includes_volume_url(self) -> None:
-        """Generated HTML includes the volume URL."""
-        html = create_niivue_html("http://example.com/brain.nii.gz")
-
-        assert "http://example.com/brain.nii.gz" in html
-
-    def test_includes_mask_when_provided(self) -> None:
-        """Generated HTML includes mask URL when provided."""
-        html = create_niivue_html(
-            "http://example.com/brain.nii.gz",
-            mask_url="http://example.com/mask.nii.gz",
-        )
-
-        assert "http://example.com/mask.nii.gz" in html
-
-    def test_sets_height(self) -> None:
-        """Generated HTML respects height parameter."""
-        html = create_niivue_html(
-            "http://example.com/brain.nii.gz",
-            height=600,
-        )
-
-        assert "height:600px" in html

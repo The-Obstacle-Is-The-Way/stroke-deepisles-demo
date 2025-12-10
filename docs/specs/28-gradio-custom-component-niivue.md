@@ -37,13 +37,13 @@ This spec documents what we need to build to properly integrate NiiVue (WebGL2 m
 
 ### Root Cause
 
-**We're fighting Gradio's architecture.** Gradio is built with Svelte and has specific lifecycle expectations:
+**We're fighting `gr.HTML`'s limitations, not Gradio itself.** Gradio CAN do WebGL (proven by `gradio-litmodel3d`), but NOT via `gr.HTML`:
 
 1. `gr.HTML` strips `<script>` tags (security)
-2. `js_on_load` runs during component mount - async operations can block hydration
-3. ES module `import()` in any lifecycle hook can hang the entire app
+2. `js_on_load` runs during component mount - **async `import()` blocks Svelte hydration**
+3. Our A/B test proved: disabling `js_on_load` makes the app load perfectly
 
-**Gradio was not designed for custom WebGL content in `gr.HTML`.**
+**The `gr.HTML` + `js_on_load` + `import()` pattern is the blocker.** Custom Components solve this by using Svelte's proper `onMount` lifecycle.
 
 ---
 
@@ -149,7 +149,16 @@ This creates the basic structure with Svelte frontend and Python backend.
 
 ### Phase 2: Implement Svelte Frontend (4-6 hours)
 
-#### 2a. Configure package.json with pinned NiiVue version
+#### 2a. Install NiiVue dependency
+
+```bash
+cd packages/gradio-niivue-viewer/frontend
+npm install @niivue/niivue@0.65.0 --save-exact
+```
+
+This pins the exact version `0.65.0` to match our tested vendored copy.
+
+#### 2b. Verify package.json
 
 ```json
 {
@@ -161,9 +170,7 @@ This creates the basic structure with Svelte frontend and Python backend.
 }
 ```
 
-**Important:** Pin exact version `0.65.0` to match our tested vendored copy.
-
-#### 2b. Modify `frontend/Index.svelte`:
+#### 2c. Modify `frontend/Index.svelte`:
 
 ```svelte
 <script lang="ts">
@@ -236,7 +243,21 @@ This creates the basic structure with Svelte frontend and Python backend.
   }
 
   async function loadVolumes() {
-    if (!nv || !value) return;
+    if (!nv) return;
+
+    // Handle null/cleared value: clear the viewer
+    if (!value || (!value.background_url && !value.overlay_url)) {
+      try {
+        // Clear all loaded volumes
+        while (nv.volumes.length > 0) {
+          nv.removeVolumeByIndex(0);
+        }
+        nv.drawScene();
+      } catch (e) {
+        console.warn('Failed to clear volumes:', e);
+      }
+      return;
+    }
 
     try {
       loading = true;
@@ -270,8 +291,8 @@ This creates the basic structure with Svelte frontend and Python backend.
     }
   }
 
-  // Reactive: reload when value changes
-  $: if (value && nv && !loading) loadVolumes();
+  // Reactive: reload when value changes (including null to clear)
+  $: if (nv && !loading) loadVolumes();
 </script>
 
 <div bind:this={container} class="niivue-container">
@@ -403,6 +424,67 @@ viewer = NiiVueViewer(label="Interactive 3D Viewer")
 # ... then set viewer.value = {"background_url": dwi_url, "overlay_url": mask_url}
 ```
 
+### Phase 6: HF Spaces Deployment (CRITICAL)
+
+**This phase is essential.** HF Spaces runs `pip install` only - it does NOT run `npm` or `gradio cc build`.
+
+#### 6a. Commit build artifacts to git
+
+```bash
+cd packages/gradio-niivue-viewer
+
+# Build the component (generates frontend/dist/ or templates/)
+gradio cc build
+
+# Force-add build artifacts (they may be gitignored by default)
+git add -f gradio_niivue_viewer/templates/
+# Or wherever the build output lands - check with:
+# find . -name "*.js" -path "*/dist/*" -o -name "*.css" -path "*/dist/*"
+
+git commit -m "chore: add compiled frontend assets for HF Spaces deployment"
+```
+
+**Why:** HF Spaces won't run npm/node build steps. The compiled JS/CSS must be in the repo.
+
+#### 6b. Update requirements.txt
+
+Add the local component to the main `requirements.txt`:
+
+```text
+# requirements.txt
+gradio>=5.0
+# ... other deps ...
+
+# Local custom component (editable install)
+-e ./packages/gradio-niivue-viewer
+```
+
+**Alternative:** If the component is at repo root:
+```text
+-e .
+```
+
+#### 6c. Verify .gitignore doesn't exclude build artifacts
+
+Check that `packages/gradio-niivue-viewer/.gitignore` doesn't exclude:
+- `gradio_niivue_viewer/templates/`
+- `frontend/dist/`
+- Any compiled `.js` or `.css` files needed at runtime
+
+If they're excluded, either:
+1. Remove those lines from `.gitignore`, OR
+2. Use `git add -f` to force-add them
+
+#### 6d. Test deployment flow
+
+```bash
+# Simulate what HF Spaces does
+pip install -r requirements.txt
+python -m stroke_deepisles_demo.ui.app
+
+# Should work WITHOUT running gradio cc build
+```
+
 ---
 
 ## Existing References
@@ -459,9 +541,11 @@ viewer = NiiVueViewer(label="Interactive 3D Viewer")
 | Risk | Mitigation |
 |------|------------|
 | Svelte/TypeScript learning curve | Follow gradio-litmodel3d example closely |
-| NiiVue WebGL2 browser support | NiiVue handles fallbacks internally |
+| NiiVue WebGL2 browser support | Explicit WebGL2 check in Svelte + graceful error UI |
 | Build system complexity | Use gradio cc tooling, don't customize |
 | HF Spaces static file serving | Component bundles NiiVue, no external deps |
+| **Build artifacts not in git** | Phase 6a: Force-add compiled assets with `git add -f` |
+| **requirements.txt missing component** | Phase 6b: Add `-e ./packages/gradio-niivue-viewer` |
 
 ---
 
@@ -586,27 +670,33 @@ def create_results_display():
 ## Next Steps
 
 1. [x] Senior review of this spec (AUDIT_REPORT_2025_12_10.md)
-2. [ ] Create `packages/gradio-niivue-viewer/` subdirectory
-3. [ ] Scaffold component with `gradio cc create`
-4. [ ] Implement Svelte frontend (with WebGL2 checks)
-5. [ ] Implement Python backend
-6. [ ] Level 1 test: Local build verification
-7. [ ] Level 2 test: Volume loading
-8. [ ] Level 3 test: HF Spaces dry run
-9. [ ] Level 4 test: Integration
-10. [ ] (Optional) Publish to PyPI
+2. [x] Red team review - all gaps addressed (build artifacts, npm install, null handling)
+3. [ ] Create `packages/gradio-niivue-viewer/` subdirectory
+4. [ ] Scaffold component with `gradio cc create`
+5. [ ] Install NiiVue: `cd frontend && npm install @niivue/niivue@0.65.0`
+6. [ ] Implement Svelte frontend (with WebGL2 checks + null value handling)
+7. [ ] Implement Python backend
+8. [ ] Level 1 test: Local build verification
+9. [ ] Level 2 test: Volume loading
+10. [ ] Level 3 test: HF Spaces dry run
+11. [ ] Level 4 test: Integration
+12. [ ] **CRITICAL**: Commit build artifacts to git
+13. [ ] **CRITICAL**: Update requirements.txt with `-e ./packages/gradio-niivue-viewer`
+14. [ ] (Optional) Publish to PyPI
 
 ---
 
-## Appendix: Why WebGL + Gradio is Hard
+## Appendix: Why WebGL + `gr.HTML` Doesn't Work
 
 From the ROOT_CAUSE_ANALYSIS.md and GRADIO_WEBGL_ANALYSIS.md research:
 
-1. **Gradio closed NIfTI support** (Issue #4511) - "Not planned"
-2. **Gradio closed WebGL canvas** (Issue #7649) - "Not planned"
-3. **gr.HTML strips script tags** - Security feature
-4. **js_on_load + import() blocks hydration** - Proven by A/B test
-5. **HF Spaces CSP blocks external CDNs** - No workaround for cdn imports
-6. **Gradio maintainer recommendation**: Custom Components
+1. **Gradio CAN do WebGL** - proven by `gradio-litmodel3d` custom component
+2. **But NOT via `gr.HTML`** - the `js_on_load` + `import()` pattern blocks Svelte hydration
+3. **Our A/B test proved it** - disabling `js_on_load` makes the app load perfectly
+4. **Gradio closed NIfTI support** (Issue #4511) - "Not planned for core"
+5. **Gradio closed WebGL canvas** (Issue #7649) - "Not planned for core"
+6. **gr.HTML strips script tags** - Security feature, can't bypass
+7. **HF Spaces CSP blocks external CDNs** - Must vendor or bundle dependencies
+8. **Gradio maintainer recommendation**: Custom Components
 
-The pattern is clear: **Gradio doesn't natively support custom WebGL in gr.HTML.** The Custom Component is the only officially supported path.
+The pattern is clear: **The `gr.HTML` + `js_on_load` + async `import()` pattern is fundamentally broken.** The Custom Component is the officially supported path for WebGL content.

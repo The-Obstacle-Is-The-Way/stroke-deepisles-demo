@@ -1,23 +1,27 @@
 # Spec #29: Codebase Status Audit (Issue #24 NiiVue/WebGL)
 
 **Date:** 2025-12-10
-**Status:** ALL HACKS CONFIRMED FAILED (Dec 10, 2025)
+**Status:** ALL `gr.HTML` HACKS CONFIRMED FAILED (Dec 10, 2025)
 **Purpose:** Top-down analysis of current frontend/NiiVue implementation state after multiple hotfix attempts
 
 ---
 
-## Executive Summary: All gr.HTML Hacks Have Failed
+## Executive Summary: The `gr.HTML` + `js_on_load` + `import()` Pattern is Broken
 
-After 6 iterations of attempted hotfixes for Issue #24 (HF Spaces "Loading..." forever), **every approach has failed**:
+After 6 iterations of attempted hotfixes for Issue #24 (HF Spaces "Loading..." forever), **every `gr.HTML`-based approach has failed**:
 
 | Attempt | Result |
 |---------|--------|
 | CDN import | FAILED - CSP blocked |
-| Vendored + js_on_load import() | FAILED - Blocks hydration |
-| head_paths | FAILED - Same issue |
+| Vendored + js_on_load import() | FAILED - Blocks Svelte hydration |
+| head_paths | FAILED - Same hydration issue |
 | head= with import() | **FAILED** - Confirmed Dec 10 |
 
-**The codebase contains dead code from all these failed attempts.** The correct solution is Gradio Custom Component (spec #28).
+**Root Cause (PROVEN):** Async `import()` inside `js_on_load` blocks Gradio's Svelte hydration. Our A/B test confirmed: disabling `js_on_load` makes the app load.
+
+**Clarification:** Gradio CAN do WebGL via Custom Components (`gradio-litmodel3d` proves this). The issue is the `gr.HTML` approach, not Gradio itself.
+
+**The correct solution is Gradio Custom Component (spec #28).**
 
 ---
 

@@ -14,7 +14,7 @@ My audit confirms your root cause analysis is accurate and your proposed solutio
 
 | Claim | Verdict | Evidence/Rationale |
 |-------|---------|--------------------|
-| **Gradio lacks native WebGL/NIfTI** | **CONFIRMED** | Issues #4511 and #7649 confirm these features are "not planned" for core. |
+| **Gradio lacks native WebGL/NIfTI in core** | **CONFIRMED** | Issues #4511 and #7649 closed as "not planned" for core. BUT `gradio-litmodel3d` proves WebGL works via Custom Components. |
 | **`gr.HTML` + `import()` breaks hydration** | **CONFIRMED** | `js_on_load` runs during the critical hydration phase. Async operations or unhandled Promise rejections here can hang the entire Gradio app ("Loading..." forever). |
 | **HF Spaces CSP blocks CDNs** | **CONFIRMED** | HF Spaces enforces strict CSP. While `custom_http_headers` *can* relax this, it doesn't solve the hydration/execution context issue. |
 | **`gr.HTML` strips `<script>`** | **CONFIRMED** | Standard security behavior. The `head=` workaround puts scripts in the global scope, polluting the window object and risking race conditions, which you effectively identified. |

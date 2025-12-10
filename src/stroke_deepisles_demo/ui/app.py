@@ -9,25 +9,16 @@ from typing import Any
 import gradio as gr
 from matplotlib.figure import Figure  # noqa: TC002
 
-# CRITICAL: Allow direct file serving for local assets (niivue.js)
-# This fixes the P0 "Loading..." bug on HF Spaces (Issue #11649)
-# Must be called BEFORE creating any Blocks - hence imports after this call
-_ASSETS_DIR = Path(__file__).parent / "assets"
-gr.set_static_paths(paths=[str(_ASSETS_DIR)])
-
-from stroke_deepisles_demo.core.logging import get_logger  # noqa: E402
-from stroke_deepisles_demo.data import list_case_ids  # noqa: E402
-from stroke_deepisles_demo.metrics import compute_volume_ml  # noqa: E402
-from stroke_deepisles_demo.pipeline import run_pipeline_on_case  # noqa: E402
-from stroke_deepisles_demo.ui.components import (  # noqa: E402
+from stroke_deepisles_demo.core.logging import get_logger
+from stroke_deepisles_demo.data import list_case_ids
+from stroke_deepisles_demo.metrics import compute_volume_ml
+from stroke_deepisles_demo.pipeline import run_pipeline_on_case
+from stroke_deepisles_demo.ui.components import (
     create_case_selector,
     create_results_display,
     create_settings_accordion,
 )
-from stroke_deepisles_demo.ui.viewer import (  # noqa: E402
-    NIIVUE_UPDATE_JS,
-    create_niivue_html,
-    get_niivue_head_html,
+from stroke_deepisles_demo.ui.viewer import (
     nifti_to_gradio_url,
     render_3panel_view,
     render_slice_comparison,
@@ -80,7 +71,15 @@ def run_segmentation(
     fast_mode: bool,
     show_ground_truth: bool,
     previous_results_dir: str | None,
-) -> tuple[str, Figure | None, Figure | None, dict[str, Any], str | None, str, str | None]:
+) -> tuple[
+    dict[str, str | None] | None,
+    Figure | None,
+    Figure | None,
+    dict[str, Any],
+    str | None,
+    str,
+    str | None,
+]:
     """
     Run segmentation and return results for display.
 
@@ -91,12 +90,12 @@ def run_segmentation(
         previous_results_dir: Path to previous results (from gr.State, for cleanup)
 
     Returns:
-        Tuple of (niivue_html, slice_fig, ortho_fig, metrics_dict, download_path, status_msg, new_results_dir)
+        Tuple of (niivue_data, slice_fig, ortho_fig, metrics_dict, download_path, status_msg, new_results_dir)
         The new_results_dir is returned to update the gr.State for next cleanup.
     """
     if not case_id:
         return (
-            "",
+            None,
             None,
             None,
             {},
@@ -130,11 +129,7 @@ def run_segmentation(
         if result.prediction_mask.exists():
             mask_url = nifti_to_gradio_url(result.prediction_mask)
 
-        niivue_html = create_niivue_html(
-            dwi_url,
-            mask_url,
-            height=500,
-        )
+        niivue_data = {"background_url": dwi_url, "overlay_url": mask_url}
 
         # 2. Static Visualizations (Matplotlib)
         gt_path = result.ground_truth if show_ground_truth else None
@@ -180,7 +175,7 @@ def run_segmentation(
 
         # Return new results_dir to update gr.State for next cleanup
         return (
-            niivue_html,
+            niivue_data,
             slice_fig,
             ortho_fig,
             metrics,
@@ -191,7 +186,7 @@ def run_segmentation(
 
     except Exception as e:
         logger.exception("Error running segmentation")
-        return "", None, None, {}, None, f"Error: {e!s}", previous_results_dir
+        return None, None, None, {}, None, f"Error: {e!s}", previous_results_dir
 
 
 def create_app() -> gr.Blocks:
@@ -251,10 +246,8 @@ def create_app() -> gr.Blocks:
                 status,
                 previous_results_state,  # Update state with new results_dir
             ],
-        ).then(
-            fn=None,  # JS-only handler to re-initialize NiiVue after HTML update
-            js=NIIVUE_UPDATE_JS,
         )
+        # Note: No need for .then(js=...) anymore, the custom component updates reactively.
 
         # Trigger data loading after UI renders (prevents startup timeout)
         demo.load(initialize_case_selector, outputs=[case_selector])
@@ -284,21 +277,7 @@ if __name__ == "__main__":
     # Log startup info for debugging HF Spaces issues
     logger.info("=" * 60)
     logger.info("STARTUP: stroke-deepisles-demo")
-    logger.info("Assets directory: %s", _ASSETS_DIR.resolve())
-    logger.info("Assets exists: %s", _ASSETS_DIR.exists())
     logger.info("=" * 60)
-
-    # CRITICAL FIX (Issue #24): Load NiiVue via head= parameter
-    #
-    # The head= parameter injects a <script type="module"> into <head> that loads
-    # NiiVue BEFORE Gradio's Svelte app hydrates. This is critical because:
-    #
-    # 1. Dynamic import() inside js_on_load blocks Svelte hydration on HF Spaces
-    # 2. head= scripts run BEFORE Gradio mounts, so failures don't block the app
-    # 3. js_on_load then just USES window.Niivue (no imports)
-    #
-    # Evidence: A/B test in docs/specs/24-bug-hf-spaces-loading-forever.md showed
-    # disabling js_on_load makes the app load. The fix is head= for loading.
 
     get_demo().launch(
         server_name=settings.gradio_server_name,
@@ -306,7 +285,5 @@ if __name__ == "__main__":
         share=settings.gradio_share,
         theme=gr.themes.Soft(),
         css="footer {visibility: hidden}",
-        head=get_niivue_head_html(),  # Load NiiVue before Gradio hydrates
         show_error=True,  # Show full Python tracebacks in UI for debugging
-        allowed_paths=[str(_ASSETS_DIR)],
     )
