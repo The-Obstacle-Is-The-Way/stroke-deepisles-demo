@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { NiiVueViewer } from '../NiiVueViewer'
 
 // Store mock function references so tests can verify calls
@@ -119,8 +119,8 @@ describe('NiiVueViewer', () => {
 
     render(<NiiVueViewer {...defaultProps} onError={onError} />)
 
-    // Wait for error callback to be invoked
-    await vi.waitFor(() => {
+    // Wait for error callback to be invoked (use RTL's waitFor, not vi.waitFor)
+    await waitFor(() => {
       expect(onError).toHaveBeenCalledWith(errorMessage)
     })
   })
@@ -152,9 +152,9 @@ describe('NiiVueViewer', () => {
     // Now reject the second load (stale)
     rejectSecondLoad!(new Error('Stale load error'))
 
-    // Wait a tick and verify onError was NOT called with stale error
-    await vi.waitFor(() => {
-      expect(onError).not.toHaveBeenCalledWith('Stale load error')
-    })
+    // Flush async work (let rejection be processed) before asserting
+    // Using waitFor with negative assertions is flaky - it passes immediately
+    await new Promise(resolve => setTimeout(resolve, 0))
+    expect(onError).not.toHaveBeenCalledWith('Stale load error')
   })
 })
