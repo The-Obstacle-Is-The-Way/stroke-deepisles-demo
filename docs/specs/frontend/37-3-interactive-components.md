@@ -652,7 +652,7 @@ npm test
 
 ## File Structure After This Phase
 
-```
+```text
 frontend/src/
 ├── components/
 │   ├── __tests__/

@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import gradio as gr
 
-# DIAGNOSTIC: Temporarily disabled custom component to test if it's the root cause
-# from gradio_niivueviewer import NiiVueViewer
+# Disabled: Gradio NiiVue viewer replaced with standalone React frontend (see frontend/ directory)
+# Original: from gradio_niivueviewer import NiiVueViewer
 from stroke_deepisles_demo.core.config import get_settings
 from stroke_deepisles_demo.core.logging import get_logger
 
@@ -42,11 +42,10 @@ def create_results_display() -> dict[str, gr.components.Component]:
     with gr.Group():
         with gr.Tabs():
             with gr.Tab("Interactive 3D"):
-                # DIAGNOSTIC: Replace custom component with simple JSON
-                # to test if custom component is causing the freeze
-                # Original: NiiVueViewer(label="Interactive 3D Viewer", height=500)
+                # Disabled: Gradio NiiVue viewer replaced with React frontend
+                # See frontend/ directory for the new NiiVue implementation
                 niivue_viewer = gr.JSON(
-                    label="NiiVue Data (diagnostic - custom component disabled)",
+                    label="NiiVue Data (React frontend active)",
                     value=None,
                 )
 

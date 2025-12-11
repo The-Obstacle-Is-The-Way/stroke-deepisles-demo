@@ -53,9 +53,12 @@ export function NiiVueViewer({ backgroundUrl, overlayUrl, onError }: NiiVueViewe
   }, [])
 
   // Effect 2: URL changes - reload volumes on existing NiiVue instance
+  // Uses isCurrent flag to ignore stale loads when URLs change rapidly
   useEffect(() => {
     const nv = nvRef.current
     if (!nv) return
+
+    let isCurrent = true
 
     // Clear previous error before new load (valid pattern for async operations)
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -73,12 +76,18 @@ export function NiiVueViewer({ backgroundUrl, overlayUrl, onError }: NiiVueViewe
       })
     }
 
-    // Load volumes with error handling
+    // Load volumes with error handling - ignore stale results
     nv.loadVolumes(volumes).catch((err: unknown) => {
+      if (!isCurrent) return // Ignore errors from stale loads
       const message = err instanceof Error ? err.message : 'Failed to load volume'
       setLoadError(message)
       onErrorRef.current?.(message)
     })
+
+    // Cleanup: mark this effect instance as stale
+    return () => {
+      isCurrent = false
+    }
   }, [backgroundUrl, overlayUrl])
 
   return (

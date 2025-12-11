@@ -357,12 +357,12 @@ npm run dev
 Create `src/test/test-utils.tsx`:
 
 ```typescript
-import { ReactElement } from 'react'
+import type { ReactElement, ReactNode } from 'react'
 import { render, RenderOptions } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 // Wrapper for any providers (Router, Theme, etc.)
-function AllTheProviders({ children }: { children: React.ReactNode }) {
+function AllTheProviders({ children }: { children: ReactNode }) {
   return <>{children}</>
 }
 
