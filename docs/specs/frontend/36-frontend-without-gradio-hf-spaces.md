@@ -730,7 +730,7 @@ colorTo: purple
 sdk: static
 app_file: dist/index.html
 app_build_command: npm run build
-# CRITICAL: Vite 6 requires Node.js >= 20. HF Spaces defaults to Node 18.
+# CRITICAL: Vite 7 requires Node.js >= 20. HF Spaces defaults to Node 18.
 # Without this, the build will fail or produce warnings.
 nodejs_version: "20"
 pinned: false

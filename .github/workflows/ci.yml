@@ -44,6 +44,7 @@ jobs:
               - '.github/workflows/ci.yml'
 
   # Backend Jobs - run on backend changes, main push, or manual override
+  # Design: Push to main always runs full CI (safety gate), PRs use path filtering (efficiency)
   lint:
     needs: changes
     if: needs.changes.outputs.backend == 'true' || github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.run_all)
@@ -238,12 +239,14 @@ jobs:
 
   frontend-build:
     needs: [changes, frontend-lint, frontend-typecheck, frontend-test]
+    # Build if: (1) frontend changed OR push to main OR manual run_all, AND (2) no prerequisite failures
+    # Note: Uses != 'failure' instead of == 'success' to handle skipped jobs gracefully
     if: |
       always() &&
       (needs.changes.outputs.frontend == 'true' || github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.run_all)) &&
-      needs.frontend-lint.result == 'success' &&
-      needs.frontend-typecheck.result == 'success' &&
-      needs.frontend-test.result == 'success'
+      needs.frontend-lint.result != 'failure' &&
+      needs.frontend-typecheck.result != 'failure' &&
+      needs.frontend-test.result != 'failure'
     runs-on: ubuntu-latest
     defaults:
       run:
