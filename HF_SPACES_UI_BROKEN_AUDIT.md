@@ -39,7 +39,7 @@ let { gradio, loading_status, ... }: Props = $props();
 **CRITICAL NEW FINDING from external validation:**
 
 `packages/niivueviewer/.gitignore` line 12 has:
-```
+```text
 backend/**/templates/
 ```
 
@@ -110,7 +110,7 @@ Gradio 6 ships with **Svelte 5.43.14**, and `@gradio` packages peer-depend on `s
 | # | Issue | File:Line | Fix |
 |---|-------|-----------|-----|
 | 10 | TECHNICAL_DEBT.md says P0 resolved | docs/TECHNICAL_DEBT.md:13-33 | Update status to reflect unresolved |
-| 11 | Stale diagnostic docs | ROOT_CAUSE_ANALYSIS.md, etc | Archive or update |
+| 11 | Stale diagnostic docs | ROOT_CAUSE_ANALYSIS.md, etc. | Archive or update |
 
 ### NOT an Issue (External Validation Refuted)
 
@@ -329,7 +329,7 @@ class NiiVueViewer(Component):
 cd /Users/ray/Desktop/CLARITY-DIGITAL-TWIN/stroke-deepisles-demo
 uv run python -m stroke_deepisles_demo.ui.app
 ```
-Open http://localhost:7860 and verify:
+Open <http://localhost:7860> and verify:
 - [ ] Page loads without freezing
 - [ ] Dropdown is clickable
 - [ ] Buttons respond
@@ -426,7 +426,7 @@ But then **didn't research what StatusTracker requires**:
 ## The Correct Prompting Approach (For Future Reference)
 
 ### What We Asked
-```
+```text
 Create a Gradio Custom Component for NiiVue WebGL viewer
 ```
 

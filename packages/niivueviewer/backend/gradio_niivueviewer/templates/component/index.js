@@ -37022,7 +37022,7 @@ function _1(i, e) {
         backColor: [0, 0, 0, 1],
         show3Dcrosshair: !0,
         logging: !1
-      }), yield d.attachToCanvas(f), yield g(), m = !0;
+      }), yield d.attachToCanvas(f), m = !0;
     } catch (p) {
       console.error("[NiiVue] Initialization failed:", p);
     }

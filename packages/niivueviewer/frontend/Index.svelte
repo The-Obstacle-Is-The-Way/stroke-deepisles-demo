@@ -51,7 +51,8 @@
       });
 
       await nv.attachToCanvas(canvas);
-      await loadVolumes();
+      // Don't call loadVolumes() here - let $effect handle it reactively
+      // Setting initialized = true triggers $effect which calls loadVolumes()
       initialized = true;
     } catch (error) {
       console.error('[NiiVue] Initialization failed:', error);
