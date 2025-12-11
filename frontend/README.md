@@ -1,73 +1,65 @@
-# React + TypeScript + Vite
+---
+title: Stroke Lesion Viewer
+emoji: 🧠
+colorFrom: blue
+colorTo: purple
+sdk: static
+app_file: dist/index.html
+app_build_command: npm run build
+# CRITICAL: Vite 6 requires Node.js >= 20. HF Spaces defaults to Node 18.
+# Without this, the build will fail or produce warnings.
+nodejs_version: "20"
+pinned: false
+---
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# Stroke Lesion Segmentation Viewer
 
-Currently, two official plugins are available:
+Interactive 3D viewer for stroke lesion segmentation results using NiiVue.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Built with React, TypeScript, Tailwind CSS, and Vite.
 
-## React Compiler
+## Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **NiiVue WebGL2 Viewer**: Pan, zoom, and navigate through NIfTI volumes
+- **Real-time Segmentation**: Run DeepISLES inference on ISLES24 dataset cases
+- **Metrics Display**: Dice score, volume (mL), processing time
 
-## Expanding the ESLint configuration
+## Architecture
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+This is the **frontend Static Space** of a two-Space deployment:
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+┌─────────────────────────────────────┐
+│  HuggingFace Static Space           │  ← You are here
+│  stroke-viewer-frontend             │
+│                                     │
+│  React 19 + TypeScript + Tailwind   │
+│  @niivue/niivue for 3D viewing      │
+└──────────────┬──────────────────────┘
+               │ HTTPS API calls
+               ▼
+┌─────────────────────────────────────┐
+│  HuggingFace Docker Space           │
+│  stroke-viewer-api                  │
+│                                     │
+│  FastAPI + DeepISLES + PyTorch      │
+└─────────────────────────────────────┘
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Local Development
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```bash
+npm install
+npm run dev          # Start dev server at http://localhost:5173
+npm test             # Run unit tests
+npm run test:e2e     # Run E2E tests
+npm run build        # Production build
+```
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Environment Variables
+
+Set `VITE_API_URL` to point to your backend:
+
+```bash
+VITE_API_URL=http://localhost:7860 npm run dev
 ```

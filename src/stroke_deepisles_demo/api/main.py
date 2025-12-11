@@ -37,10 +37,11 @@ app.add_middleware(
 # API routes
 app.include_router(router, prefix="/api")
 
-# Static files for NIfTI results (only mount if directory exists)
+# Static files for NIfTI results
+# Create directory if it doesn't exist (ensures mount works on first run)
 RESULTS_DIR = Path("/tmp/stroke-results")
-if RESULTS_DIR.exists():
-    app.mount("/files", StaticFiles(directory=str(RESULTS_DIR)), name="files")
+RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+app.mount("/files", StaticFiles(directory=str(RESULTS_DIR)), name="files")
 
 
 @app.get("/")
