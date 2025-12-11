@@ -4,6 +4,7 @@
   import { Block } from "@gradio/atoms";
   import { StatusTracker } from "@gradio/statustracker";
   import type { LoadingStatus } from "@gradio/statustracker";
+  import type { Gradio } from "@gradio/utils";
 
   interface Props {
       value?: { background_url: string | null; overlay_url: string | null } | null;
@@ -17,6 +18,8 @@
       container?: boolean;
       scale?: number;
       min_width?: number;
+      // CRITICAL: gradio prop provides i18n, autoscroll, dispatch
+      gradio: Gradio<{ change: never }>;
   }
 
   let {
@@ -30,23 +33,30 @@
       height = 500,
       container = true,
       scale = null,
-      min_width = undefined
+      min_width = undefined,
+      gradio
   }: Props = $props();
 
   let div_container: HTMLDivElement;
   let nv: Niivue | null = null;
   let canvas: HTMLCanvasElement;
+  let initialized = false;
 
   onMount(async () => {
-    // Initialize NiiVue
-    nv = new Niivue({
-      backColor: [0, 0, 0, 1],
-      show3Dcrosshair: true,
-      logging: false // Reduce noise
-    });
+    try {
+      nv = new Niivue({
+        backColor: [0, 0, 0, 1],
+        show3Dcrosshair: true,
+        logging: false
+      });
 
-    await nv.attachToCanvas(canvas);
-    await loadVolumes();
+      await nv.attachToCanvas(canvas);
+      // Don't call loadVolumes() here - let $effect handle it reactively
+      // Setting initialized = true triggers $effect which calls loadVolumes()
+      initialized = true;
+    } catch (error) {
+      console.error('[NiiVue] Initialization failed:', error);
+    }
   });
 
   onDestroy(() => {
@@ -94,10 +104,9 @@
     }
   }
 
-  // Reactive effect: Re-load volumes when `value` changes
+  // Reactive effect: Re-load volumes when `value` changes (only after init)
   $effect(() => {
-      // Dependence on value
-      if (value || value === null) {
+      if (initialized && value !== undefined) {
           loadVolumes();
       }
   });
@@ -118,7 +127,8 @@
 >
     {#if loading_status}
         <StatusTracker
-            autoscroll={false}
+            autoscroll={gradio.autoscroll}
+            i18n={gradio.i18n}
             {...loading_status}
         />
     {/if}

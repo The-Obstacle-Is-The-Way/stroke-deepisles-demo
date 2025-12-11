@@ -9,4 +9,3 @@ __tmp/*
 .mypycache
 .ruff_cache
 node_modules
-backend/**/templates/
