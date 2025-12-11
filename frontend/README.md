@@ -6,8 +6,7 @@ colorTo: purple
 sdk: static
 app_file: dist/index.html
 app_build_command: npm run build
-# CRITICAL: Vite 6 requires Node.js >= 20. HF Spaces defaults to Node 18.
-# Without this, the build will fail or produce warnings.
+# CRITICAL: Vite 7 requires Node.js >= 20. HF Spaces defaults to Node 18.
 nodejs_version: "20"
 pinned: false
 ---
@@ -61,5 +60,20 @@ npm run build        # Production build
 Set `VITE_API_URL` to point to your backend:
 
 ```bash
+# Local development (default)
 VITE_API_URL=http://localhost:7860 npm run dev
+
+# Production is configured in .env.production
+# Points to: https://vibecodermcswaggins-stroke-deepisles-demo.hf.space
+```
+
+## Deployment
+
+This frontend deploys as a **HuggingFace Static Space**. The backend API runs on a separate Docker Space with GPU.
+
+```bash
+# Build for production (uses .env.production)
+npm run build
+
+# The dist/ folder is deployed to HF Static Space
 ```
