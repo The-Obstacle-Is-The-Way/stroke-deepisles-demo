@@ -152,9 +152,9 @@ describe('NiiVueViewer', () => {
     // Now reject the second load (stale)
     rejectSecondLoad!(new Error('Stale load error'))
 
-    // Wait a tick and verify onError was NOT called with stale error
-    await waitFor(() => {
-      expect(onError).not.toHaveBeenCalledWith('Stale load error')
-    })
+    // Flush async work (let rejection be processed) before asserting
+    // Using waitFor with negative assertions is flaky - it passes immediately
+    await new Promise(resolve => setTimeout(resolve, 0))
+    expect(onError).not.toHaveBeenCalledWith('Stale load error')
   })
 })

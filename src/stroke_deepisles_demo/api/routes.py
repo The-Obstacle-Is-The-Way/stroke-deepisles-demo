@@ -32,18 +32,29 @@ def get_backend_base_url(request: Request) -> str:
 
 
 @router.get("/cases", response_model=CasesResponse)
-async def get_cases() -> CasesResponse:
-    """List available cases from dataset."""
+def get_cases() -> CasesResponse:
+    """List available cases from dataset.
+
+    Note: This is a sync def (not async) because list_case_ids() is synchronous.
+    FastAPI automatically runs sync endpoints in a threadpool to avoid blocking.
+    """
     try:
         cases = list_case_ids()
         return CasesResponse(cases=cases)
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from None
 
 
 @router.post("/segment", response_model=SegmentResponse)
-async def run_segmentation(request: Request, body: SegmentRequest) -> SegmentResponse:
-    """Run DeepISLES segmentation on a case."""
+def run_segmentation(request: Request, body: SegmentRequest) -> SegmentResponse:
+    """Run DeepISLES segmentation on a case.
+
+    Note: This is a sync def (not async) because run_pipeline_on_case() is synchronous
+    and CPU/GPU-bound. FastAPI automatically runs sync endpoints in a threadpool,
+    which prevents blocking the event loop during inference.
+    """
     try:
         # Generate unique run ID to avoid conflicts
         run_id = str(uuid.uuid4())[:8]
@@ -77,5 +88,7 @@ async def run_segmentation(request: Request, body: SegmentRequest) -> SegmentRes
             dwiUrl=f"{backend_url}{file_path_prefix}/{dwi_filename}",
             predictionUrl=f"{backend_url}{file_path_prefix}/{pred_filename}",
         )
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from None

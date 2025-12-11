@@ -71,7 +71,7 @@ You **need both** because:
 │  Endpoints:                         │
 │  - GET  /api/cases                  │
 │  - POST /api/segment                │
-│  - GET  /api/files/{path}           │
+│  - GET  /files/{run_id}/{case}/...  │
 │                                     │
 │  Sleeps after 48h inactivity        │
 └─────────────────────────────────────┘
@@ -1097,25 +1097,24 @@ No additional env vars needed - uses existing stroke-deepisles-demo configuratio
 
 ## Dependencies Summary (Verified Dec 11, 2025)
 
-**Frontend (npm) - PINNED VERSIONS:**
+**Frontend (npm) - ACTUAL VERSIONS (from package.json):**
 | Package | Version | Notes |
 |---------|---------|-------|
-| react | 18.3.1 | NOT React 19 (CVE-2025-55182) |
-| react-dom | 18.3.1 | Must match react version |
-| @niivue/niivue | 0.65.0 | Latest stable |
-| typescript | 5.6.3 | Latest 5.6.x |
-| vite | 6.0.5 | Stable v6 (not v7/v8 beta) |
-| tailwindcss | 4.1.7 | Latest v4 |
-| @tailwindcss/vite | 4.1.7 | Must match tailwindcss |
-| @vitejs/plugin-react | 4.3.4 | Latest stable |
+| react | ^19.2.0 | React 19 client-only (safe from CVE-2025-55182) |
+| react-dom | ^19.2.0 | Must match react version |
+| @niivue/niivue | ^0.65.0 | Latest stable |
+| typescript | ~5.9.3 | Latest 5.9.x |
+| vite | ^7.2.4 | Latest v7 |
+| tailwindcss | ^4.1.17 | Latest v4 |
+| @tailwindcss/vite | ^4.1.17 | Must match tailwindcss |
+| @vitejs/plugin-react | ^5.1.1 | Latest stable |
 
-**Backend (pip) - PINNED VERSIONS:**
+**Backend (pip) - VERSIONS (from pyproject.toml):**
 | Package | Version | Notes |
 |---------|---------|-------|
-| fastapi | 0.124.2 | Latest (Dec 10, 2025) |
-| uvicorn[standard] | 0.34.0 | Latest stable |
-| pydantic | 2.10.4 | Latest stable |
-| python-multipart | >=0.0.18 | Required by FastAPI |
+| fastapi | >=0.115.0 | Latest compatible |
+| uvicorn[standard] | >=0.32.0 | Latest stable |
+| pydantic | (bundled) | Included with FastAPI |
 
-**Node.js:** >= 20.0.0 (required for Vite 6)
+**Node.js:** >= 20.0.0 (required for Vite 7)
 **Python:** >= 3.11 (recommended for FastAPI)
