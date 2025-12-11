@@ -81,9 +81,13 @@ You **need both** because:
 
 ## Project Structure
 
+This is an **existing monorepo** (`stroke-deepisles-demo`), NOT a new project. The frontend is
+added alongside the existing Python package. The "backend" is the existing `src/stroke_deepisles_demo/`
+package with a new `api/` submodule.
+
 ```
-stroke-viewer/
-├── frontend/                    # Static Space
+stroke-deepisles-demo/           # EXISTING monorepo
+├── frontend/                    # NEW: React + NiiVue (Static Space)
 │   ├── src/
 │   │   ├── components/
 │   │   │   ├── NiiVueViewer.tsx
@@ -99,25 +103,42 @@ stroke-viewer/
 │   │   ├── App.tsx
 │   │   ├── main.tsx
 │   │   └── index.css
+│   ├── e2e/                     # Playwright E2E tests
 │   ├── public/
 │   ├── index.html
 │   ├── vite.config.ts
+│   ├── vitest.config.ts
+│   ├── playwright.config.ts
 │   ├── tsconfig.json
 │   ├── package.json
 │   └── README.md                # HF Spaces YAML config
 │
-├── backend/                     # Docker Space
-│   ├── api/
+├── src/stroke_deepisles_demo/   # EXISTING Python package (Docker Space)
+│   ├── api/                     # NEW: FastAPI REST API submodule
 │   │   ├── __init__.py
 │   │   ├── main.py              # FastAPI app
 │   │   ├── routes.py            # API endpoints
 │   │   └── schemas.py           # Pydantic models
-│   ├── Dockerfile
-│   ├── requirements.txt
-│   └── README.md                # HF Spaces YAML config
+│   ├── core/                    # Config, logging (existing)
+│   ├── data/                    # Data adapters (existing)
+│   ├── inference/               # DeepISLES integration (existing)
+│   ├── ui/                      # Gradio UI (being replaced)
+│   ├── pipeline.py              # ML pipeline (existing)
+│   └── metrics.py               # Metrics computation (existing)
 │
-└── README.md                    # Project overview
+├── tests/
+│   ├── api/                     # NEW: API endpoint tests
+│   │   ├── __init__.py
+│   │   └── test_endpoints.py
+│   └── ...                      # Existing tests
+│
+├── Dockerfile                   # Docker for HF Spaces (existing)
+├── pyproject.toml               # Python package config (existing)
+└── README.md
 ```
+
+**Key difference from a greenfield project:** We're adding `frontend/` and `src/stroke_deepisles_demo/api/`
+to an existing codebase, NOT creating separate `frontend/` and `backend/` directories.
 
 ---
 
@@ -706,37 +727,44 @@ Built with React, TypeScript, Tailwind CSS, and Vite.
 
 ## Backend Implementation
 
-### requirements.txt
+The backend is the **existing** `src/stroke_deepisles_demo/` Python package. We add a new
+`api/` submodule for FastAPI endpoints. This keeps all Python code in one package with
+proper imports (e.g., `from stroke_deepisles_demo.api.routes import router`).
 
+### pyproject.toml (additions)
+
+Add these dependencies to the existing `pyproject.toml`:
+
+```toml
+[project.optional-dependencies]
+api = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+]
 ```
-fastapi==0.124.2
-uvicorn[standard]==0.34.0
-pydantic==2.10.4
-python-multipart>=0.0.18
 
-# Existing project dependencies
-stroke-deepisles-demo @ file:.
-```
-
-**Why these exact versions (Dec 2025):**
-- `fastapi` **0.124.2**: Latest stable (Dec 10, 2025)
-- `uvicorn[standard]` **0.34.0**: Latest stable
-- `pydantic` **2.10.4**: Latest stable
-- `python-multipart` **>=0.0.18**: Required by FastAPI 0.124.x
-
-### backend/api/main.py
+### src/stroke_deepisles_demo/api/__init__.py
 
 ```python
-"""FastAPI backend for stroke segmentation."""
+"""FastAPI REST API for stroke segmentation."""
+
+from stroke_deepisles_demo.api.main import app
+
+__all__ = ["app"]
+```
+
+### src/stroke_deepisles_demo/api/main.py
+
+```python
+"""FastAPI application for stroke segmentation API."""
 
 import os
-import re
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from api.routes import router
+from stroke_deepisles_demo.api.routes import router
 
 app = FastAPI(
     title="Stroke Segmentation API",
@@ -744,11 +772,10 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# CORS for frontend - HF Spaces use dashed hostnames: {org}--{space}.hf.space
-# Also supports PR previews: pr-{n}--{org}--{space}.hf.space
+# CORS configuration
 FRONTEND_ORIGIN = os.environ.get("FRONTEND_ORIGIN", "")
 CORS_ORIGINS = [
-    "http://localhost:5173",  # Local Vite dev server
+    "http://localhost:5173",  # Vite dev server
     "http://localhost:3000",  # Alternative local port
 ]
 if FRONTEND_ORIGIN:
@@ -757,12 +784,7 @@ if FRONTEND_ORIGIN:
 app.add_middleware(
     CORSMiddleware,
     allow_origins=CORS_ORIGINS,
-    # Regex matches HuggingFace Spaces origins:
-    # - Production: https://{org}--stroke-viewer-frontend.hf.space
-    # - PR preview: https://{org}--stroke-viewer-frontend--pr-{N}.hf.space
-    # - Branch:     https://{org}--stroke-viewer-frontend--{branch}.hf.space
-    # Pattern: anything--stroke-viewer-frontend, optionally followed by --anything
-    allow_origin_regex=r"https://.*--stroke-viewer-frontend(--.*)?\.hf\.space",
+    allow_origin_regex=r"https://.*--stroke-viewer-frontend(--.*)?\\.hf\\.space",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -771,17 +793,19 @@ app.add_middleware(
 # API routes
 app.include_router(router, prefix="/api")
 
-# Serve NIfTI files from results directory
-# Files are stored as /tmp/stroke-results/{run_id}/{case_id}/{filename}
-app.mount("/files", StaticFiles(directory="/tmp/stroke-results"), name="files")
+# Static files for NIfTI results (only mount if directory exists)
+RESULTS_DIR = "/tmp/stroke-results"
+if os.path.exists(RESULTS_DIR):
+    app.mount("/files", StaticFiles(directory=RESULTS_DIR), name="files")
 
 
 @app.get("/")
 async def root():
+    """Health check endpoint."""
     return {"status": "healthy", "service": "stroke-segmentation-api"}
 ```
 
-### backend/api/routes.py
+### src/stroke_deepisles_demo/api/routes.py
 
 ```python
 """API route handlers."""
@@ -791,15 +815,15 @@ import uuid
 from pathlib import Path
 
 from fastapi import APIRouter, HTTPException, Request
-from api.schemas import SegmentRequest, SegmentResponse, CasesResponse
 
+from stroke_deepisles_demo.api.schemas import CasesResponse, SegmentRequest, SegmentResponse
 from stroke_deepisles_demo.data import list_case_ids
 from stroke_deepisles_demo.pipeline import run_pipeline_on_case
 from stroke_deepisles_demo.metrics import compute_volume_ml
 
 router = APIRouter()
 
-# Base directory for results (must match StaticFiles mount in main.py)
+# Base directory for results
 RESULTS_BASE = Path("/tmp/stroke-results")
 
 
@@ -813,7 +837,6 @@ def get_backend_base_url(request: Request) -> str:
     env_url = os.environ.get("BACKEND_PUBLIC_URL", "").rstrip("/")
     if env_url:
         return env_url
-    # Fall back to request origin (works for local dev)
     return str(request.base_url).rstrip("/")
 
 
@@ -831,7 +854,7 @@ async def get_cases():
 async def run_segmentation(request: Request, body: SegmentRequest):
     """Run DeepISLES segmentation on a case."""
     try:
-        # Generate unique run ID to avoid conflicts between concurrent requests
+        # Generate unique run ID to avoid conflicts
         run_id = str(uuid.uuid4())[:8]
         output_dir = RESULTS_BASE / run_id
 
@@ -850,14 +873,11 @@ async def run_segmentation(request: Request, body: SegmentRequest):
         except Exception:
             pass
 
-        # Build ABSOLUTE file URLs for cross-origin NiiVue loading
-        # Files are at: /tmp/stroke-results/{run_id}/{case_id}/{filename}
-        # Served at: /files/{run_id}/{case_id}/{filename}
+        # Build absolute file URLs
         backend_url = get_backend_base_url(request)
         dwi_filename = result.input_files["dwi"].name
         pred_filename = result.prediction_mask.name
 
-        # URL path: /files/{run_id}/{case_id}/{filename}
         file_path_prefix = f"/files/{run_id}/{result.case_id}"
 
         return SegmentResponse(
@@ -868,29 +888,34 @@ async def run_segmentation(request: Request, body: SegmentRequest):
             dwiUrl=f"{backend_url}{file_path_prefix}/{dwi_filename}",
             predictionUrl=f"{backend_url}{file_path_prefix}/{pred_filename}",
         )
-
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 ```
 
-### backend/api/schemas.py
+### src/stroke_deepisles_demo/api/schemas.py
 
 ```python
-"""Pydantic schemas for API."""
+"""Pydantic schemas for API requests and responses."""
 
 from pydantic import BaseModel
 
 
 class CasesResponse(BaseModel):
+    """Response for GET /api/cases."""
+
     cases: list[str]
 
 
 class SegmentRequest(BaseModel):
+    """Request body for POST /api/segment."""
+
     case_id: str
     fast_mode: bool = True
 
 
 class SegmentResponse(BaseModel):
+    """Response for POST /api/segment."""
+
     caseId: str
     diceScore: float | None
     volumeMl: float | None
@@ -899,7 +924,9 @@ class SegmentResponse(BaseModel):
     predictionUrl: str
 ```
 
-### backend/Dockerfile
+### Dockerfile (update existing)
+
+The existing `Dockerfile` at project root needs to be updated for the API:
 
 ```dockerfile
 # CRITICAL: Must use isleschallenge/deepisles base image
@@ -907,26 +934,17 @@ class SegmentResponse(BaseModel):
 # - PyTorch with CUDA support
 # - Pre-installed DeepISLES model weights (~18GB)
 # - All medical imaging dependencies (nibabel, nnunet, etc.)
-#
-# Using python:3.11-slim would require manually downloading weights
-# and reinstalling all CUDA/PyTorch dependencies - not feasible.
 FROM isleschallenge/deepisles:latest
 
 WORKDIR /app
 
-# Copy the ENTIRE project (stroke-deepisles-demo package)
-# This is required because requirements.txt references "stroke-deepisles-demo @ file:."
+# Copy the project
 COPY pyproject.toml .
 COPY src/ src/
 COPY README.md .
 
-# Copy API code
-COPY backend/api/ api/
-COPY backend/requirements.txt .
-
-# Install API dependencies (FastAPI, uvicorn) + local package
-# Note: Base image already has torch, nibabel, etc.
-RUN pip install --no-cache-dir -r requirements.txt
+# Install the package with API dependencies
+RUN pip install --no-cache-dir -e ".[api]"
 
 # Create results directory (used by StaticFiles mount)
 RUN mkdir -p /tmp/stroke-results
@@ -938,8 +956,8 @@ ENV DEEPISLES_DIRECT_INVOCATION=1
 # Expose port (HF Spaces expects 7860)
 EXPOSE 7860
 
-# Run FastAPI
-CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "7860"]
+# Run FastAPI (note: module path is stroke_deepisles_demo.api.main:app)
+CMD ["uvicorn", "stroke_deepisles_demo.api.main:app", "--host", "0.0.0.0", "--port", "7860"]
 ```
 
 **CRITICAL: GPU Required**
@@ -992,48 +1010,48 @@ FastAPI backend running DeepISLES stroke lesion segmentation.
 ### Frontend (Local Development)
 
 ```bash
-# Create project
-npm create vite@latest stroke-viewer-frontend -- --template react-ts
-cd stroke-viewer-frontend
+cd frontend
 
-# Install dependencies
-npm install @niivue/niivue
-npm install -D tailwindcss @tailwindcss/vite
-
-# Copy the files from this spec into src/
+# Install dependencies (already configured in package.json)
+npm install
 
 # Run dev server
 npm run dev
 # Opens http://localhost:5173
+
+# Run tests
+npm test                  # Unit tests with Vitest
+npm run test:e2e          # E2E tests with Playwright
+npm run test:coverage     # Coverage report
 ```
 
 ### Backend (Local Development)
 
 ```bash
-cd backend
+# From project root (stroke-deepisles-demo/)
 
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
+# Install with API dependencies
+pip install -e ".[api]"
 
 # Run server
-uvicorn api.main:app --reload --port 7860
+uvicorn stroke_deepisles_demo.api.main:app --reload --port 7860
 # Opens http://localhost:7860
+
+# Run API tests
+pytest tests/api/ -v
 ```
 
 ### Deploy to HuggingFace
 
 ```bash
-# Frontend (Static Space)
+# Frontend (Static Space) - deploy from frontend/ directory
 cd frontend
+npm run build
 huggingface-cli repo create stroke-viewer-frontend --type space --space-sdk static
 huggingface-cli upload stroke-viewer-frontend ./dist . --repo-type space
 
-# Backend (Docker Space)
-cd backend
+# Backend (Docker Space) - deploy from project root
+# The Dockerfile at project root builds the full package including API
 huggingface-cli repo create stroke-viewer-api --type space --space-sdk docker
 huggingface-cli upload stroke-viewer-api . . --repo-type space
 ```
@@ -1068,11 +1086,12 @@ No additional env vars needed - uses existing stroke-deepisles-demo configuratio
 
 ## Next Steps
 
-1. Create `frontend/` directory with files from this spec
-2. Create `backend/` directory with files from this spec
-3. Test locally: `npm run dev` + `uvicorn api.main:app`
-4. Create HuggingFace Spaces (one Static, one Docker)
-5. Deploy and test
+1. ✅ Create `frontend/` directory with React + NiiVue (DONE - PR #32 merged)
+2. ✅ Create `src/stroke_deepisles_demo/api/` submodule with FastAPI (DONE)
+3. ✅ Create `tests/api/` with endpoint tests (DONE - 8 tests passing)
+4. Test locally: `npm run dev` + `uvicorn stroke_deepisles_demo.api.main:app`
+5. Create HuggingFace Spaces (one Static, one Docker)
+6. Deploy and test
 
 ---
 
