@@ -198,8 +198,7 @@ export default defineConfig({
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noFallthroughCasesInSwitch": true
   },
   "include": ["src"]
 }
@@ -334,9 +333,17 @@ interface NiiVueViewerProps {
 export function NiiVueViewer({ backgroundUrl, overlayUrl }: NiiVueViewerProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const nvRef = useRef<Niivue | null>(null)
+  // Guard against React StrictMode double-mount in development.
+  // StrictMode mounts → unmounts → mounts to detect side-effect issues.
+  // Without this guard, we'd create 2 WebGL contexts on the second mount.
+  const initRef = useRef(false)
 
   useEffect(() => {
     if (!canvasRef.current) return
+
+    // StrictMode guard: skip if already initialized (second mount after unmount)
+    if (initRef.current && nvRef.current) return
+    initRef.current = true
 
     // Initialize NiiVue
     const nv = new Niivue({
@@ -369,11 +376,13 @@ export function NiiVueViewer({ backgroundUrl, overlayUrl }: NiiVueViewerProps) {
     // navigating between results will exhaust contexts and break the viewer.
     return () => {
       if (nvRef.current) {
-        // NiiVue's destroy() releases GL resources
         try {
-          nvRef.current.closeDrawing()
+          // NiiVue's cleanup() releases event listeners and observers
+          // See: https://niivue.github.io/niivue/devdocs/classes/Niivue.html#cleanup
+          nvRef.current.cleanup()
           // Force WebGL context loss to free GPU memory immediately
-          const gl = canvasRef.current?.getContext('webgl2')
+          // Access gl from NiiVue instance, not canvas (avoids creating new context)
+          const gl = nvRef.current.gl
           if (gl) {
             const ext = gl.getExtension('WEBGL_lose_context')
             ext?.loseContext()
@@ -382,6 +391,7 @@ export function NiiVueViewer({ backgroundUrl, overlayUrl }: NiiVueViewerProps) {
           // Ignore cleanup errors
         }
         nvRef.current = null
+        initRef.current = false
       }
     }
   }, [backgroundUrl, overlayUrl])
@@ -889,19 +899,17 @@ class SegmentResponse(BaseModel):
 ### backend/Dockerfile
 
 ```dockerfile
-FROM python:3.11-slim
+# CRITICAL: Must use isleschallenge/deepisles base image
+# This image contains:
+# - PyTorch with CUDA support
+# - Pre-installed DeepISLES model weights (~18GB)
+# - All medical imaging dependencies (nibabel, nnunet, etc.)
+#
+# Using python:3.11-slim would require manually downloading weights
+# and reinstalling all CUDA/PyTorch dependencies - not feasible.
+FROM isleschallenge/deepisles:latest
 
 WORKDIR /app
-
-# Install system dependencies
-# - git: for pip installing from git repos
-# - libgl1: required by OpenCV (transitive dep of medical imaging libs)
-# - libglib2.0-0: required by OpenCV
-RUN apt-get update && apt-get install -y \
-    git \
-    libgl1-mesa-glx \
-    libglib2.0-0 \
-    && rm -rf /var/lib/apt/lists/*
 
 # Copy the ENTIRE project (stroke-deepisles-demo package)
 # This is required because requirements.txt references "stroke-deepisles-demo @ file:."
@@ -913,11 +921,16 @@ COPY README.md .
 COPY backend/api/ api/
 COPY backend/requirements.txt .
 
-# Install dependencies (including the local stroke-deepisles-demo package)
+# Install API dependencies (FastAPI, uvicorn) + local package
+# Note: Base image already has torch, nibabel, etc.
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Create results directory (used by StaticFiles mount)
 RUN mkdir -p /tmp/stroke-results
+
+# Environment variables for HuggingFace Spaces
+ENV HF_SPACES=1
+ENV DEEPISLES_DIRECT_INVOCATION=1
 
 # Expose port (HF Spaces expects 7860)
 EXPOSE 7860
@@ -925,6 +938,19 @@ EXPOSE 7860
 # Run FastAPI
 CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "7860"]
 ```
+
+**CRITICAL: GPU Required**
+
+DeepISLES requires GPU acceleration. HuggingFace Spaces FREE tier (`cpu-basic`) will NOT work.
+
+| Tier | GPU | Will Work? |
+|------|-----|------------|
+| `cpu-basic` (free) | None | ❌ No |
+| `t4-small` | NVIDIA T4 (16GB) | ✅ Yes |
+| `t4-medium` | NVIDIA T4 (16GB) | ✅ Yes |
+| `a10g-small` | NVIDIA A10G (24GB) | ✅ Yes |
+
+When creating the HF Space, select **T4-small** or higher.
 
 **Note:** The Dockerfile copies the full project because `requirements.txt` has:
 ```

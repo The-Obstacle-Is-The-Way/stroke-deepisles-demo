@@ -194,12 +194,12 @@ export const handlers = [
 
   // POST /api/segment - Run segmentation
   http.post(`${API_BASE}/api/segment`, async ({ request }) => {
-    const body = (await request.json()) as { case_id: string }
+    const body = (await request.json()) as { case_id: string; fast_mode?: boolean }
     return HttpResponse.json({
       caseId: body.case_id,
       diceScore: 0.847,
       volumeMl: 15.32,
-      elapsedSeconds: 12.5,
+      elapsedSeconds: body.fast_mode === false ? 45.0 : 12.5,
       dwiUrl: `${API_BASE}/files/dwi.nii.gz`,
       predictionUrl: `${API_BASE}/files/prediction.nii.gz`,
     })

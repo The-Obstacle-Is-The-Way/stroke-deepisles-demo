@@ -389,7 +389,10 @@ vi.mock('@niivue/niivue', () => ({
     attachToCanvas: vi.fn(),
     loadVolumes: vi.fn().mockResolvedValue(undefined),
     setSliceType: vi.fn(),
-    closeDrawing: vi.fn(), // Required for cleanup
+    cleanup: vi.fn(), // NiiVue's cleanup() releases event listeners/observers
+    gl: {
+      getExtension: vi.fn(() => ({ loseContext: vi.fn() })),
+    },
     opts: {},
   })),
 }))
@@ -432,7 +435,8 @@ describe('NiiVueViewer', () => {
     const mockInstance = {
       attachToCanvas: vi.fn(),
       loadVolumes: vi.fn().mockResolvedValue(undefined),
-      closeDrawing: vi.fn(),
+      cleanup: vi.fn(),
+      gl: { getExtension: vi.fn(() => ({ loseContext: vi.fn() })) },
       opts: {},
     }
     ;(Niivue as unknown as ReturnType<typeof vi.fn>).mockImplementation(
@@ -481,9 +485,17 @@ interface NiiVueViewerProps {
 export function NiiVueViewer({ backgroundUrl, overlayUrl }: NiiVueViewerProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const nvRef = useRef<Niivue | null>(null)
+  // Guard against React StrictMode double-mount in development.
+  // StrictMode mounts → unmounts → mounts to detect side-effect issues.
+  // Without this guard, we'd create 2 WebGL contexts on the second mount.
+  const initRef = useRef(false)
 
   useEffect(() => {
     if (!canvasRef.current) return
+
+    // StrictMode guard: skip if already initialized (second mount after unmount)
+    if (initRef.current && nvRef.current) return
+    initRef.current = true
 
     const nv = new Niivue({
       backColor: [0.05, 0.05, 0.05, 1],
@@ -514,9 +526,12 @@ export function NiiVueViewer({ backgroundUrl, overlayUrl }: NiiVueViewerProps) {
     return () => {
       if (nvRef.current) {
         try {
-          nvRef.current.closeDrawing()
+          // NiiVue's cleanup() releases event listeners and observers
+          // See: https://niivue.github.io/niivue/devdocs/classes/Niivue.html#cleanup
+          nvRef.current.cleanup()
           // Force WebGL context loss to free GPU memory immediately
-          const gl = canvasRef.current?.getContext('webgl2')
+          // Access gl from NiiVue instance, not canvas (avoids creating new context)
+          const gl = nvRef.current.gl
           if (gl) {
             const ext = gl.getExtension('WEBGL_lose_context')
             ext?.loseContext()
@@ -525,6 +540,7 @@ export function NiiVueViewer({ backgroundUrl, overlayUrl }: NiiVueViewerProps) {
           // Ignore cleanup errors
         }
         nvRef.current = null
+        initRef.current = false
       }
     }
   }, [backgroundUrl, overlayUrl])
