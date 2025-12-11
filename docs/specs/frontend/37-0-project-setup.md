@@ -37,7 +37,7 @@ npm install @niivue/niivue@0.65.0
 
 # Dev dependencies - Testing
 npm install -D vitest@2.1.8 @vitest/coverage-v8@2.1.8 @vitest/ui@2.1.8
-npm install -D @testing-library/react@16.1.0 @testing-library/jest-dom@6.6.3 @testing-library/user-event@14.5.2
+npm install -D @testing-library/react@16.3.0 @testing-library/jest-dom@6.6.3 @testing-library/user-event@14.5.2
 npm install -D jsdom@25.0.1 msw@2.7.0
 
 # Dev dependencies - Styling
