@@ -131,6 +131,11 @@ module = [
     "numpy.*",
     "pyarrow.*",
     "pytest.*",
+    # FastAPI route decorators cause "untyped decorator" errors in strict mode
+    # See: https://github.com/tiangolo/fastapi/discussions/7463
+    "fastapi.*",
+    "starlette.*",
+    "uvicorn.*",
     # DeepISLES modules (only available in DeepISLES Docker image)
     "src.isles22_ensemble",
 ]
