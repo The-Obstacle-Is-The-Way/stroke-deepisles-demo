@@ -12,19 +12,28 @@ export function CaseSelector({ selectedCase, onSelectCase }: CaseSelectorProps) 
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    const abortController = new AbortController()
+
     const fetchCases = async () => {
       try {
-        const data = await apiClient.getCases()
+        const data = await apiClient.getCases(abortController.signal)
         setCases(data.cases)
       } catch (err) {
+        // Ignore abort errors - component unmounted
+        if (err instanceof Error && err.name === 'AbortError') return
+
         const message = err instanceof Error ? err.message : 'Unknown error'
         setError(`Failed to load cases: ${message}`)
       } finally {
-        setIsLoading(false)
+        if (!abortController.signal.aborted) {
+          setIsLoading(false)
+        }
       }
     }
 
     fetchCases()
+
+    return () => abortController.abort()
   }, [])
 
   if (isLoading) {

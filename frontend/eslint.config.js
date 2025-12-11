@@ -6,9 +6,10 @@ import tseslint from 'typescript-eslint'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  globalIgnores(['dist', 'coverage']),
+  // Main source files - full React rules
   {
-    files: ['**/*.{ts,tsx}'],
+    files: ['src/**/*.{ts,tsx}'],
     extends: [
       js.configs.recommended,
       tseslint.configs.recommended,
@@ -18,6 +19,15 @@ export default defineConfig([
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
+    },
+  },
+  // E2E tests - Playwright, not React (disable react-hooks rules)
+  {
+    files: ['e2e/**/*.{ts,tsx}'],
+    extends: [js.configs.recommended, tseslint.configs.recommended],
+    languageOptions: {
+      ecmaVersion: 2020,
+      globals: { ...globals.browser, ...globals.node },
     },
   },
 ])

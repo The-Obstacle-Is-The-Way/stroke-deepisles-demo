@@ -136,7 +136,9 @@ const mockWebGL2Context = {
   isContextLost: vi.fn(() => false),
 }
 
-HTMLCanvasElement.prototype.getContext = function (
+// Override getContext to return WebGL mock - uses type assertion for test mocking
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+;(HTMLCanvasElement.prototype as any).getContext = function (
   contextType: string
 ): RenderingContext | null {
   if (contextType === 'webgl2' || contextType === 'webgl') {
