@@ -364,9 +364,25 @@ export function NiiVueViewer({ backgroundUrl, overlayUrl }: NiiVueViewerProps) {
     // Load volumes
     nv.loadVolumes(volumes)
 
-    // Cleanup on unmount
+    // Cleanup on unmount - CRITICAL: Release WebGL context
+    // Browsers limit WebGL contexts (~16 in Chrome). Without cleanup,
+    // navigating between results will exhaust contexts and break the viewer.
     return () => {
-      nvRef.current = null
+      if (nvRef.current) {
+        // NiiVue's destroy() releases GL resources
+        try {
+          nvRef.current.closeDrawing()
+          // Force WebGL context loss to free GPU memory immediately
+          const gl = canvasRef.current?.getContext('webgl2')
+          if (gl) {
+            const ext = gl.getExtension('WEBGL_lose_context')
+            ext?.loseContext()
+          }
+        } catch {
+          // Ignore cleanup errors
+        }
+        nvRef.current = null
+      }
     }
   }, [backgroundUrl, overlayUrl])
 
@@ -663,6 +679,9 @@ colorTo: purple
 sdk: static
 app_file: dist/index.html
 app_build_command: npm run build
+# CRITICAL: Vite 6 requires Node.js >= 20. HF Spaces defaults to Node 18.
+# Without this, the build will fail or produce warnings.
+nodejs_version: "20"
 pinned: false
 ---
 
@@ -700,6 +719,9 @@ stroke-deepisles-demo @ file:.
 ```python
 """FastAPI backend for stroke segmentation."""
 
+import os
+import re
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -712,13 +734,22 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# CORS for frontend
+# CORS for frontend - HF Spaces use dashed hostnames: {org}--{space}.hf.space
+# Also supports PR previews: pr-{n}--{org}--{space}.hf.space
+FRONTEND_ORIGIN = os.environ.get("FRONTEND_ORIGIN", "")
+CORS_ORIGINS = [
+    "http://localhost:5173",  # Local Vite dev server
+    "http://localhost:3000",  # Alternative local port
+]
+if FRONTEND_ORIGIN:
+    CORS_ORIGINS.append(FRONTEND_ORIGIN)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://your-frontend.hf.space",  # Production frontend
-        "http://localhost:5173",  # Local Vite dev server
-    ],
+    allow_origins=CORS_ORIGINS,
+    # Regex matches: https://{anything}--stroke-viewer-frontend.hf.space
+    # Covers: org--space, pr-N--org--space, branch--org--space
+    allow_origin_regex=r"https://.*--stroke-viewer-frontend\.hf\.space",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -727,7 +758,8 @@ app.add_middleware(
 # API routes
 app.include_router(router, prefix="/api")
 
-# Serve NIfTI files from temp directory
+# Serve NIfTI files from results directory
+# Files are stored as /tmp/stroke-results/{run_id}/{case_id}/{filename}
 app.mount("/files", StaticFiles(directory="/tmp/stroke-results"), name="files")
 
 
@@ -741,7 +773,11 @@ async def root():
 ```python
 """API route handlers."""
 
-from fastapi import APIRouter, HTTPException
+import os
+import uuid
+from pathlib import Path
+
+from fastapi import APIRouter, HTTPException, Request
 from api.schemas import SegmentRequest, SegmentResponse, CasesResponse
 
 from stroke_deepisles_demo.data import list_case_ids
@@ -749,6 +785,23 @@ from stroke_deepisles_demo.pipeline import run_pipeline_on_case
 from stroke_deepisles_demo.metrics import compute_volume_ml
 
 router = APIRouter()
+
+# Base directory for results (must match StaticFiles mount in main.py)
+RESULTS_BASE = Path("/tmp/stroke-results")
+
+
+def get_backend_base_url(request: Request) -> str:
+    """Get the backend's public URL for building absolute file URLs.
+
+    Priority:
+    1. BACKEND_PUBLIC_URL env var (for production HF Spaces)
+    2. Request's base URL (for local development)
+    """
+    env_url = os.environ.get("BACKEND_PUBLIC_URL", "").rstrip("/")
+    if env_url:
+        return env_url
+    # Fall back to request origin (works for local dev)
+    return str(request.base_url).rstrip("/")
 
 
 @router.get("/cases", response_model=CasesResponse)
@@ -762,12 +815,17 @@ async def get_cases():
 
 
 @router.post("/segment", response_model=SegmentResponse)
-async def run_segmentation(request: SegmentRequest):
+async def run_segmentation(request: Request, body: SegmentRequest):
     """Run DeepISLES segmentation on a case."""
     try:
+        # Generate unique run ID to avoid conflicts between concurrent requests
+        run_id = str(uuid.uuid4())[:8]
+        output_dir = RESULTS_BASE / run_id
+
         result = run_pipeline_on_case(
-            request.case_id,
-            fast=request.fast_mode,
+            body.case_id,
+            output_dir=output_dir,
+            fast=body.fast_mode,
             compute_dice=True,
             cleanup_staging=True,
         )
@@ -779,18 +837,23 @@ async def run_segmentation(request: SegmentRequest):
         except Exception:
             pass
 
-        # Build file URLs (served via /files mount)
-        base_url = "/files"
+        # Build ABSOLUTE file URLs for cross-origin NiiVue loading
+        # Files are at: /tmp/stroke-results/{run_id}/{case_id}/{filename}
+        # Served at: /files/{run_id}/{case_id}/{filename}
+        backend_url = get_backend_base_url(request)
         dwi_filename = result.input_files["dwi"].name
         pred_filename = result.prediction_mask.name
+
+        # URL path: /files/{run_id}/{case_id}/{filename}
+        file_path_prefix = f"/files/{run_id}/{result.case_id}"
 
         return SegmentResponse(
             caseId=result.case_id,
             diceScore=result.dice_score,
             volumeMl=volume_ml,
             elapsedSeconds=round(result.elapsed_seconds, 2),
-            dwiUrl=f"{base_url}/{dwi_filename}",
-            predictionUrl=f"{base_url}/{pred_filename}",
+            dwiUrl=f"{backend_url}{file_path_prefix}/{dwi_filename}",
+            predictionUrl=f"{backend_url}{file_path_prefix}/{pred_filename}",
         )
 
     except Exception as e:
@@ -831,18 +894,29 @@ FROM python:3.11-slim
 WORKDIR /app
 
 # Install system dependencies
+# - git: for pip installing from git repos
+# - libgl1: required by OpenCV (transitive dep of medical imaging libs)
+# - libglib2.0-0: required by OpenCV
 RUN apt-get update && apt-get install -y \
     git \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements and install
-COPY requirements.txt .
+# Copy the ENTIRE project (stroke-deepisles-demo package)
+# This is required because requirements.txt references "stroke-deepisles-demo @ file:."
+COPY pyproject.toml .
+COPY src/ src/
+COPY README.md .
+
+# Copy API code
+COPY backend/api/ api/
+COPY backend/requirements.txt .
+
+# Install dependencies (including the local stroke-deepisles-demo package)
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
-COPY api/ api/
-
-# Create results directory
+# Create results directory (used by StaticFiles mount)
 RUN mkdir -p /tmp/stroke-results
 
 # Expose port (HF Spaces expects 7860)
@@ -851,6 +925,12 @@ EXPOSE 7860
 # Run FastAPI
 CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "7860"]
 ```
+
+**Note:** The Dockerfile copies the full project because `requirements.txt` has:
+```
+stroke-deepisles-demo @ file:.
+```
+This PEP 508 local path reference requires the package source to be present.
 
 ### backend/README.md (HuggingFace Spaces Config)
 

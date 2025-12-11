@@ -248,6 +248,28 @@ global.ResizeObserver = class ResizeObserver {
 }
 
 // Mock WebGL2 context for NiiVue
+// NiiVue requires specific extensions for float textures (overlays)
+// See: https://github.com/niivue/niivue#browser-requirements
+const mockExtensions: Record<string, object> = {
+  // Required for float textures (overlay rendering)
+  EXT_color_buffer_float: {},
+  OES_texture_float_linear: {},
+  // Required for WebGL context management
+  WEBGL_lose_context: {
+    loseContext: vi.fn(),
+    restoreContext: vi.fn(),
+  },
+  // Optional but commonly requested
+  EXT_texture_filter_anisotropic: {
+    TEXTURE_MAX_ANISOTROPY_EXT: 0x84fe,
+    MAX_TEXTURE_MAX_ANISOTROPY_EXT: 0x84ff,
+  },
+  WEBGL_debug_renderer_info: {
+    UNMASKED_VENDOR_WEBGL: 0x9245,
+    UNMASKED_RENDERER_WEBGL: 0x9246,
+  },
+}
+
 const mockWebGL2Context = {
   canvas: null as HTMLCanvasElement | null,
   drawingBufferWidth: 640,
@@ -256,10 +278,12 @@ const mockWebGL2Context = {
   shaderSource: vi.fn(),
   compileShader: vi.fn(),
   getShaderParameter: vi.fn(() => true),
+  getShaderInfoLog: vi.fn(() => ''),
   createProgram: vi.fn(() => ({})),
   attachShader: vi.fn(),
   linkProgram: vi.fn(),
   getProgramParameter: vi.fn(() => true),
+  getProgramInfoLog: vi.fn(() => ''),
   useProgram: vi.fn(),
   getAttribLocation: vi.fn(() => 0),
   getUniformLocation: vi.fn(() => ({})),
@@ -271,33 +295,70 @@ const mockWebGL2Context = {
   createTexture: vi.fn(() => ({})),
   bindTexture: vi.fn(),
   texParameteri: vi.fn(),
+  texParameterf: vi.fn(),
   texImage2D: vi.fn(),
+  texImage3D: vi.fn(),
+  texStorage2D: vi.fn(),
+  texStorage3D: vi.fn(),
+  texSubImage2D: vi.fn(),
+  texSubImage3D: vi.fn(),
   activeTexture: vi.fn(),
+  generateMipmap: vi.fn(),
   uniform1i: vi.fn(),
   uniform1f: vi.fn(),
   uniform2f: vi.fn(),
+  uniform2fv: vi.fn(),
   uniform3f: vi.fn(),
+  uniform3fv: vi.fn(),
   uniform4f: vi.fn(),
+  uniform4fv: vi.fn(),
   uniformMatrix4fv: vi.fn(),
   viewport: vi.fn(),
+  scissor: vi.fn(),
   clear: vi.fn(),
   clearColor: vi.fn(),
+  clearDepth: vi.fn(),
   enable: vi.fn(),
   disable: vi.fn(),
   blendFunc: vi.fn(),
+  blendFuncSeparate: vi.fn(),
+  depthFunc: vi.fn(),
+  depthMask: vi.fn(),
+  cullFace: vi.fn(),
   drawArrays: vi.fn(),
   drawElements: vi.fn(),
-  getExtension: vi.fn(() => null),
-  getParameter: vi.fn(() => 16384),
+  // CRITICAL: Return stub extensions for NiiVue float texture support
+  getExtension: vi.fn((name: string) => mockExtensions[name] || null),
+  getParameter: vi.fn((pname: number) => {
+    // Return reasonable defaults for common parameter queries
+    if (pname === 0x0d33) return 16384 // MAX_TEXTURE_SIZE
+    if (pname === 0x8073) return 2048 // MAX_3D_TEXTURE_SIZE
+    if (pname === 0x851c) return 16 // MAX_TEXTURE_IMAGE_UNITS
+    return 0
+  }),
+  getSupportedExtensions: vi.fn(() => Object.keys(mockExtensions)),
   pixelStorei: vi.fn(),
+  readPixels: vi.fn(),
   createFramebuffer: vi.fn(() => ({})),
   bindFramebuffer: vi.fn(),
   framebufferTexture2D: vi.fn(),
   checkFramebufferStatus: vi.fn(() => 36053), // FRAMEBUFFER_COMPLETE
+  createRenderbuffer: vi.fn(() => ({})),
+  bindRenderbuffer: vi.fn(),
+  renderbufferStorage: vi.fn(),
+  framebufferRenderbuffer: vi.fn(),
   deleteTexture: vi.fn(),
   deleteBuffer: vi.fn(),
   deleteProgram: vi.fn(),
   deleteShader: vi.fn(),
+  deleteFramebuffer: vi.fn(),
+  deleteRenderbuffer: vi.fn(),
+  createVertexArray: vi.fn(() => ({})),
+  bindVertexArray: vi.fn(),
+  deleteVertexArray: vi.fn(),
+  flush: vi.fn(),
+  finish: vi.fn(),
+  isContextLost: vi.fn(() => false),
 }
 
 HTMLCanvasElement.prototype.getContext = function (
@@ -328,6 +389,7 @@ vi.mock('@niivue/niivue', () => ({
     attachToCanvas: vi.fn(),
     loadVolumes: vi.fn().mockResolvedValue(undefined),
     setSliceType: vi.fn(),
+    closeDrawing: vi.fn(), // Required for cleanup
     opts: {},
   })),
 }))
@@ -370,6 +432,7 @@ describe('NiiVueViewer', () => {
     const mockInstance = {
       attachToCanvas: vi.fn(),
       loadVolumes: vi.fn().mockResolvedValue(undefined),
+      closeDrawing: vi.fn(),
       opts: {},
     }
     ;(Niivue as unknown as ReturnType<typeof vi.fn>).mockImplementation(
@@ -445,8 +508,24 @@ export function NiiVueViewer({ backgroundUrl, overlayUrl }: NiiVueViewerProps) {
 
     nv.loadVolumes(volumes)
 
+    // Cleanup on unmount - CRITICAL: Release WebGL context
+    // Browsers limit WebGL contexts (~16 in Chrome). Without cleanup,
+    // navigating between results will exhaust contexts and break the viewer.
     return () => {
-      nvRef.current = null
+      if (nvRef.current) {
+        try {
+          nvRef.current.closeDrawing()
+          // Force WebGL context loss to free GPU memory immediately
+          const gl = canvasRef.current?.getContext('webgl2')
+          if (gl) {
+            const ext = gl.getExtension('WEBGL_lose_context')
+            ext?.loseContext()
+          }
+        } catch {
+          // Ignore cleanup errors
+        }
+        nvRef.current = null
+      }
     }
   }, [backgroundUrl, overlayUrl])
 

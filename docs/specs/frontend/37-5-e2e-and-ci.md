@@ -165,12 +165,74 @@ export class HomePage {
 
 ---
 
-## Step 5: E2E Tests
+## Step 5: Global API Mocking Fixture
+
+**CRITICAL:** E2E tests run against `npm run dev` which has no backend.
+Without API mocking, tests will hang or fail on API calls.
+
+Create `e2e/fixtures.ts` - Global mock for all API calls:
+
+```typescript
+import { test as base, expect } from '@playwright/test'
+
+// API response mocks matching MSW handlers
+const MOCK_CASES = ['sub-stroke0001', 'sub-stroke0002', 'sub-stroke0003']
+const MOCK_SEGMENT_RESPONSE = {
+  caseId: 'sub-stroke0001',
+  diceScore: 0.847,
+  volumeMl: 15.32,
+  elapsedSeconds: 12.5,
+  // Use a real public NIfTI for visual testing (NiiVue demo image)
+  dwiUrl: 'https://niivue.github.io/niivue-demo-images/mni152.nii.gz',
+  predictionUrl: 'https://niivue.github.io/niivue-demo-images/mni152.nii.gz',
+}
+
+// Extend base test to include API mocking
+export const test = base.extend({
+  // Auto-mock API routes for every test
+  page: async ({ page }, use) => {
+    // Mock GET /api/cases
+    await page.route('**/api/cases', (route) => {
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ cases: MOCK_CASES }),
+      })
+    })
+
+    // Mock POST /api/segment - return different caseId based on request
+    await page.route('**/api/segment', async (route) => {
+      const request = route.request()
+      const body = JSON.parse(request.postData() || '{}')
+
+      // Simulate network delay
+      await new Promise((r) => setTimeout(r, 200))
+
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          ...MOCK_SEGMENT_RESPONSE,
+          caseId: body.case_id || 'sub-stroke0001',
+        }),
+      })
+    })
+
+    await use(page)
+  },
+})
+
+export { expect }
+```
+
+---
+
+## Step 6: E2E Tests
 
 Create `e2e/home.spec.ts`:
 
 ```typescript
-import { test, expect } from '@playwright/test'
+import { test, expect } from './fixtures'
 import { HomePage } from './pages/HomePage'
 
 test.describe('Home Page', () => {
@@ -211,7 +273,7 @@ test.describe('Home Page', () => {
 Create `e2e/segmentation-flow.spec.ts`:
 
 ```typescript
-import { test, expect } from '@playwright/test'
+import { test, expect } from './fixtures'
 import { HomePage } from './pages/HomePage'
 
 test.describe('Segmentation Flow', () => {
@@ -265,12 +327,24 @@ test.describe('Segmentation Flow', () => {
 Create `e2e/error-handling.spec.ts`:
 
 ```typescript
-import { test, expect } from '@playwright/test'
+import { test as base, expect } from '@playwright/test'
 import { HomePage } from './pages/HomePage'
+
+// Error tests need to override the default mocks, so use base test
+const test = base
 
 test.describe('Error Handling', () => {
   test('shows error when API fails', async ({ page }) => {
-    // Mock API to return error
+    // Mock cases API (needed for page to load)
+    await page.route('**/api/cases', (route) => {
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ cases: ['sub-stroke0001'] }),
+      })
+    })
+
+    // Mock segment API to return error
     await page.route('**/api/segment', (route) => {
       route.fulfill({
         status: 500,
@@ -311,7 +385,7 @@ test.describe('Error Handling', () => {
 
 ---
 
-## Step 6: GitHub Actions CI Workflow
+## Step 7: GitHub Actions CI Workflow
 
 Create `.github/workflows/frontend-ci.yml`:
 
@@ -414,7 +488,7 @@ jobs:
 
 ---
 
-## Step 7: Add Coverage Thresholds
+## Step 8: Add Coverage Thresholds
 
 Update `vite.config.ts` coverage section:
 
@@ -441,7 +515,7 @@ coverage: {
 
 ---
 
-## Step 8: Run All Tests
+## Step 9: Run All Tests
 
 ```bash
 # Unit & Integration tests
@@ -476,6 +550,7 @@ frontend/
 ├── e2e/
 │   ├── pages/
 │   │   └── HomePage.ts
+│   ├── fixtures.ts              # <-- NEW: Global API mocking
 │   ├── home.spec.ts
 │   ├── segmentation-flow.spec.ts
 │   └── error-handling.spec.ts
