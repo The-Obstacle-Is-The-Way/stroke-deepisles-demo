@@ -17,12 +17,9 @@ numpy>=1.26.0,<2.0.0
 pydantic>=2.5.0
 pydantic-settings>=2.1.0
 
-# UI - Gradio 6.x (latest stable as of Dec 2025)
-gradio>=6.0.0,<7.0.0
-matplotlib>=3.8.0
-
 # Networking
 requests>=2.0.0
 
-# Custom Components
-./packages/niivueviewer
+# API server (FastAPI backend)
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0

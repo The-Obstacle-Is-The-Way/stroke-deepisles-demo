@@ -1,6 +1,6 @@
-# Dockerfile for Hugging Face Spaces deployment
+# Dockerfile for Hugging Face Spaces deployment (FastAPI backend)
 # Base: DeepISLES image with nnU-Net, SEALS, and all ML dependencies
-# See: docs/specs/07-hf-spaces-deployment.md
+# See: docs/specs/frontend/36-frontend-without-gradio-hf-spaces.md
 #
 # IMPORTANT: During Docker build, GPU is NOT available.
 # All GPU operations happen at runtime only.
@@ -31,12 +31,8 @@ WORKDIR /home/user/demo
 # Copy requirements first for better layer caching
 COPY --chown=1000:1000 requirements.txt /home/user/demo/requirements.txt
 
-# Copy local packages (Custom Components) BEFORE pip install
-# This is required because requirements.txt refers to ./packages/niivueviewer
-COPY --chown=1000:1000 packages/ /home/user/demo/packages/
-
 # Install Python dependencies into SYSTEM Python (NOT conda env)
-# DeepISLES conda env is Python 3.8, but Gradio 6 needs Python 3.10+
+# DeepISLES conda env is Python 3.8, but FastAPI needs Python 3.10+
 # We'll shell out to conda env for inference only
 RUN pip install --no-cache-dir -r requirements.txt
 
@@ -44,7 +40,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY --chown=1000:1000 pyproject.toml /home/user/demo/pyproject.toml
 COPY --chown=1000:1000 README.md /home/user/demo/README.md
 COPY --chown=1000:1000 src/ /home/user/demo/src/
-COPY --chown=1000:1000 app.py /home/user/demo/app.py
 
 # Copy adapter script for subprocess invocation of DeepISLES
 # This script runs in the conda env (Py3.8) and is called via subprocess
@@ -67,18 +62,18 @@ ENV DEEPISLES_PATH=/app
 ENV HF_HOME=/home/user/demo/cache
 
 # Create directories for data with proper permissions
-RUN mkdir -p /home/user/demo/data /home/user/demo/results /home/user/demo/cache && \
-    chown -R 1000:1000 /home/user/demo
+# CRITICAL: /tmp/stroke-results is required for FastAPI StaticFiles mount
+RUN mkdir -p /home/user/demo/data /home/user/demo/results /home/user/demo/cache /tmp/stroke-results && \
+    chown -R 1000:1000 /home/user/demo /tmp/stroke-results
 
 # Switch to non-root user (required by HF Spaces)
 USER user
 
-# Expose the Gradio port
+# Expose the API port (HF Spaces expects 7860)
 EXPOSE 7860
 
 # Reset ENTRYPOINT from base image
 ENTRYPOINT []
 
-# Run Gradio app with SYSTEM Python (Py3.10+)
-# DeepISLES inference is invoked via subprocess into conda env
-CMD ["python", "-m", "stroke_deepisles_demo.ui.app"]
+# Run FastAPI with uvicorn (module path: stroke_deepisles_demo.api.main:app)
+CMD ["uvicorn", "stroke_deepisles_demo.api.main:app", "--host", "0.0.0.0", "--port", "7860"]
