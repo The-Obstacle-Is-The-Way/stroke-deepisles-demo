@@ -99,4 +99,62 @@ describe('NiiVueViewer', () => {
     const canvas = document.querySelector('canvas')
     expect(canvas).toHaveClass('w-full', 'h-[500px]')
   })
+
+  it('displays error when volume loading fails', async () => {
+    const errorMessage = 'Network error loading volume'
+    mockLoadVolumes.mockRejectedValueOnce(new Error(errorMessage))
+
+    render(<NiiVueViewer {...defaultProps} />)
+
+    // Wait for error to be displayed
+    const errorElement = await screen.findByText(/failed to load volume/i)
+    expect(errorElement).toBeInTheDocument()
+    expect(errorElement).toHaveTextContent(errorMessage)
+  })
+
+  it('calls onError callback when volume loading fails', async () => {
+    const errorMessage = 'Network error'
+    const onError = vi.fn()
+    mockLoadVolumes.mockRejectedValueOnce(new Error(errorMessage))
+
+    render(<NiiVueViewer {...defaultProps} onError={onError} />)
+
+    // Wait for error callback to be invoked
+    await vi.waitFor(() => {
+      expect(onError).toHaveBeenCalledWith(errorMessage)
+    })
+  })
+
+  it('ignores errors from stale loads after URL change', async () => {
+    const onError = vi.fn()
+    // First load succeeds, second load fails slowly
+    let rejectSecondLoad: (error: Error) => void
+    mockLoadVolumes
+      .mockResolvedValueOnce(undefined)
+      .mockImplementationOnce(() => new Promise((_, reject) => {
+        rejectSecondLoad = reject
+      }))
+
+    const { rerender } = render(
+      <NiiVueViewer backgroundUrl="http://localhost/first.nii.gz" onError={onError} />
+    )
+
+    // Change URL - starts second load
+    rerender(
+      <NiiVueViewer backgroundUrl="http://localhost/second.nii.gz" onError={onError} />
+    )
+
+    // Change URL again - makes second load stale
+    rerender(
+      <NiiVueViewer backgroundUrl="http://localhost/third.nii.gz" onError={onError} />
+    )
+
+    // Now reject the second load (stale)
+    rejectSecondLoad!(new Error('Stale load error'))
+
+    // Wait a tick and verify onError was NOT called with stale error
+    await vi.waitFor(() => {
+      expect(onError).not.toHaveBeenCalledWith('Stale load error')
+    })
+  })
 })
