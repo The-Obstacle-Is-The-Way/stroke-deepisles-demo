@@ -207,28 +207,48 @@ export default defineConfig({
 })
 ```
 
-### tsconfig.json
+### TypeScript Configuration (Vite 7 Project References Pattern)
 
+Vite 7 uses a project references pattern for better separation of app, test, and build configs:
+
+**tsconfig.json** (root - references only):
+```json
+{
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" },
+    { "path": "./tsconfig.test.json" }
+  ]
+}
+```
+
+**tsconfig.app.json** (application code):
 ```json
 {
   "compilerOptions": {
-    "target": "ES2020",
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "target": "ES2022",
     "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "ESNext",
+    "types": ["vite/client"],
     "skipLibCheck": true,
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
-    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
     "moduleDetection": "force",
     "noEmit": true,
     "jsx": "react-jsx",
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "erasableSyntaxOnly": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["src/test", "src/mocks", "src/**/*.test.tsx", "src/**/*.test.ts"]
 }
 ```
 
