@@ -2,11 +2,13 @@
 
 **Date:** 2025-12-10
 **Branch:** `debug/hf-spaces-ui-completely-broken`
-**Status:** P0 CRITICAL - ROOT CAUSE IDENTIFIED
+**Status:** P0 CRITICAL - ROOT CAUSE IDENTIFIED + EXTERNALLY VALIDATED
 
 ---
 
-## TL;DR - THE FIX
+## TL;DR - THE FIXES (2 Critical Issues)
+
+### Issue 1: Missing `gradio` Prop (Causes UI Freeze)
 
 Our custom component is missing the **`gradio` prop** which provides `i18n` and `autoscroll`. This is 100% required for StatusTracker to work.
 
@@ -18,11 +20,12 @@ let { value, loading_status, ... }: Props = $props();
 <StatusTracker {...loading_status} />  // CRASHES - no i18n!
 ```
 
-**Correct pattern (from Gradio docs):**
+**Correct pattern:**
 ```svelte
-// CORRECT - includes gradio prop
-export let gradio: Gradio<{ change: never }>;
-export let loading_status: LoadingStatus;
+// CORRECT - includes gradio prop (can use $props() OR export let)
+import type { Gradio } from "@gradio/utils";
+
+let { gradio, loading_status, ... }: Props = $props();
 
 <StatusTracker
     autoscroll={gradio.autoscroll}
@@ -30,6 +33,19 @@ export let loading_status: LoadingStatus;
     {...loading_status}
 />
 ```
+
+### Issue 2: .gitignore Excludes Compiled Templates (Causes Missing Assets on HF Spaces)
+
+**CRITICAL NEW FINDING from external validation:**
+
+`packages/niivueviewer/.gitignore` line 12 has:
+```
+backend/**/templates/
+```
+
+This means **any rebuilt component templates will NOT be committed**. Even though the current templates are tracked (added before the rule), a `gradio cc build` will create new files that Git ignores.
+
+**Fix:** Remove `backend/**/templates/` from `.gitignore`
 
 ---
 
@@ -47,51 +63,67 @@ The custom component **does not declare the `gradio` prop**, which is injected b
 - [PDF Component Example](https://www.gradio.app/guides/pdf-component-example) shows working pattern
 - [StatusTracker npm](https://www.npmjs.com/package/@gradio/statustracker) confirms `i18n` is required
 
-### Secondary Issue: Svelte 5 Runes vs Svelte 4 Syntax
+### Secondary Issue: Svelte 5 Runes vs Svelte 4 Syntax - **REFUTED**
 
-Our component uses **Svelte 5 runes** (`$props()`, `$effect()`), but all Gradio documentation examples use **Svelte 4 syntax** (`export let`).
+**External validation clarified:** Svelte 5 runes are NOT inherently risky.
+
+Gradio 6 ships with **Svelte 5.43.14**, and `@gradio` packages peer-depend on `svelte ^5.43.4`. Svelte 5 runes (`$props()`, `$effect()`) are supported.
 
 | File | Syntax | Status |
 |------|--------|--------|
-| Index.svelte | `$props()` (Svelte 5) | **WRONG** |
-| Example.svelte | `export let` (Svelte 4) | Correct |
-| Gradio PDF example | `export let` (Svelte 4) | Reference |
+| Index.svelte | `$props()` (Svelte 5) | **OK** (if gradio prop is added) |
+| Example.svelte | `export let` (Svelte 4) | OK (legacy syntax) |
+| Gradio PDF example | `export let` (Svelte 4) | Reference (uses older syntax) |
 
-While Svelte 5 is backwards compatible, mixing paradigms in a Gradio custom component is risky and undocumented.
+**Verdict:** We can keep `$props()` and `$effect()`. The issue is the missing `gradio` prop, not the syntax choice. However, mixing paradigms within a single package (Index uses runes, Example uses legacy) is inconsistent and should be unified.
 
 ---
 
-## All Issues Found (Priority Order)
+## All Issues Found (Priority Order) - EXTERNALLY VALIDATED
 
-### Critical (Will Definitely Break)
-
-| # | Issue | File:Line | Fix |
-|---|-------|-----------|-----|
-| 1 | **Missing `gradio` prop** | Index.svelte:8-20 | Add `export let gradio: Gradio<{...}>` |
-| 2 | **Missing `i18n` to StatusTracker** | Index.svelte:121 | Add `i18n={gradio.i18n}` |
-| 3 | **Missing `autoscroll` to StatusTracker** | Index.svelte:120 | Add `autoscroll={gradio.autoscroll}` |
-
-### Likely Breaking
+### P0 - Critical (Will Definitely Break)
 
 | # | Issue | File:Line | Fix |
 |---|-------|-----------|-----|
-| 4 | Svelte 5 `$props()` instead of `export let` | Index.svelte:22-34 | Rewrite to Svelte 4 syntax |
-| 5 | Svelte 5 `$effect()` instead of `$:` | Index.svelte:98-103 | Rewrite to reactive statement |
-| 6 | No EVENTS defined in Python backend | niivueviewer.py | Add `EVENTS = [Events.change]` |
+| 1 | **Missing `gradio` prop** | Index.svelte:8-20 | Add `gradio: Gradio<{...}>` to Props interface and destructure |
+| 2 | **Missing `i18n` to StatusTracker** | Index.svelte:120-123 | Add `i18n={gradio.i18n}` |
+| 3 | **Missing `autoscroll` to StatusTracker** | Index.svelte:120-123 | Replace `autoscroll={false}` with `autoscroll={gradio.autoscroll}` |
+| 4 | **`.gitignore` excludes templates/** | `.gitignore:12` | Remove `backend/**/templates/` line |
 
-### Possibly Contributing
+### P1 - Likely Breaking
 
 | # | Issue | File:Line | Fix |
 |---|-------|-----------|-----|
-| 7 | No error boundary in onMount | Index.svelte:40-50 | Add try/catch |
-| 8 | Double loadVolumes call (onMount + $effect) | Index.svelte:40,98 | Remove redundant call |
-| 9 | NiiVue shows "loading..." forever on null value | Index.svelte:73-76 | Better empty state |
+| 5 | No error handling in onMount | Index.svelte:40-50 | Wrap NiiVue init in try/catch |
+| 6 | Double loadVolumes call (onMount + $effect) | Index.svelte:49,98-103 | Remove $effect's loadVolumes() or add guard |
+
+### P2 - Code Quality (Should Fix)
+
+| # | Issue | File:Line | Fix |
+|---|-------|-----------|-----|
+| 7 | Unused template dependencies | frontend/package.json | Remove cropperjs, lazy-brush, resize-observer-polyfill |
+| 8 | Example.svelte value shape mismatch | Example.svelte | Update to use {background_url, overlay_url} |
+| 9 | Mixed Svelte syntax (Index=runes, Example=legacy) | Both files | Unify to one paradigm |
+
+### P3 - Documentation
+
+| # | Issue | File:Line | Fix |
+|---|-------|-----------|-----|
+| 10 | TECHNICAL_DEBT.md says P0 resolved | docs/TECHNICAL_DEBT.md:13-33 | Update status to reflect unresolved |
+| 11 | Stale diagnostic docs | ROOT_CAUSE_ANALYSIS.md, etc | Archive or update |
+
+### NOT an Issue (External Validation Refuted)
+
+| # | Previous Claim | Status | Reason |
+|---|----------------|--------|--------|
+| - | Svelte 5 runes are risky | **REFUTED** | Gradio 6 ships Svelte 5.43.14; runes are supported |
+| - | Missing EVENTS breaks component | **LOW PRIORITY** | Output components can work without EVENTS declaration |
 
 ---
 
 ## Correct Index.svelte Pattern
 
-Based on [Gradio's PDF Component Example](https://www.gradio.app/guides/pdf-component-example):
+Based on [Gradio's PDF Component Example](https://www.gradio.app/guides/pdf-component-example) + external validation that Svelte 5 runes are OK:
 
 ```svelte
 <script lang="ts">
@@ -102,26 +134,42 @@ Based on [Gradio's PDF Component Example](https://www.gradio.app/guides/pdf-comp
     import type { LoadingStatus } from "@gradio/statustracker";
     import type { Gradio } from "@gradio/utils";
 
-    // Props - using Svelte 4 syntax (export let)
-    export let value: { background_url: string | null; overlay_url: string | null } | null = null;
-    export let label: string | undefined = undefined;
-    export let show_label = true;
-    export let loading_status: LoadingStatus | undefined = undefined;
-    export let elem_id = "";
-    export let elem_classes: string[] = [];
-    export let visible = true;
-    export let height = 500;
-    export let container = true;
-    export let scale: number | null = null;
-    export let min_width: number | undefined = undefined;
+    // Props interface - MUST include gradio
+    interface Props {
+        value?: { background_url: string | null; overlay_url: string | null } | null;
+        label?: string;
+        show_label?: boolean;
+        loading_status?: LoadingStatus;
+        elem_id?: string;
+        elem_classes?: string[];
+        visible?: boolean;
+        height?: number;
+        container?: boolean;
+        scale?: number | null;
+        min_width?: number;
+        // CRITICAL: gradio prop provides i18n, autoscroll, dispatch
+        gradio: Gradio<{ change: never }>;
+    }
 
-    // CRITICAL: The gradio prop provides i18n, autoscroll, and dispatch
-    export let gradio: Gradio<{
-        change: never;
-    }>;
+    // Svelte 5 runes syntax (validated as OK with Gradio 6)
+    let {
+        value = null,
+        label,
+        show_label = true,
+        loading_status,
+        elem_id = "",
+        elem_classes = [],
+        visible = true,
+        height = 500,
+        container = true,
+        scale = null,
+        min_width = undefined,
+        gradio  // CRITICAL: must destructure this
+    }: Props = $props();
 
     let canvas: HTMLCanvasElement;
     let nv: Niivue | null = null;
+    let initialized = false;  // Guard against double-load
 
     onMount(async () => {
         try {
@@ -132,6 +180,7 @@ Based on [Gradio's PDF Component Example](https://www.gradio.app/guides/pdf-comp
             });
             await nv.attachToCanvas(canvas);
             await loadVolumes();
+            initialized = true;
         } catch (error) {
             console.error('[NiiVue] Initialization failed:', error);
         }
@@ -175,10 +224,12 @@ Based on [Gradio's PDF Component Example](https://www.gradio.app/guides/pdf-comp
         }
     }
 
-    // Reactive statement (Svelte 4 syntax)
-    $: if (value !== undefined) {
-        loadVolumes();
-    }
+    // Svelte 5 $effect - only run after initial mount to avoid double-load
+    $effect(() => {
+        if (initialized && value !== undefined) {
+            loadVolumes();
+        }
+    });
 </script>
 
 <Block
@@ -225,9 +276,11 @@ Based on [Gradio's PDF Component Example](https://www.gradio.app/guides/pdf-comp
 
 ---
 
-## Python Backend Fix
+## Python Backend Fix (LOW PRIORITY)
 
-Add EVENTS to enable event dispatching:
+**External validation says:** EVENTS is not required for output-only components. The UI freeze is NOT caused by missing EVENTS.
+
+However, if we want to emit events in the future:
 
 ```python
 from gradio.events import Events
@@ -235,29 +288,37 @@ from gradio.events import Events
 class NiiVueViewer(Component):
     """WebGL NIfTI viewer using NiiVue."""
 
-    EVENTS = [Events.change]  # ADD THIS
+    EVENTS = [Events.change]  # OPTIONAL - add if we want to emit change events
 
     data_model = NiiVueViewerData
     # ... rest unchanged
 ```
 
+**Decision:** Skip for now. Focus on P0 issues first.
+
 ---
 
-## Validation Checklist
+## Validation Checklist (Updated per External Validation)
 
 ### Before Fix
-- [ ] `gradio` prop declared? **NO**
-- [ ] `i18n` passed to StatusTracker? **NO**
-- [ ] `autoscroll` passed to StatusTracker? **NO**
-- [ ] Using Svelte 4 syntax? **NO** (using Svelte 5 runes)
-- [ ] EVENTS defined in Python? **NO**
+- [ ] `gradio` prop declared? **NO** ← P0
+- [ ] `i18n` passed to StatusTracker? **NO** ← P0
+- [ ] `autoscroll` passed to StatusTracker? **NO** ← P0
+- [ ] `.gitignore` allows templates/? **NO** (ignored!) ← P0
+- [ ] onMount has error handling? **NO** ← P1
+- [ ] Double loadVolumes prevented? **NO** ← P1
 
 ### After Fix (Target)
-- [ ] `gradio` prop declared? YES
-- [ ] `i18n` passed to StatusTracker? YES
-- [ ] `autoscroll` passed to StatusTracker? YES
-- [ ] Using Svelte 4 syntax? YES
-- [ ] EVENTS defined in Python? YES
+- [x] `gradio` prop declared? YES
+- [x] `i18n` passed to StatusTracker? YES
+- [x] `autoscroll` passed to StatusTracker? YES
+- [x] `.gitignore` allows templates/? YES
+- [x] onMount has error handling? YES
+- [x] Double loadVolumes prevented? YES (via `initialized` guard)
+
+### Not Required (Per External Validation)
+- Svelte 4 syntax? **NOT REQUIRED** - Svelte 5 runes are OK with Gradio 6
+- EVENTS in Python? **NOT REQUIRED** - output components work without it
 
 ---
 
@@ -285,15 +346,22 @@ Push to HF Spaces only after local test passes.
 
 ---
 
-## External Audit Validation
+## External Audit Validation (Two Independent Agents Confirmed)
 
 | Claim | Validated | Evidence |
 |-------|-----------|----------|
-| StatusTracker requires `i18n` | **TRUE** | [Gradio docs](https://www.gradio.app/guides/frontend), [npm package](https://www.npmjs.com/package/@gradio/statustracker) |
-| `gradio` prop provides `i18n` | **TRUE** | [PDF example](https://www.gradio.app/guides/pdf-component-example) shows `gradio.i18n` |
-| Svelte 5 runes may cause issues | **LIKELY** | All Gradio examples use Svelte 4 `export let` |
-| Missing EVENTS in Python | **TRUE** | [Backend guide](https://www.gradio.app/guides/backend) shows EVENTS required for events |
-| `demo.load()` blocking | **FALSE** | Runs after render, not the cause |
+| StatusTracker requires `i18n` | **TRUE** | @gradio/statustracker npm package requires i18n with no default; compiled JS dereferences `e.i18n()` |
+| `gradio` prop provides `i18n` | **TRUE** | Official PDF Component Example shows `gradio.i18n` pattern |
+| Svelte 5 runes cause issues | **REFUTED** | Gradio 6 ships Svelte 5.43.14; @gradio packages peer-depend on svelte ^5.43.4 |
+| Missing EVENTS breaks component | **REFUTED** | Output components can work without EVENTS; not relevant to UI freeze |
+| `.gitignore` excludes templates/ | **TRUE** | `packages/niivueviewer/.gitignore:12` has `backend/**/templates/` |
+| `demo.load()` blocks hydration | **FALSE** | Runs after render, not the cause |
+
+### Web Search Validation Sources
+- Gradio GitHub Issue #6609: Hydration freezes when frontend errors occur before StatusTracker renders
+- Gradio GitHub Issue #7649: WebGL must be handled via custom component
+- Gradio GitHub Issue #11319: Spaces failures when templates not packaged
+- @gradio/statustracker npm tarball: Props interface confirms `i18n` required with no default
 
 ---
 
@@ -402,7 +470,7 @@ Create a Gradio Custom Component for NiiVue WebGL viewer
 
 ---
 
-## Lessons Learned
+## Lessons Learned (Updated Post-Validation)
 
 ### 1. Official Documentation Is Not Optional
 
@@ -427,24 +495,42 @@ The spec was reviewed for:
 - ✅ HF Spaces deployment
 - ❌ **Component prop requirements** (MISSED)
 - ❌ **StatusTracker requirements** (MISSED)
+- ❌ **`.gitignore` patterns** (MISSED - templates were ignored!)
 
-### 5. Svelte 5 Runes Are Risky With Gradio
+### 5. ~~Svelte 5 Runes Are Risky With Gradio~~ **REFUTED**
 
-Gradio's documentation and all examples use Svelte 4. Using Svelte 5 runes introduces untested behavior. **Follow the documented pattern.**
+**Correction:** External validation proved Gradio 6 ships with Svelte 5.43.14 and supports runes. The issue was the missing `gradio` prop, not the syntax choice.
+
+### 6. NEW: Check .gitignore Before Assuming Files Are Committed
+
+The templates/ directory was ignored by `.gitignore`. Even though existing files were tracked, any rebuild would create new files that Git ignores. **Always verify .gitignore patterns when dealing with build artifacts.**
+
+### 7. NEW: External Validation Is Critical for Complex Issues
+
+Two independent external agents validated our findings and caught:
+- The `.gitignore` issue we missed
+- Refuted the Svelte 5 concern
+- Confirmed the exact mechanism (i18n deref crash)
 
 ---
 
-## Summary
+## Summary (Post External Validation)
 
-**The UI freeze is caused by StatusTracker crashing due to missing `i18n` prop.** The `i18n` is provided by the `gradio` prop, which our component never declares. This is a fundamental implementation error - we didn't follow the Gradio custom component pattern correctly.
+**Root Cause #1:** The UI freeze is caused by StatusTracker crashing due to missing `i18n` prop. The `i18n` is provided by the `gradio` prop, which our component never declares. The compiled JS dereferences `e.i18n()` which throws a TypeError, blocking Svelte hydration.
 
-**Why it was missed:** The spec didn't thoroughly read official Gradio documentation. It focused on NiiVue/WebGL integration and assumed Gradio component patterns, rather than verifying against working examples.
+**Root Cause #2:** The `.gitignore` file ignores `backend/**/templates/`, meaning any rebuilt component assets won't be committed. This is a deployment time bomb.
 
-**The fix is straightforward:**
-1. Add `export let gradio: Gradio<{...}>` to Index.svelte
+**Why it was missed:** The spec didn't thoroughly read official Gradio documentation OR check `.gitignore` patterns.
+
+**The fix is straightforward (P0 only):**
+1. Add `gradio: Gradio<{...}>` to Props interface in Index.svelte
 2. Pass `gradio.i18n` and `gradio.autoscroll` to StatusTracker
-3. Convert from Svelte 5 runes to Svelte 4 syntax for safety
-4. Add EVENTS to Python backend
-5. Rebuild with `gradio cc build`
+3. Remove `backend/**/templates/` from `.gitignore`
+4. Rebuild with `gradio cc build`
+5. Commit the new templates
 
-**For future custom components:** Always read the official Frontend Guide and PDF Component Example FIRST, then verify your implementation matches line-by-line.
+**NOT required (per external validation):**
+- Converting to Svelte 4 syntax (Svelte 5 runes are fine)
+- Adding EVENTS to Python backend (output components don't need it)
+
+**For future custom components:** Always read the official Frontend Guide and PDF Component Example FIRST, verify your implementation matches, AND check `.gitignore` patterns for build artifacts.

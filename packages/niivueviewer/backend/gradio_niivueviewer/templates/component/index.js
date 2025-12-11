@@ -1,4 +1,4 @@
-import * as y from "../../../../../assets/svelte/svelte_internal_client.js";
+import * as C from "../../../../../assets/svelte/svelte_internal_client.js";
 import { onMount as mn, untrack as ir, tick as Ea, onDestroy as Fa } from "../../../../../assets/svelte/svelte_svelte.js";
 import "../../../../../assets/svelte/svelte_internal_flags_legacy.js";
 import { spring as sr } from "../../../../../assets/svelte/svelte_motion.js";
@@ -16,12 +16,12 @@ function rt(i, e, t, s, r, a, n, o, l) {
   return c[0] = i, c[1] = e, c[2] = t, c[3] = s, c[4] = r, c[5] = a, c[6] = n, c[7] = o, c[8] = l, c;
 }
 function Sa(i, e) {
-  var t = e[0], s = e[1], r = e[2], a = e[3], n = e[4], o = e[5], l = e[6], c = e[7], h = e[8], u = h * n - o * c, d = -h * a + o * l, f = c * a - n * l, g = t * u + s * d + r * f;
-  return g ? (g = 1 / g, i[0] = u * g, i[1] = (-h * s + r * c) * g, i[2] = (o * s - r * n) * g, i[3] = d * g, i[4] = (h * t - r * l) * g, i[5] = (-o * t + r * a) * g, i[6] = f * g, i[7] = (-c * t + s * l) * g, i[8] = (n * t - s * a) * g, i) : null;
+  var t = e[0], s = e[1], r = e[2], a = e[3], n = e[4], o = e[5], l = e[6], c = e[7], h = e[8], u = h * n - o * c, d = -h * a + o * l, f = c * a - n * l, m = t * u + s * d + r * f;
+  return m ? (m = 1 / m, i[0] = u * m, i[1] = (-h * s + r * c) * m, i[2] = (o * s - r * n) * m, i[3] = d * m, i[4] = (h * t - r * l) * m, i[5] = (-o * t + r * a) * m, i[6] = f * m, i[7] = (-c * t + s * l) * m, i[8] = (n * t - s * a) * m, i) : null;
 }
 function gn(i, e, t) {
-  var s = e[0], r = e[1], a = e[2], n = e[3], o = e[4], l = e[5], c = e[6], h = e[7], u = e[8], d = t[0], f = t[1], g = t[2], m = t[3], p = t[4], v = t[5], A = t[6], x = t[7], w = t[8];
-  return i[0] = d * s + f * n + g * c, i[1] = d * r + f * o + g * h, i[2] = d * a + f * l + g * u, i[3] = m * s + p * n + v * c, i[4] = m * r + p * o + v * h, i[5] = m * a + p * l + v * u, i[6] = A * s + x * n + w * c, i[7] = A * r + x * o + w * h, i[8] = A * a + x * l + w * u, i;
+  var s = e[0], r = e[1], a = e[2], n = e[3], o = e[4], l = e[5], c = e[6], h = e[7], u = e[8], d = t[0], f = t[1], m = t[2], g = t[3], p = t[4], v = t[5], A = t[6], x = t[7], w = t[8];
+  return i[0] = d * s + f * n + m * c, i[1] = d * r + f * o + m * h, i[2] = d * a + f * l + m * u, i[3] = g * s + p * n + v * c, i[4] = g * r + p * o + v * h, i[5] = g * a + p * l + v * u, i[6] = A * s + x * n + w * c, i[7] = A * r + x * o + w * h, i[8] = A * a + x * l + w * u, i;
 }
 function ie() {
   var i = new Ce(16);
@@ -34,9 +34,9 @@ function xe(i) {
 function Ia(i, e) {
   return i[0] = e[0], i[1] = e[1], i[2] = e[2], i[3] = e[3], i[4] = e[4], i[5] = e[5], i[6] = e[6], i[7] = e[7], i[8] = e[8], i[9] = e[9], i[10] = e[10], i[11] = e[11], i[12] = e[12], i[13] = e[13], i[14] = e[14], i[15] = e[15], i;
 }
-function Le(i, e, t, s, r, a, n, o, l, c, h, u, d, f, g, m) {
+function Le(i, e, t, s, r, a, n, o, l, c, h, u, d, f, m, g) {
   var p = new Ce(16);
-  return p[0] = i, p[1] = e, p[2] = t, p[3] = s, p[4] = r, p[5] = a, p[6] = n, p[7] = o, p[8] = l, p[9] = c, p[10] = h, p[11] = u, p[12] = d, p[13] = f, p[14] = g, p[15] = m, p;
+  return p[0] = i, p[1] = e, p[2] = t, p[3] = s, p[4] = r, p[5] = a, p[6] = n, p[7] = o, p[8] = l, p[9] = c, p[10] = h, p[11] = u, p[12] = d, p[13] = f, p[14] = m, p[15] = g, p;
 }
 function pn(i) {
   return i[0] = 1, i[1] = 0, i[2] = 0, i[3] = 0, i[4] = 0, i[5] = 1, i[6] = 0, i[7] = 0, i[8] = 0, i[9] = 0, i[10] = 1, i[11] = 0, i[12] = 0, i[13] = 0, i[14] = 0, i[15] = 1, i;
@@ -50,16 +50,16 @@ function Ne(i, e) {
   return i;
 }
 function Re(i, e) {
-  var t = e[0], s = e[1], r = e[2], a = e[3], n = e[4], o = e[5], l = e[6], c = e[7], h = e[8], u = e[9], d = e[10], f = e[11], g = e[12], m = e[13], p = e[14], v = e[15], A = t * o - s * n, x = t * l - r * n, w = t * c - a * n, D = s * l - r * o, b = s * c - a * o, C = r * c - a * l, E = h * m - u * g, F = h * p - d * g, M = h * v - f * g, S = u * p - d * m, T = u * v - f * m, k = d * v - f * p, B = A * k - x * T + w * S + D * M - b * F + C * E;
-  return B ? (B = 1 / B, i[0] = (o * k - l * T + c * S) * B, i[1] = (r * T - s * k - a * S) * B, i[2] = (m * C - p * b + v * D) * B, i[3] = (d * b - u * C - f * D) * B, i[4] = (l * M - n * k - c * F) * B, i[5] = (t * k - r * M + a * F) * B, i[6] = (p * w - g * C - v * x) * B, i[7] = (h * C - d * w + f * x) * B, i[8] = (n * T - o * M + c * E) * B, i[9] = (s * M - t * T - a * E) * B, i[10] = (g * b - m * w + v * A) * B, i[11] = (u * w - h * b - f * A) * B, i[12] = (o * F - n * S - l * E) * B, i[13] = (t * S - s * F + r * E) * B, i[14] = (m * x - g * D - p * A) * B, i[15] = (h * D - u * x + d * A) * B, i) : null;
+  var t = e[0], s = e[1], r = e[2], a = e[3], n = e[4], o = e[5], l = e[6], c = e[7], h = e[8], u = e[9], d = e[10], f = e[11], m = e[12], g = e[13], p = e[14], v = e[15], A = t * o - s * n, x = t * l - r * n, w = t * c - a * n, D = s * l - r * o, b = s * c - a * o, y = r * c - a * l, E = h * g - u * m, F = h * p - d * m, M = h * v - f * m, S = u * p - d * g, T = u * v - f * g, k = d * v - f * p, B = A * k - x * T + w * S + D * M - b * F + y * E;
+  return B ? (B = 1 / B, i[0] = (o * k - l * T + c * S) * B, i[1] = (r * T - s * k - a * S) * B, i[2] = (g * y - p * b + v * D) * B, i[3] = (d * b - u * y - f * D) * B, i[4] = (l * M - n * k - c * F) * B, i[5] = (t * k - r * M + a * F) * B, i[6] = (p * w - m * y - v * x) * B, i[7] = (h * y - d * w + f * x) * B, i[8] = (n * T - o * M + c * E) * B, i[9] = (s * M - t * T - a * E) * B, i[10] = (m * b - g * w + v * A) * B, i[11] = (u * w - h * b - f * A) * B, i[12] = (o * F - n * S - l * E) * B, i[13] = (t * S - s * F + r * E) * B, i[14] = (g * x - m * D - p * A) * B, i[15] = (h * D - u * x + d * A) * B, i) : null;
 }
 function mt(i, e, t) {
-  var s = e[0], r = e[1], a = e[2], n = e[3], o = e[4], l = e[5], c = e[6], h = e[7], u = e[8], d = e[9], f = e[10], g = e[11], m = e[12], p = e[13], v = e[14], A = e[15], x = t[0], w = t[1], D = t[2], b = t[3];
-  return i[0] = x * s + w * o + D * u + b * m, i[1] = x * r + w * l + D * d + b * p, i[2] = x * a + w * c + D * f + b * v, i[3] = x * n + w * h + D * g + b * A, x = t[4], w = t[5], D = t[6], b = t[7], i[4] = x * s + w * o + D * u + b * m, i[5] = x * r + w * l + D * d + b * p, i[6] = x * a + w * c + D * f + b * v, i[7] = x * n + w * h + D * g + b * A, x = t[8], w = t[9], D = t[10], b = t[11], i[8] = x * s + w * o + D * u + b * m, i[9] = x * r + w * l + D * d + b * p, i[10] = x * a + w * c + D * f + b * v, i[11] = x * n + w * h + D * g + b * A, x = t[12], w = t[13], D = t[14], b = t[15], i[12] = x * s + w * o + D * u + b * m, i[13] = x * r + w * l + D * d + b * p, i[14] = x * a + w * c + D * f + b * v, i[15] = x * n + w * h + D * g + b * A, i;
+  var s = e[0], r = e[1], a = e[2], n = e[3], o = e[4], l = e[5], c = e[6], h = e[7], u = e[8], d = e[9], f = e[10], m = e[11], g = e[12], p = e[13], v = e[14], A = e[15], x = t[0], w = t[1], D = t[2], b = t[3];
+  return i[0] = x * s + w * o + D * u + b * g, i[1] = x * r + w * l + D * d + b * p, i[2] = x * a + w * c + D * f + b * v, i[3] = x * n + w * h + D * m + b * A, x = t[4], w = t[5], D = t[6], b = t[7], i[4] = x * s + w * o + D * u + b * g, i[5] = x * r + w * l + D * d + b * p, i[6] = x * a + w * c + D * f + b * v, i[7] = x * n + w * h + D * m + b * A, x = t[8], w = t[9], D = t[10], b = t[11], i[8] = x * s + w * o + D * u + b * g, i[9] = x * r + w * l + D * d + b * p, i[10] = x * a + w * c + D * f + b * v, i[11] = x * n + w * h + D * m + b * A, x = t[12], w = t[13], D = t[14], b = t[15], i[12] = x * s + w * o + D * u + b * g, i[13] = x * r + w * l + D * d + b * p, i[14] = x * a + w * c + D * f + b * v, i[15] = x * n + w * h + D * m + b * A, i;
 }
 function St(i, e, t) {
-  var s = t[0], r = t[1], a = t[2], n, o, l, c, h, u, d, f, g, m, p, v;
-  return e === i ? (i[12] = e[0] * s + e[4] * r + e[8] * a + e[12], i[13] = e[1] * s + e[5] * r + e[9] * a + e[13], i[14] = e[2] * s + e[6] * r + e[10] * a + e[14], i[15] = e[3] * s + e[7] * r + e[11] * a + e[15]) : (n = e[0], o = e[1], l = e[2], c = e[3], h = e[4], u = e[5], d = e[6], f = e[7], g = e[8], m = e[9], p = e[10], v = e[11], i[0] = n, i[1] = o, i[2] = l, i[3] = c, i[4] = h, i[5] = u, i[6] = d, i[7] = f, i[8] = g, i[9] = m, i[10] = p, i[11] = v, i[12] = n * s + h * r + g * a + e[12], i[13] = o * s + u * r + m * a + e[13], i[14] = l * s + d * r + p * a + e[14], i[15] = c * s + f * r + v * a + e[15]), i;
+  var s = t[0], r = t[1], a = t[2], n, o, l, c, h, u, d, f, m, g, p, v;
+  return e === i ? (i[12] = e[0] * s + e[4] * r + e[8] * a + e[12], i[13] = e[1] * s + e[5] * r + e[9] * a + e[13], i[14] = e[2] * s + e[6] * r + e[10] * a + e[14], i[15] = e[3] * s + e[7] * r + e[11] * a + e[15]) : (n = e[0], o = e[1], l = e[2], c = e[3], h = e[4], u = e[5], d = e[6], f = e[7], m = e[8], g = e[9], p = e[10], v = e[11], i[0] = n, i[1] = o, i[2] = l, i[3] = c, i[4] = h, i[5] = u, i[6] = d, i[7] = f, i[8] = m, i[9] = g, i[10] = p, i[11] = v, i[12] = n * s + h * r + m * a + e[12], i[13] = o * s + u * r + g * a + e[13], i[14] = l * s + d * r + p * a + e[14], i[15] = c * s + f * r + v * a + e[15]), i;
 }
 function rr(i, e, t) {
   var s = t[0], r = t[1], a = t[2];
@@ -571,20 +571,20 @@ var ao = /* @__PURE__ */ Zt(ti, 9, 1), oo = /* @__PURE__ */ Zt(Fn, 5, 1), ji = f
       var Ve = new ye(Math.max(ue * 2, se));
       Ve.set(t), t = Ve;
     }
-  }, h = e.f || 0, u = e.p || 0, d = e.b || 0, f = e.l, g = e.d, m = e.m, p = e.n, v = r * 8;
+  }, h = e.f || 0, u = e.p || 0, d = e.b || 0, f = e.l, m = e.d, g = e.m, p = e.n, v = r * 8;
   do {
     if (!f) {
       h = Oe(i, u, 1);
       var A = Oe(i, u + 1, 3);
       if (u += 3, A)
         if (A == 1)
-          f = ao, g = oo, m = 9, p = 5;
+          f = ao, m = oo, g = 9, p = 5;
         else if (A == 2) {
-          var b = Oe(i, u, 31) + 257, C = Oe(i, u + 10, 15) + 4, E = b + Oe(i, u + 5, 31) + 1;
+          var b = Oe(i, u, 31) + 257, y = Oe(i, u + 10, 15) + 4, E = b + Oe(i, u + 5, 31) + 1;
           u += 14;
-          for (var F = new ye(E), M = new ye(19), S = 0; S < C; ++S)
+          for (var F = new ye(E), M = new ye(19), S = 0; S < y; ++S)
             M[io[S]] = Oe(i, u + S * 3, 7);
-          u += C * 3;
+          u += y * 3;
           for (var T = ji(M), k = (1 << T) - 1, B = Zt(M, T, 1), S = 0; S < E; ) {
             var U = B[Oe(i, u, k)];
             u += U & 15;
@@ -598,7 +598,7 @@ var ao = /* @__PURE__ */ Zt(ti, 9, 1), oo = /* @__PURE__ */ Zt(Fn, 5, 1), ji = f
             }
           }
           var P = F.subarray(0, b), L = F.subarray(b);
-          m = ji(P), p = ji(L), f = Zt(P, m, 1), g = Zt(L, p, 1);
+          g = ji(P), p = ji(L), f = Zt(P, g, 1), m = Zt(L, p, 1);
         } else
           Ie(1);
       else {
@@ -616,7 +616,7 @@ var ao = /* @__PURE__ */ Zt(ti, 9, 1), oo = /* @__PURE__ */ Zt(Fn, 5, 1), ji = f
       }
     }
     o && c(d + 131072);
-    for (var q = (1 << m) - 1, X = (1 << p) - 1, O = u; ; O = u) {
+    for (var q = (1 << g) - 1, X = (1 << p) - 1, O = u; ; O = u) {
       var V = f[Zi(i, u) & q], Y = V >> 4;
       if (u += V & 15, u > v) {
         l && Ie(0);
@@ -633,7 +633,7 @@ var ao = /* @__PURE__ */ Zt(ti, 9, 1), oo = /* @__PURE__ */ Zt(Fn, 5, 1), ji = f
           var S = Y - 257, W = bn[S];
           _ = Oe(i, u, (1 << W) - 1) + En[S], u += W;
         }
-        var Q = g[Zi(i, u) & X], J = Q >> 4;
+        var Q = m[Zi(i, u) & X], J = Q >> 4;
         Q || Ie(3), u += Q & 15;
         var L = no[J];
         if (J > 3) {
@@ -655,7 +655,7 @@ var ao = /* @__PURE__ */ Zt(ti, 9, 1), oo = /* @__PURE__ */ Zt(Fn, 5, 1), ji = f
           t[d] = t[d - L];
       }
     }
-    e.l = f, e.p = O, e.b = d, e.f = h, f && (h = 1, e.m = m, e.d = g, e.n = p);
+    e.l = f, e.p = O, e.b = d, e.f = h, f && (h = 1, e.m = g, e.d = m, e.n = p);
   } while (!h);
   return d != t.length && n ? Ei(t, 0, d) : t.subarray(0, d);
 }, co = /* @__PURE__ */ new ye(0), Tn = function(i) {
@@ -1044,8 +1044,8 @@ class H {
       [0, 0, 0, 0],
       [0, 0, 0, 0],
       [0, 0, 0, 0]
-    ], d, f = e, g = t, m = s, p, v, A;
-    return u[3][0] = u[3][1] = u[3][2] = 0, u[3][3] = 1, d = 1 - (f * f + g * g + m * m), d < 1e-7 ? (d = 1 / Math.sqrt(f * f + g * g + m * m), f *= d, g *= d, m *= d, d = 0) : d = Math.sqrt(d), p = o > 0 ? o : 1, v = l > 0 ? l : 1, A = c > 0 ? c : 1, h < 0 && (A = -A), u[0][0] = (d * d + f * f - g * g - m * m) * p, u[0][1] = 2 * (f * g - d * m) * v, u[0][2] = 2 * (f * m + d * g) * A, u[1][0] = 2 * (f * g + d * m) * p, u[1][1] = (d * d + g * g - f * f - m * m) * v, u[1][2] = 2 * (g * m - d * f) * A, u[2][0] = 2 * (f * m - d * g) * p, u[2][1] = 2 * (g * m + d * f) * v, u[2][2] = (d * d + m * m - g * g - f * f) * A, u[0][3] = r, u[1][3] = a, u[2][3] = n, u;
+    ], d, f = e, m = t, g = s, p, v, A;
+    return u[3][0] = u[3][1] = u[3][2] = 0, u[3][3] = 1, d = 1 - (f * f + m * m + g * g), d < 1e-7 ? (d = 1 / Math.sqrt(f * f + m * m + g * g), f *= d, m *= d, g *= d, d = 0) : d = Math.sqrt(d), p = o > 0 ? o : 1, v = l > 0 ? l : 1, A = c > 0 ? c : 1, h < 0 && (A = -A), u[0][0] = (d * d + f * f - m * m - g * g) * p, u[0][1] = 2 * (f * m - d * g) * v, u[0][2] = 2 * (f * g + d * m) * A, u[1][0] = 2 * (f * m + d * g) * p, u[1][1] = (d * d + m * m - f * f - g * g) * v, u[1][2] = 2 * (m * g - d * f) * A, u[2][0] = 2 * (f * g - d * m) * p, u[2][1] = 2 * (m * g + d * f) * v, u[2][2] = (d * d + g * g - m * m - f * f) * A, u[0][3] = r, u[1][3] = a, u[2][3] = n, u;
   }
   /**
    * Converts sform to an orientation string (e.g., XYZ+--).  (See http://nifti.nimh.nih.gov/pub/dist/src/niftilib/nifti1_io.c)
@@ -1053,7 +1053,7 @@ class H {
    * @returns {string}
    */
   convertNiftiSFormToNEMA(e) {
-    var t, s, r, a, n, o, l, c, h, u, d, f, g, m, p, v, A, x, w, D, b, C, E, F, M, S, T, k, B, U, V, N, P, L;
+    var t, s, r, a, n, o, l, c, h, u, d, f, m, g, p, v, A, x, w, D, b, y, E, F, M, S, T, k, B, U, V, N, P, L;
     if (p = 0, T = [
       [0, 0, 0],
       [0, 0, 0],
@@ -1081,17 +1081,17 @@ class H {
     }
     if (T[0][0] = t, T[0][1] = s, T[0][2] = r, T[1][0] = a, T[1][1] = n, T[1][2] = o, T[2][0] = l, T[2][1] = c, T[2][2] = h, d = this.nifti_mat33_determ(T), d === 0)
       return null;
-    for (S = -666, w = C = E = F = 1, D = 2, b = 3, g = 1; g <= 3; g += 1)
-      for (m = 1; m <= 3; m += 1)
-        if (g !== m) {
+    for (S = -666, w = y = E = F = 1, D = 2, b = 3, m = 1; m <= 3; m += 1)
+      for (g = 1; g <= 3; g += 1)
+        if (m !== g) {
           for (p = 1; p <= 3; p += 1)
-            if (!(g === p || m === p))
+            if (!(m === p || g === p))
               for (k[0][0] = k[0][1] = k[0][2] = k[1][0] = k[1][1] = k[1][2] = k[2][0] = k[2][1] = k[2][2] = 0, v = -1; v <= 1; v += 2)
                 for (A = -1; A <= 1; A += 2)
                   for (x = -1; x <= 1; x += 2)
-                    k[0][g - 1] = v, k[1][m - 1] = A, k[2][p - 1] = x, f = this.nifti_mat33_determ(k), f * d > 0 && (M = this.nifti_mat33_mul(k, T), u = M[0][0] + M[1][1] + M[2][2], u > S && (S = u, w = g, D = m, b = p, C = v, E = A, F = x));
+                    k[0][m - 1] = v, k[1][g - 1] = A, k[2][p - 1] = x, f = this.nifti_mat33_determ(k), f * d > 0 && (M = this.nifti_mat33_mul(k, T), u = M[0][0] + M[1][1] + M[2][2], u > S && (S = u, w = m, D = g, b = p, y = v, E = A, F = x));
         }
-    switch (B = U = V = N = P = L = "", w * C) {
+    switch (B = U = V = N = P = L = "", w * y) {
       case 1:
         B = "X", N = "+";
         break;
@@ -1471,8 +1471,8 @@ async function Co(i) {
 }
 async function mr(i, e = 1 / 0) {
   const t = (f) => f[0] === 31 && f[1] === 139 && f[2] === 8 ? "gzip" : f[0] === 120 && [1, 94, 156, 218].includes(f[1]) ? "deflate" : "deflate-raw", s = new Uint8Array(i), r = t(s), a = new DecompressionStream(r), n = new TransformStream({
-    transform(f, g) {
-      g.enqueue(f);
+    transform(f, m) {
+      m.enqueue(f);
     },
     flush(f) {
       f.terminate();
@@ -1485,10 +1485,10 @@ async function mr(i, e = 1 / 0) {
   let d = 0;
   try {
     for (; d < e; ) {
-      const { done: f, value: g } = await h.read();
+      const { done: f, value: m } = await h.read();
       if (f)
         break;
-      const m = e - d, p = g.subarray(0, Math.min(g.length, m));
+      const g = e - d, p = m.subarray(0, Math.min(m.length, g));
       if (u.push(p), d += p.length, d >= e) {
         await Promise.all([
           h.cancel().catch(() => {
@@ -1509,9 +1509,9 @@ async function mr(i, e = 1 / 0) {
       })
     ]);
   }
-  return u.length === 1 ? u[0].buffer : u.reduce((f, g) => {
-    const m = new Uint8Array(f.byteLength + g.byteLength);
-    return m.set(new Uint8Array(f), 0), m.set(g, f.byteLength), m.buffer;
+  return u.length === 1 ? u[0].buffer : u.reduce((f, m) => {
+    const g = new Uint8Array(f.byteLength + m.byteLength);
+    return g.set(new Uint8Array(f), 0), g.set(m, f.byteLength), g.buffer;
   }, new ArrayBuffer(0));
 }
 function Do(i, e = !1) {
@@ -2023,10 +2023,10 @@ class Vs {
     c.push("|O"), c.push(e.shape);
     let h;
     l.length && (h = (d, f) => {
-      let g = f;
-      for (let m of l)
-        g = m(d, g);
-      return g;
+      let m = f;
+      for (let g of l)
+        m = g(d, m);
+      return m;
     });
     let u = JSON.stringify(c, h, t);
     return r && (u = u.replace(/[\u007F-\uFFFF]/g, (d) => {
@@ -2236,7 +2236,7 @@ function Ho(i, e, t, s) {
     }
     if (u === null)
       return;
-    let { data: d, shape: f, stride: g } = u, m = l.map((A, x) => A % f[x]).reduce((A, x, w) => A + x * g[w], 0), p = d[m], v = d[m + 1];
+    let { data: d, shape: f, stride: m } = u, g = l.map((A, x) => A % f[x]).reduce((A, x, w) => A + x * m[w], 0), p = d[g], v = d[g + 1];
     if (!(p === Cr && v === Cr))
       return r(h, {
         offset: Number(p),
@@ -2622,15 +2622,15 @@ function Fi(i, e, t, s) {
     }, t, a);
     return;
   }
-  const [h, u, d] = r.to, [f, g, m] = r.from, p = Nn(h, u, d);
+  const [h, u, d] = r.to, [f, m, g] = r.from, p = Nn(h, u, d);
   if (a.length === 0) {
-    if (d === 1 && m === 1 && n === 1 && l === 1) {
+    if (d === 1 && g === 1 && n === 1 && l === 1) {
       let v = f * t, A = p * t;
       i.data.set(e.data.subarray(v, v + A), h * t);
       return;
     }
     for (let v = 0; v < p; v++) {
-      let A = l * (f + m * v) * t;
+      let A = l * (f + g * v) * t;
       i.data.set(e.data.subarray(A, A + t), n * (h + d * v) * t);
     }
     return;
@@ -2640,7 +2640,7 @@ function Fi(i, e, t, s) {
       data: i.data.subarray(n * (h + v * d) * t),
       stride: o
     }, {
-      data: e.data.subarray(l * (f + v * m) * t),
+      data: e.data.subarray(l * (f + v * g) * t),
       stride: c
     }, t, a);
 }
@@ -3758,11 +3758,11 @@ I(ae, "generateCrosshairs", function(i, e, t, s, r, a, n = 20, o = 0) {
 I(ae, "generateCrosshairsGeometry", function(i, e, t, s, r, a = 20, n = 0) {
   const o = [], l = [], c = r * n;
   if (c <= 0) {
-    let f = G(t[0], e[1], e[2]), g = G(s[0], e[1], e[2]);
-    ae.makeCylinder(o, l, f, g, r, a), f = G(e[0], t[1], e[2]), g = G(e[0], s[1], e[2]), ae.makeCylinder(o, l, f, g, r, a), f = G(e[0], e[1], t[2]), g = G(e[0], e[1], s[2]), ae.makeCylinder(o, l, f, g, r, a);
+    let f = G(t[0], e[1], e[2]), m = G(s[0], e[1], e[2]);
+    ae.makeCylinder(o, l, f, m, r, a), f = G(e[0], t[1], e[2]), m = G(e[0], s[1], e[2]), ae.makeCylinder(o, l, f, m, r, a), f = G(e[0], e[1], t[2]), m = G(e[0], e[1], s[2]), ae.makeCylinder(o, l, f, m, r, a);
   } else {
-    let f = G(t[0], e[1], e[2]), g = G(e[0] - c, e[1], e[2]);
-    ae.makeCylinder(o, l, f, g, r, a, !1), f = G(e[0] + c, e[1], e[2]), g = G(s[0], e[1], e[2]), ae.makeCylinder(o, l, f, g, r, a, !1), f = G(e[0], t[1], e[2]), g = G(e[0], e[1] - c, e[2]), ae.makeCylinder(o, l, f, g, r, a, !1), f = G(e[0], e[1] + c, e[2]), g = G(e[0], s[1], e[2]), ae.makeCylinder(o, l, f, g, r, a, !1), f = G(e[0], e[1], t[2]), g = G(e[0], e[1], e[2] - c), ae.makeCylinder(o, l, f, g, r, a, !1), f = G(e[0], e[1], e[2] + c), g = G(e[0], e[1], s[2]), ae.makeCylinder(o, l, f, g, r, a, !1);
+    let f = G(t[0], e[1], e[2]), m = G(e[0] - c, e[1], e[2]);
+    ae.makeCylinder(o, l, f, m, r, a, !1), f = G(e[0] + c, e[1], e[2]), m = G(s[0], e[1], e[2]), ae.makeCylinder(o, l, f, m, r, a, !1), f = G(e[0], t[1], e[2]), m = G(e[0], e[1] - c, e[2]), ae.makeCylinder(o, l, f, m, r, a, !1), f = G(e[0], e[1] + c, e[2]), m = G(e[0], s[1], e[2]), ae.makeCylinder(o, l, f, m, r, a, !1), f = G(e[0], e[1], t[2]), m = G(e[0], e[1], e[2] - c), ae.makeCylinder(o, l, f, m, r, a, !1), f = G(e[0], e[1], e[2] + c), m = G(e[0], e[1], s[2]), ae.makeCylinder(o, l, f, m, r, a, !1);
   }
   const h = i.createBuffer();
   if (h === null)
@@ -3790,8 +3790,8 @@ I(ae, "subdivide", function(i, e) {
   for (let o = 0; o < r; o++) {
     const l = e[o * 3 + 0], c = e[o * 3 + 1], h = e[o * 3 + 2], u = G(i[l * 3 + 0], i[l * 3 + 1], i[l * 3 + 2]), d = G(i[c * 3 + 0], i[c * 3 + 1], i[c * 3 + 2]), f = G(i[h * 3 + 0], i[h * 3 + 1], i[h * 3 + 2]);
     At(a, u, d), Pe(n, a), i.push(...n), At(a, d, f), Pe(n, a), i.push(...n), At(a, u, f), Pe(n, a), i.push(...n);
-    let g = [t, t + 1, t + 2];
-    e.push(...g), g = [l, t, t + 2], e.push(...g), g = [t, c, t + 1], e.push(...g), e[o * 3 + 0] = t + 2, e[o * 3 + 1] = t + 1, e[o * 3 + 2] = h, s = s + 3, t = t + 3;
+    let m = [t, t + 1, t + 2];
+    e.push(...m), m = [l, t, t + 2], e.push(...m), m = [t, c, t + 1], e.push(...m), e[o * 3 + 0] = t + 2, e[o * 3 + 1] = t + 1, e[o * 3 + 2] = h, s = s + 3, t = t + 3;
   }
 });
 I(ae, "weldVertices", function(i, e) {
@@ -3941,23 +3941,23 @@ I(ae, "makeCylinder", function(i, e, t, s, r, a = 20, n = !0) {
   Ci(c, o, l), Pe(c, c);
   let h = 2 * a, u = 2 * a;
   n && (u += 2 * a, h += 2);
-  const d = Math.floor(i.length / 3), f = new Uint32Array(u * 3), g = new Float32Array(h * 3);
-  function m(D, b) {
-    g[D * 3 + 0] = b[0], g[D * 3 + 1] = b[1], g[D * 3 + 2] = b[2];
+  const d = Math.floor(i.length / 3), f = new Uint32Array(u * 3), m = new Float32Array(h * 3);
+  function g(D, b) {
+    m[D * 3 + 0] = b[0], m[D * 3 + 1] = b[1], m[D * 3 + 2] = b[2];
   }
-  function p(D, b, C, E) {
-    f[D * 3 + 0] = b + d, f[D * 3 + 1] = C + d, f[D * 3 + 2] = E + d;
+  function p(D, b, y, E) {
+    f[D * 3 + 0] = b + d, f[D * 3 + 1] = y + d, f[D * 3 + 2] = E + d;
   }
   const v = 2 * a, A = v + 1;
-  n && (m(v, t), m(A, s));
+  n && (g(v, t), g(A, s));
   const x = le(), w = le();
   for (let D = 0; D < a; D++) {
-    const b = Math.cos(D / a * 2 * Math.PI), C = Math.sin(D / a * 2 * Math.PI);
-    x[0] = r * (b * l[0] + C * c[0]), x[1] = r * (b * l[1] + C * c[1]), x[2] = r * (b * l[2] + C * c[2]), At(w, t, x), m(D, w), At(w, s, x), m(D + a, w);
+    const b = Math.cos(D / a * 2 * Math.PI), y = Math.sin(D / a * 2 * Math.PI);
+    x[0] = r * (b * l[0] + y * c[0]), x[1] = r * (b * l[1] + y * c[1]), x[2] = r * (b * l[2] + y * c[2]), At(w, t, x), g(D, w), At(w, s, x), g(D + a, w);
     let E = 0;
     D < a - 1 && (E = D + 1), p(D * 2, D, E, D + a), p(D * 2 + 1, E, E + a, D + a), n && (p(a * 2 + D, D, v, E), p(a * 2 + D + a, A, D + a, E + a));
   }
-  e.push(...f), i.push(...g);
+  e.push(...f), i.push(...m);
 });
 I(ae, "makeColoredCylinder", function(i, e, t, s, r, a, n = [192, 0, 0, 255], o = 20, l = !1) {
   let c = i.length / 3;
@@ -11718,8 +11718,8 @@ var bl = {
       else if (d === s) {
         u.labels = Array(c).fill("?");
         for (let f = 0; f < s; f++) {
-          const g = r[f];
-          u.labels[g] = i.labels[f];
+          const m = r[f];
+          u.labels[m] = i.labels[f];
         }
       }
     }
@@ -11775,13 +11775,13 @@ var bl = {
     }
     typeof h > "u" && (h = new Uint8ClampedArray(n).fill(64), h[0] = 0);
     for (let f = 0; f < n - 1; f++) {
-      const g = u[f];
-      let m = u[f + 1];
-      f === 0 && g !== 0 && R.warn("colormap issue: indices expected to start with 0 not ", g), f === u.length - 2 && m !== 255 && (R.warn("padding colormap: indices expected end with 255 not ", m), m = 255);
-      const p = m - g;
-      let v = g * 4;
-      for (let A = g; A <= m; A++) {
-        const x = (A - g) / p;
+      const m = u[f];
+      let g = u[f + 1];
+      f === 0 && m !== 0 && R.warn("colormap issue: indices expected to start with 0 not ", m), f === u.length - 2 && g !== 255 && (R.warn("padding colormap: indices expected end with 255 not ", g), g = 255);
+      const p = g - m;
+      let v = m * 4;
+      for (let A = m; A <= g; A++) {
+        const x = (A - m) / p;
         d[v++] = o[f] + x * (o[f + 1] - o[f]), d[v++] = l[f] + x * (l[f + 1] - l[f]), d[v++] = c[f] + x * (c[f + 1] - c[f]), d[v++] = h[f] + x * (h[f + 1] - h[f]);
       }
     }
@@ -11811,12 +11811,12 @@ var bl = {
     return await s, a;
   }
   static createMZ3(i, e, t = !1, s = null) {
-    const a = s instanceof Uint8Array && s.length === i.length / 3 * 4, n = a ? 7 : 3, o = e.length / 3, l = i.length / 3, c = 0, h = 16, u = o * 3 * 4, d = l * 3 * 4, f = a ? s.length : 0, g = h + u + d + f, m = new ArrayBuffer(g), p = new DataView(m);
+    const a = s instanceof Uint8Array && s.length === i.length / 3 * 4, n = a ? 7 : 3, o = e.length / 3, l = i.length / 3, c = 0, h = 16, u = o * 3 * 4, d = l * 3 * 4, f = a ? s.length : 0, m = h + u + d + f, g = new ArrayBuffer(m), p = new DataView(g);
     p.setUint16(0, 23117, !0), p.setUint16(2, n, !0), p.setUint32(4, o, !0), p.setUint32(8, l, !0), p.setUint32(12, c, !0);
     let v = h;
-    if (new Uint32Array(m, v, e.length).set(e), v += u, new Float32Array(m, v, i.length).set(i), a && (v += d, new Uint8Array(m, v, s.length).set(s)), t)
+    if (new Uint32Array(g, v, e.length).set(e), v += u, new Float32Array(g, v, i.length).set(i), a && (v += d, new Uint8Array(g, v, s.length).set(s)), t)
       throw new Error("Call async createMZ3Async() for compression");
-    return m;
+    return g;
   }
   static async createMZ3Async(i, e, t = !1, s = null) {
     const r = this.createMZ3(i, e, t, s);
@@ -11883,18 +11883,18 @@ var bl = {
     let s;
     const r = i.length;
     let a, n, o, l, c, h, u, d, f;
-    const g = new Float32Array(r), m = e.length;
-    for (s = 0; s < m; s += 3) {
+    const m = new Float32Array(r), g = e.length;
+    for (s = 0; s < g; s += 3) {
       u = e[s] * 3, d = e[s + 1] * 3, f = e[s + 2] * 3;
       const p = [i[u], i[u + 1], i[u + 2]], v = [i[d], i[d + 1], i[d + 2]], A = [i[f], i[f + 1], i[f + 2]];
-      a = v[0] - p[0], n = v[1] - p[1], o = v[2] - p[2], l = A[0] - p[0], c = A[1] - p[1], h = A[2] - p[2], t[0] = c * o - h * n, t[1] = h * a - l * o, t[2] = l * n - c * a, g[u] += t[0], g[u + 1] += t[1], g[u + 2] += t[2], g[d] += t[0], g[d + 1] += t[1], g[d + 2] += t[2], g[f] += t[0], g[f + 1] += t[1], g[f + 2] += t[2];
+      a = v[0] - p[0], n = v[1] - p[1], o = v[2] - p[2], l = A[0] - p[0], c = A[1] - p[1], h = A[2] - p[2], t[0] = c * o - h * n, t[1] = h * a - l * o, t[2] = l * n - c * a, m[u] += t[0], m[u + 1] += t[1], m[u + 2] += t[2], m[d] += t[0], m[d + 1] += t[1], m[d + 2] += t[2], m[f] += t[0], m[f + 1] += t[1], m[f + 2] += t[2];
     }
     for (s = 0; s < r; s += 3) {
-      t[0] = -1 * g[s], t[1] = -1 * g[s + 1], t[2] = -1 * g[s + 2];
+      t[0] = -1 * m[s], t[1] = -1 * m[s + 1], t[2] = -1 * m[s + 2];
       let p = t[0] * t[0] + t[1] * t[1] + t[2] * t[2];
-      p > 0 && (p = 1 / Math.sqrt(p), t[0] *= p, t[1] *= p, t[2] *= p), g[s] = t[0], g[s + 1] = t[1], g[s + 2] = t[2];
+      p > 0 && (p = 1 / Math.sqrt(p), t[0] *= p, t[1] *= p, t[2] *= p), m[s] = t[0], m[s + 1] = t[1], m[s + 2] = t[2];
     }
-    return g;
+    return m;
   }
 }, Z, ke, Ti, xs, Kt, Gn = class {
   constructor(i) {
@@ -12055,42 +12055,42 @@ var j = class Bt {
       throw new Error("File too small to be MAT v4: bytes = " + e.byteLength);
     let r = new DataView(e), a = r.getUint16(0, !0), n = e;
     if (a === 35615 || a === 8075) {
-      const g = await this.decompress(new Uint8Array(e));
-      r = new DataView(g.buffer), a = r.getUint16(0, !0), n = g.buffer, s = n.byteLength;
+      const m = await this.decompress(new Uint8Array(e));
+      r = new DataView(m.buffer), a = r.getUint16(0, !0), n = m.buffer, s = n.byteLength;
     }
     const o = new TextDecoder("utf-8"), l = new Uint8Array(n);
     let c = 0;
     const h = {};
-    function u(g) {
-      return Math.floor(g / 10) % 10;
+    function u(m) {
+      return Math.floor(m / 10) % 10;
     }
-    function d(g, m, p) {
-      const v = new Uint8Array(l.subarray(m, p));
-      return g === 1 ? new Float32Array(v.buffer) : g === 2 ? new Int32Array(v.buffer) : g === 3 ? new Int16Array(v.buffer) : g === 4 ? new Uint16Array(v.buffer) : g === 5 ? new Uint8Array(v.buffer) : new Float64Array(v.buffer);
+    function d(m, g, p) {
+      const v = new Uint8Array(l.subarray(g, p));
+      return m === 1 ? new Float32Array(v.buffer) : m === 2 ? new Int32Array(v.buffer) : m === 3 ? new Int16Array(v.buffer) : m === 4 ? new Uint16Array(v.buffer) : m === 5 ? new Uint8Array(v.buffer) : new Float64Array(v.buffer);
     }
     function f() {
-      const g = r.getUint32(c, !0), m = r.getUint32(c + 4, !0), p = r.getUint32(c + 8, !0), v = r.getUint32(c + 12, !0), A = r.getUint32(c + 16, !0);
+      const m = r.getUint32(c, !0), g = r.getUint32(c + 4, !0), p = r.getUint32(c + 8, !0), v = r.getUint32(c + 12, !0), A = r.getUint32(c + 16, !0);
       if (c += 20, v !== 0)
         throw new Error("Matlab V4 reader does not support imaginary numbers");
-      const x = m * p;
+      const x = g * p;
       if (x < 1)
         throw new Error("mrows * ncols must be greater than one");
       const w = new Uint8Array(l.subarray(c, c + A));
       let D = o.decode(w).trim().replaceAll("\0", "");
       t && (D = D.replaceAll(".", "_"));
-      const b = u(g);
-      let C = 8;
+      const b = u(m);
+      let y = 8;
       if (b >= 1 && b <= 2)
-        C = 4;
+        y = 4;
       else if (b >= 3 && b <= 4)
-        C = 2;
+        y = 2;
       else if (b === 5)
-        C = 1;
+        y = 1;
       else if (b !== 0)
         throw new Error("impossible Matlab v4 datatype");
-      if (c += A, g > 50)
+      if (c += A, m > 50)
         throw new Error("Does not appear to be little-endian V4 Matlab file");
-      const E = c + x * C;
+      const E = c + x * y;
       h[D] = d(b, c, E), c = E;
     }
     for (; c + 20 < s; )
@@ -12270,14 +12270,14 @@ var j = class Bt {
     function n() {
       for (; a < t && r[a] !== 60; )
         a++;
-      const m = a;
+      const g = a;
       for (; a < t && r[a] !== 62; )
         a++;
-      return a++, a - m < 1 ? "" : new TextDecoder().decode(e.slice(m, a - 1)).trim();
+      return a++, a - g < 1 ? "" : new TextDecoder().decode(e.slice(g, a - 1)).trim();
     }
     let o = n();
-    function l(m) {
-      const p = o.indexOf(m);
+    function l(g) {
+      const p = o.indexOf(g);
       if (p < 0)
         return 0;
       const v = o.indexOf('"', p) + 1, A = o.indexOf('"', v), x = o.slice(v, A);
@@ -12289,7 +12289,7 @@ var j = class Bt {
     const u = [];
     u.push(h);
     const d = [], f = [];
-    for (let m = 0; m < c; m++) {
+    for (let g = 0; g < c; g++) {
       o = n();
       const p = l("ni_dimen="), v = l("Bundle_Tag="), A = o.includes("binary.lsbfirst");
       for (let x = 0; x < p; x++) {
@@ -12302,14 +12302,14 @@ var j = class Bt {
       }
       o = n();
     }
-    const g = [];
-    return g.push({
+    const m = [];
+    return m.push({
       id: "tract",
       vals: Float32Array.from(f)
     }), {
       pts: new Float32Array(d),
       offsetPt0: new Uint32Array(u),
-      dps: g
+      dps: m
     };
   }
   // readTRACT()
@@ -12349,26 +12349,26 @@ var j = class Bt {
       let u = 0, d = 0;
       for (; d < l.length; ) {
         h.push(d);
-        const m = c.getUint32(d, !0);
-        d = d + m + 13, u += m;
+        const g = c.getUint32(d, !0);
+        d = d + g + 13, u += g;
       }
       t = new Uint32Array(h.length + 1), s = new Float32Array(u);
       let f = 0;
-      for (let m = 0; m < h.length; m++) {
-        t[m] = f / 3;
-        let p = h[m];
+      for (let g = 0; g < h.length; g++) {
+        t[g] = f / 3;
+        let p = h[g];
         const v = c.getUint32(p, !0) / 3;
         let A = c.getInt32(p + 4, !0), x = c.getInt32(p + 8, !0), w = c.getInt32(p + 12, !0);
         p += 16, s[f++] = A, s[f++] = x, s[f++] = w;
         for (let D = 2; D <= v; D++)
           A = A + c.getInt8(p++), x = x + c.getInt8(p++), w = w + c.getInt8(p++), s[f++] = A, s[f++] = x, s[f++] = w;
       }
-      for (let m = 0; m < f; m++)
-        s[m] = s[m] / 32;
-      let g = 0;
-      for (let m = 0; m < f / 3; m++) {
-        const p = pe(s[g], s[g + 1], s[g + 2], 1);
-        Me(p, p, a), s[g++] = p[0], s[g++] = p[1], s[g++] = p[2];
+      for (let g = 0; g < f; g++)
+        s[g] = s[g] / 32;
+      let m = 0;
+      for (let g = 0; g < f / 3; g++) {
+        const p = pe(s[m], s[m + 1], s[m + 2], 1);
+        Me(p, p, a), s[m++] = p[0], s[m++] = p[1], s[m++] = p[2];
       }
       t[h.length] = f / 3;
     }
@@ -12435,11 +12435,11 @@ var j = class Bt {
       const c = [];
       let h = 0;
       for (let f = 0; f < t.length; f++) {
-        const g = String(t[f].id), p = e[g].filter((A) => A.id === l);
+        const m = String(t[f].id), p = e[m].filter((A) => A.id === l);
         if (p.length === 0)
-          throw new Error(`assembleDpgFromMap: missing tag "${l}" for group "${g}".`);
+          throw new Error(`assembleDpgFromMap: missing tag "${l}" for group "${m}".`);
         if (p.length > 1)
-          throw new Error(`assembleDpgFromMap: multiple entries for tag "${l}" in group "${g}".`);
+          throw new Error(`assembleDpgFromMap: multiple entries for tag "${l}" in group "${m}".`);
         const v = p[0];
         if (v.vals instanceof Float32Array)
           c.push(v.vals), h += v.vals.length;
@@ -12448,7 +12448,7 @@ var j = class Bt {
             const A = Float32Array.from(v.vals);
             c.push(A), h += A.length;
           } catch {
-            throw new Error(`assembleDpgFromMap: invalid vals for tag "${l}" in group "${g}".`);
+            throw new Error(`assembleDpgFromMap: invalid vals for tag "${l}" in group "${m}".`);
           }
       }
       const u = new Float32Array(h);
@@ -12467,16 +12467,16 @@ var j = class Bt {
   // read TRX format tractogram
   // https://github.com/tee-ar-ex/trx-spec/blob/master/specifications.md
   static async readTRX(e) {
-    function t(m) {
-      const p = (m & 31744) >> 10, v = m & 1023;
-      return (m >> 15 ? -1 : 1) * (p ? p === 31 ? v ? NaN : 1 / 0 : Math.pow(2, p - 15) * (1 + v / 1024) : 6103515625e-14 * (v / 1024));
+    function t(g) {
+      const p = (g & 31744) >> 10, v = g & 1023;
+      return (g >> 15 ? -1 : 1) * (p ? p === 31 ? v ? NaN : 1 / 0 : Math.pow(2, p - 15) * (1 + v / 1024) : 6103515625e-14 * (v / 1024));
     }
     let s = 0, r = 0, a = new Float32Array([]);
     const n = [], o = {}, l = [], c = [], h = [];
     let u = [], d = !1;
     const f = new Gn(e);
-    for (let m = 0; m < f.entries.length; m++) {
-      const p = f.entries[m];
+    for (let g = 0; g < f.entries.length; g++) {
+      const p = f.entries[g];
       if (p.uncompressedSize === 0)
         continue;
       const v = p.fileName.split("/"), A = v.slice(-1)[0];
@@ -12488,12 +12488,12 @@ var j = class Bt {
         u = JSON.parse(F);
         continue;
       }
-      let C = 0, E = [];
+      let y = 0, E = [];
       if (A.endsWith(".uint64") || A.endsWith(".int64")) {
-        C = b.length / 8, E = new Uint32Array(C);
+        y = b.length / 8, E = new Uint32Array(y);
         const F = new Uint32Array(b.buffer);
         let M = 0;
-        for (let S = 0; S < C; S++)
+        for (let S = 0; S < y; S++)
           E[S] = F[M], F[M + 1] !== 0 && (d = !0), M += 2;
       } else if (A.endsWith(".uint32"))
         E = new Uint32Array(b.buffer);
@@ -12512,15 +12512,15 @@ var j = class Bt {
       else if (A.endsWith(".float32"))
         E = new Float32Array(b.buffer);
       else if (A.endsWith(".float16")) {
-        C = b.length / 2, E = new Float32Array(C);
+        y = b.length / 2, E = new Float32Array(y);
         const F = new Uint16Array(b.buffer), M = new Float32Array(65536);
         for (let S = 0; S < 65536; S++)
           M[S] = t(S);
-        for (let S = 0; S < C; S++)
+        for (let S = 0; S < y; S++)
           E[S] = M[F[S]];
       } else
         continue;
-      if (C = E.length, w.includes("groups")) {
+      if (y = E.length, w.includes("groups")) {
         l.push({
           id: D,
           vals: Float32Array.from(E.slice())
@@ -12550,21 +12550,21 @@ var j = class Bt {
         continue;
       }
       if (A.startsWith("offsets.")) {
-        s = C;
-        for (let F = 0; F < C; F++)
+        s = y;
+        for (let F = 0; F < y; F++)
           n[F] = E[F];
       }
-      A.startsWith("positions.3.") && (r = C, a = new Float32Array(E));
+      A.startsWith("positions.3.") && (r = y, a = new Float32Array(E));
     }
     if (s === 0 || r === 0)
       throw new Error("Failure reading TRX format (no offsets or points).");
     if (d)
       throw new Error("Too many vertices: JavaScript does not support 64 bit integers");
-    let g = [];
-    return l.length > 0 && o && Object.keys(o).length > 0 && (g = this.assembleDpgFromMap(o, l)), n[s] = r / 3, {
+    let m = [];
+    return l.length > 0 && o && Object.keys(o).length > 0 && (m = this.assembleDpgFromMap(o, l)), n[s] = r / 3, {
       pts: a,
       offsetPt0: new Uint32Array(n),
-      dpg: g,
+      dpg: m,
       dps: c,
       dpv: h,
       groups: l,
@@ -12632,10 +12632,10 @@ var j = class Bt {
     function a() {
       for (; r < t && s[r] === 10; )
         r++;
-      const g = r;
+      const m = r;
       for (; r < t && s[r] !== 10; )
         r++;
-      return r++, r - g < 1 ? "" : new TextDecoder().decode(e.slice(g, r - 1));
+      return r++, r - m < 1 ? "" : new TextDecoder().decode(e.slice(m, r - 1));
     }
     let n = a();
     if (!n.includes("mrtrix tracks"))
@@ -12649,14 +12649,14 @@ var j = class Bt {
     const l = new DataView(e);
     let c = 0, h = new Uint32Array(t / 16), u = 0, d = 0, f = new Float32Array(t / 4);
     for (h[0] = 0; r + 12 < t; ) {
-      const g = l.getFloat32(r, !0);
-      r += 4;
       const m = l.getFloat32(r, !0);
       r += 4;
+      const g = l.getFloat32(r, !0);
+      r += 4;
       const p = l.getFloat32(r, !0);
-      if (r += 4, isFinite(g))
-        f[d++] = g, f[d++] = m, f[d++] = p, c++;
-      else if (h[u++] = c, !isNaN(g))
+      if (r += 4, isFinite(m))
+        f[d++] = m, f[d++] = g, f[d++] = p, c++;
+      else if (h[u++] = c, !isNaN(m))
         break;
     }
     return f = f.slice(0, d), h = h.slice(0, u), {
@@ -12714,24 +12714,24 @@ var j = class Bt {
         vals: []
       });
     }
-    const g = ie();
-    for (let S = 0; S < 16; S++)
-      g[S] = t.getFloat32(440 + S * 4, !0);
-    g[15] === 0 && (R.warn("TRK vox_to_ras not set"), pn(g));
     const m = ie();
-    An(m, u, g);
+    for (let S = 0; S < 16; S++)
+      m[S] = t.getFloat32(440 + S * 4, !0);
+    m[15] === 0 && (R.warn("TRK vox_to_ras not set"), pn(m));
+    const g = ie();
+    An(g, u, m);
     let p = null, v = null;
     p = new Int32Array(e.slice(a)), v = new Float32Array(p.buffer);
     const A = p.length;
     if (A < 1)
       throw new Error("Empty TRK file.");
-    let x = 0, w = 0, D = new Uint32Array(p.length / 4), b = 0, C = new Float32Array(p.length), E = 0;
+    let x = 0, w = 0, D = new Uint32Array(p.length / 4), b = 0, y = new Float32Array(p.length), E = 0;
     for (; x < A; ) {
       const S = p[x];
       x = x + 1, D[b++] = w;
       for (let T = 0; T < S; T++) {
         const k = v[x + 0], B = v[x + 1], U = v[x + 2];
-        if (x += 3, C[E++] = k * m[0] + B * m[1] + U * m[2] + m[3], C[E++] = k * m[4] + B * m[5] + U * m[6] + m[7], C[E++] = k * m[8] + B * m[9] + U * m[10] + m[11], n > 0)
+        if (x += 3, y[E++] = k * g[0] + B * g[1] + U * g[2] + g[3], y[E++] = k * g[4] + B * g[5] + U * g[6] + g[7], y[E++] = k * g[8] + B * g[9] + U * g[10] + g[11], n > 0)
           for (let V = 0; V < n; V++)
             o[V].vals.push(v[x]), x++;
         w++;
@@ -12752,8 +12752,8 @@ var j = class Bt {
         id: o[S].id,
         vals: Float32Array.from(o[S].vals)
       });
-    return D[b++] = w, C = C.slice(0, E), D = D.slice(0, b), {
-      pts: C,
+    return D[b++] = w, y = y.slice(0, E), D = D.slice(0, b), {
+      pts: y,
       offsetPt0: D,
       dps: F,
       dpv: M
@@ -12782,9 +12782,9 @@ var j = class Bt {
     let u = 0;
     for (; u < l * 3; ) {
       n++;
-      const m = r[n].trim().trim().split(/\s+/);
-      for (let p = 0; p < m.length && !(u >= c); p++)
-        h[u] = parseFloat(m[p]), u++;
+      const g = r[n].trim().trim().split(/\s+/);
+      for (let p = 0; p < g.length && !(u >= c); p++)
+        h[u] = parseFloat(g[p]), u++;
     }
     const d = [];
     for (n++; r[n].length < 1; )
@@ -12795,39 +12795,39 @@ var j = class Bt {
       n++;
     }
     if (o = r[n].trim().split(/\s+/), n++, o[0].includes("LINES")) {
-      const g = parseInt(o[1]);
-      if (g < 1)
+      const m = parseInt(o[1]);
+      if (m < 1)
         throw new Error("Corrupted VTK ASCII");
-      let m = r[n].trim();
+      let g = r[n].trim();
       const p = [];
       let v = [];
-      if (m.startsWith("OFFSETS")) {
+      if (g.startsWith("OFFSETS")) {
         n++;
         let A = 0;
-        for (; A < g; ) {
-          m = r[n].trim(), n++;
-          const x = m.trim().split(/\s+/);
-          for (let w = 0; w < x.length && (p[A] = parseInt(x[w]), A++, !(A >= g)); w++)
+        for (; A < m; ) {
+          g = r[n].trim(), n++;
+          const x = g.trim().split(/\s+/);
+          for (let w = 0; w < x.length && (p[A] = parseInt(x[w]), A++, !(A >= m)); w++)
             ;
         }
         v = Array.from(h);
       } else {
         let A = function() {
-          m = r[n].trim();
-          const b = m.trim().split(/\s+/);
+          g = r[n].trim();
+          const b = g.trim().split(/\s+/);
           w = [];
-          for (let C = 0; C < b.length; C++)
-            w.push(parseInt(b[C]));
+          for (let y = 0; y < b.length; y++)
+            w.push(parseInt(b[y]));
           D = 0, n++;
         }, x = 0;
         p[0] = 0;
         let w = [], D = 0;
         A();
-        for (let b = 0; b < g; b++) {
+        for (let b = 0; b < m; b++) {
           D >= w.length && A();
-          const C = w[D++];
-          x += C, p[b + 1] = x;
-          for (let E = 0; E < C; E++) {
+          const y = w[D++];
+          x += y, p[b + 1] = x;
+          for (let E = 0; E < y; E++) {
             D >= w.length && A();
             const F = w[D++] * 3;
             v.push(h[F + 0]), v.push(h[F + 1]), v.push(h[F + 2]);
@@ -12839,8 +12839,8 @@ var j = class Bt {
         offsetPt0: Uint32Array.from(p)
       };
     } else if (o[0].includes("TRIANGLE_STRIPS")) {
-      const g = parseInt(o[1]);
-      for (let m = 0; m < g; m++) {
+      const m = parseInt(o[1]);
+      for (let g = 0; g < m; g++) {
         const p = r[n].trim();
         n++;
         const v = p.trim().split(/\s+/), A = parseInt(v[0]) - 2;
@@ -12849,8 +12849,8 @@ var j = class Bt {
           w % 2 ? (d.push(parseInt(v[x + 2])), d.push(parseInt(v[x + 1])), d.push(parseInt(v[x]))) : (d.push(parseInt(v[x])), d.push(parseInt(v[x + 1])), d.push(parseInt(v[x + 2]))), x += 1;
       }
     } else if (o[0].includes("POLYGONS")) {
-      const g = parseInt(o[1]);
-      for (let m = 0; m < g; m++) {
+      const m = parseInt(o[1]);
+      for (let g = 0; g < m; g++) {
         const p = r[n].trim();
         n++;
         const v = p.trim().split(/\s+/), A = parseInt(v[0]) - 2, x = parseInt(v[1]);
@@ -12883,14 +12883,14 @@ var j = class Bt {
     }, d = /(?:\.([^.]+))?$/;
     let f = d.exec(e)[1];
     f = f.toUpperCase(), f === "GZ" && (f = d.exec(e.slice(0, -3))[1], f = f.toUpperCase());
-    const g = s.vertexCount / 3;
+    const m = s.vertexCount / 3;
     if (s.offsetPt0) {
       const v = e.split("/");
       let A = "Unknown";
       if (v.length > 1 && v.pop() && (A = A.split(".").slice(0, -1).join(".")), f === "TXT") {
-        const C = s.offsetPt0.length - 1, E = we.readTXT(t, C);
-        if (E.length !== C)
-          throw new Error(`TXT file has ${E.length} items, expected one per streamline (${C}).`);
+        const y = s.offsetPt0.length - 1, E = we.readTXT(t, y);
+        if (E.length !== y)
+          throw new Error(`TXT file has ${E.length} items, expected one per streamline (${y}).`);
         s.dps || (s.dps = []);
         const F = E.reduce((S, T) => Math.min(S, T)), M = E.reduce((S, T) => Math.max(S, T));
         return s.dps.push({
@@ -12906,7 +12906,7 @@ var j = class Bt {
         throw new Error("readLayer for streamlines only supports TSF and TXT files.");
       const x = s.pts.length / 3, w = we.readTSF(t, x);
       s.dpv || (s.dpv = []);
-      const D = w.reduce((C, E) => Math.min(C, E)), b = w.reduce((C, E) => Math.max(C, E));
+      const D = w.reduce((y, E) => Math.min(y, E)), b = w.reduce((y, E) => Math.max(y, E));
       return s.dpv.push({
         id: A,
         vals: Float32Array.from(w.slice()),
@@ -12916,23 +12916,23 @@ var j = class Bt {
         cal_max: b
       }), u;
     }
-    if (g < 3) {
+    if (m < 3) {
       R.error("n_vert < 3 in layer");
       return;
     }
     if (f === "MZ3") {
-      const v = await we.readMZ3(t, g);
+      const v = await we.readMZ3(t, m);
       u.values = v.scalars, "colormapLabel" in v && (u.colormapLabel = v.colormapLabel);
     } else if (f === "ANNOT") {
-      const v = we.readANNOT(t, g, !0);
+      const v = we.readANNOT(t, m, !0);
       v instanceof Uint32Array ? u.values = v : (u.values = v.scalars, u.colormapLabel = v.colormapLabel);
     } else if (f === "CRV" || f === "CURV" || f === "THICKNESS" || f === "AREA")
-      u.values = we.readCURV(t, g), u.isTransparentBelowCalMin = !1;
+      u.values = we.readCURV(t, m), u.isTransparentBelowCalMin = !1;
     else if (f === "GII") {
-      const v = await we.readGII(t, g);
+      const v = await we.readGII(t, m);
       u.values = v.scalars, u.colormapLabel = v.colormapLabel;
     } else if (f === "MGH" || f === "MGZ") {
-      const v = await we.readMGH(t, g, !0);
+      const v = await we.readMGH(t, m, !0);
       "scalars" in v ? (u.values = v.scalars, u.colormapLabel = v.colormapLabel) : u.values = v;
     } else if (f === "NII")
       u.values = await we.readNII(
@@ -12941,22 +12941,22 @@ var j = class Bt {
         s.anatomicalStructurePrimary
       );
     else if (f === "SMP")
-      u.values = await we.readSMP(t, g);
+      u.values = await we.readSMP(t, m);
     else if (f === "STC")
-      u.values = we.readSTC(t, g);
+      u.values = we.readSTC(t, m);
     else if (we.isCurv(t))
-      u.values = we.readCURV(t, g), u.isTransparentBelowCalMin = !1;
+      u.values = we.readCURV(t, m), u.isTransparentBelowCalMin = !1;
     else
       return R.warn("Unknown layer overlay format " + e), u;
     if (!u.values) {
       R.error("no values in layer");
       return;
     }
-    u.nFrame4D = u.values.length / g, u.frame4D = 0, u.outlineBorder = h;
-    let m = u.values[0], p = u.values[0];
+    u.nFrame4D = u.values.length / m, u.frame4D = 0, u.outlineBorder = h;
+    let g = u.values[0], p = u.values[0];
     for (let v = 0; v < u.values.length; v++)
-      m = Math.min(m, u.values[v]), p = Math.max(p, u.values[v]);
-    return u.global_min = m, u.global_max = p, u.cal_min = l || 0, l || (u.cal_min = m), u.cal_max = c || 0, c || (u.cal_max = p), u.cal_minNeg = NaN, u.cal_maxNeg = NaN, u.opacity = r, u.colormap = a, u.colormapNegative = n, u.useNegativeCmap = o, u;
+      g = Math.min(g, u.values[v]), p = Math.max(p, u.values[v]);
+    return u.global_min = g, u.global_max = p, u.cal_min = l || 0, l || (u.cal_min = g), u.cal_max = c || 0, c || (u.cal_max = p), u.cal_minNeg = NaN, u.cal_maxNeg = NaN, u.opacity = r, u.colormap = a, u.colormapNegative = n, u.useNegativeCmap = o, u;
   }
   // readLayer()
   // read brainvoyager smp format file
@@ -13019,14 +13019,14 @@ var j = class Bt {
       throw new Error("CURV file smaller than specified");
     const c = new Float32Array(l * o);
     let h = 15;
-    for (let g = 0; g < l * o; g++)
-      c[g] = s.getFloat32(h, !1), h += 4;
+    for (let m = 0; m < l * o; m++)
+      c[m] = s.getFloat32(h, !1), h += 4;
     let u = c[0], d = c[0];
-    for (let g = 0; g < c.length; g++)
-      u = Math.min(u, c[g]), d = Math.max(d, c[g]);
+    for (let m = 0; m < c.length; m++)
+      u = Math.min(u, c[m]), d = Math.max(d, c[m]);
     const f = 1 / (d - u);
-    for (let g = 0; g < c.length; g++)
-      c[g] = 1 - (c[g] - u) * f;
+    for (let m = 0; m < c.length; m++)
+      c[m] = 1 - (c[m] - u) * f;
     return c;
   }
   // readCURV()
@@ -13056,10 +13056,10 @@ var j = class Bt {
       return l;
     const d = r.getInt32(o += 4, !1), f = r.getInt32(o += 4, !1);
     o += f;
-    const g = r.getInt32(o += 4, !1);
-    if (g < 1)
+    const m = r.getInt32(o += 4, !1);
+    if (m < 1)
       return l;
-    const m = {
+    const g = {
       R: Array(d).fill(0),
       G: Array(d).fill(0),
       B: Array(d).fill(0),
@@ -13067,7 +13067,7 @@ var j = class Bt {
       I: Array(d).fill(0),
       labels: Array(d).fill("")
     };
-    for (let x = 0; x < g; x++) {
+    for (let x = 0; x < m; x++) {
       const w = r.getInt32(o += 4, !1), D = r.getInt32(o += 4, !1);
       o += 4;
       let b = "";
@@ -13078,12 +13078,12 @@ var j = class Bt {
         b += String.fromCharCode(T);
       }
       o -= 4;
-      const C = r.getInt32(o += 4, !1), E = r.getInt32(o += 4, !1), F = r.getInt32(o += 4, !1), M = r.getInt32(o += 4, !1);
+      const y = r.getInt32(o += 4, !1), E = r.getInt32(o += 4, !1), F = r.getInt32(o += 4, !1), M = r.getInt32(o += 4, !1);
       if (w < 0 || w >= d) {
         R.warn("annot entry out of range");
         continue;
       }
-      m.R[w] = C, m.G[w] = E, m.B[w] = F, m.A[w] = M, m.I[w] = (M << 24) + (F << 16) + (E << 8) + C, m.labels[w] = b;
+      g.R[w] = y, g.G[w] = E, g.B[w] = F, g.A[w] = M, g.I[w] = (M << 24) + (F << 16) + (E << 8) + y, g.labels[w] = b;
     }
     const p = new Float32Array(a);
     p.fill(-1);
@@ -13091,7 +13091,7 @@ var j = class Bt {
     for (let x = 0; x < t; x++) {
       const w = l[x];
       for (let D = 0; D < d; D++)
-        if (m.I[D] === w) {
+        if (g.I[D] === w) {
           p[x] = D;
           break;
         }
@@ -13099,8 +13099,8 @@ var j = class Bt {
     }
     v > 0 && R.error(`annot vertex colors do not match ${v} of ${a} vertices.`);
     for (let x = 0; x < d; x++)
-      m.I[x] = x;
-    const A = oe.makeLabelLut(m);
+      g.I[x] = x;
+    const A = oe.makeLabelLut(g);
     return {
       scalars: p,
       colormapLabel: A
@@ -13186,8 +13186,8 @@ var j = class Bt {
       throw new Error("File too small to be VTK: bytes = " + e.byteLength);
     const s = new Uint8Array(e);
     let r = 0;
-    function a(m = !0) {
-      if (m)
+    function a(g = !0) {
+      if (g)
         for (; r < t && s[r] === 10; )
           r++;
       const p = r;
@@ -13209,30 +13209,30 @@ var j = class Bt {
     let l = n.trim().split(/\s+/);
     const h = parseInt(l[1]) * 3, u = new Float32Array(h), d = new DataView(e);
     if (o)
-      for (let m = 0; m < h; m++)
-        u[m] = d.getFloat64(r, !1), r += 8;
+      for (let g = 0; g < h; g++)
+        u[g] = d.getFloat64(r, !1), r += 8;
     else
-      for (let m = 0; m < h; m++)
-        u[m] = d.getFloat32(r, !1), r += 4;
+      for (let g = 0; g < h; g++)
+        u[g] = d.getFloat32(r, !1), r += 4;
     n = a(), l = n.trim().split(/\s+/);
     const f = [];
     if (l[0].includes("LINES")) {
-      const m = parseInt(l[1]), p = r;
+      const g = parseInt(l[1]), p = r;
       if (n = a(), n.startsWith("OFFSETS")) {
         let w = !1;
         n.includes("int64") && (w = !0);
-        const D = new Uint32Array(m);
+        const D = new Uint32Array(g);
         if (w) {
-          let C = !1;
-          for (let E = 0; E < m; E++) {
+          let y = !1;
+          for (let E = 0; E < g; E++) {
             let F = d.getInt32(r, !1);
-            F !== 0 && (C = !0), r += 4, F = d.getInt32(r, !1), r += 4, D[E] = F;
+            F !== 0 && (y = !0), r += 4, F = d.getInt32(r, !1), r += 4, D[E] = F;
           }
-          C && R.warn("int32 overflow: JavaScript does not support int64");
+          y && R.warn("int32 overflow: JavaScript does not support int64");
         } else
-          for (let C = 0; C < m; C++) {
+          for (let y = 0; y < g; y++) {
             const E = d.getInt32(r, !1);
-            r += 4, D[C] = E;
+            r += 4, D[y] = E;
           }
         return {
           pts: u,
@@ -13243,12 +13243,12 @@ var j = class Bt {
       let v = 0;
       const A = [], x = [];
       A.push(v);
-      for (let w = 0; w < m; w++) {
+      for (let w = 0; w < g; w++) {
         const D = d.getInt32(r, !1);
         r += 4, v += D, A.push(v);
         for (let b = 0; b < D; b++) {
-          const C = d.getInt32(r, !1) * 3;
-          r += 4, x.push(u[C + 0]), x.push(u[C + 1]), x.push(u[C + 2]);
+          const y = d.getInt32(r, !1) * 3;
+          r += 4, x.push(u[y + 0]), x.push(u[y + 1]), x.push(u[y + 2]);
         }
       }
       return {
@@ -13256,8 +13256,8 @@ var j = class Bt {
         offsetPt0: Uint32Array.from(A)
       };
     } else if (l[0].includes("TRIANGLE_STRIPS")) {
-      const m = parseInt(l[1]);
-      for (let p = 0; p < m; p++) {
+      const g = parseInt(l[1]);
+      for (let p = 0; p < g; p++) {
         const v = d.getInt32(r, !1) - 2;
         r += 4;
         for (let A = 0; A < v; A++)
@@ -13265,30 +13265,30 @@ var j = class Bt {
         r += 8;
       }
     } else if (l[0].includes("POLYGONS")) {
-      const m = parseInt(l[1]), p = r, v = a();
+      const g = parseInt(l[1]), p = r, v = a();
       if (v.startsWith("OFFSETS")) {
         let A = v.includes("int64");
-        const x = new Uint32Array(m);
+        const x = new Uint32Array(g);
         let w = !1;
-        for (let E = 0; E < m; E++)
+        for (let E = 0; E < g; E++)
           A && (d.getInt32(r, !1) !== 0 && (w = !0), r += 4), x[E] = d.getInt32(r, !1), r += 4;
-        if (!Number.isSafeInteger(m) || m >= 2147483648 || w)
+        if (!Number.isSafeInteger(g) || g >= 2147483648 || w)
           throw new Error("values exceed 2GB limit");
         const D = a();
         if (!D.startsWith("CONNECTIVITY"))
           throw new Error("Expected CONNECTIVITY after OFFSETS");
         A = D.includes("int64");
-        const b = x[m - 1], C = new Uint32Array(b);
+        const b = x[g - 1], y = new Uint32Array(b);
         for (let E = 0; E < b; E++)
-          A && (r += 4), C[E] = d.getInt32(r, !1), r += 4;
-        for (let E = 0; E < m; E++) {
+          A && (r += 4), y[E] = d.getInt32(r, !1), r += 4;
+        for (let E = 0; E < g; E++) {
           const F = E === 0 ? 0 : x[E - 1], M = x[E];
           for (let S = 1; S < M - F - 1; S++)
-            f.push(C[F]), f.push(C[F + S]), f.push(C[F + S + 1]);
+            f.push(y[F]), f.push(y[F + S]), f.push(y[F + S + 1]);
         }
       } else {
         r = p;
-        for (let A = 0; A < m; A++) {
+        for (let A = 0; A < g; A++) {
           const x = d.getInt32(r, !1) - 2;
           if (A === 0 && x > 65535)
             throw new Error("Invalid VTK binary polygons using little-endian data (MRtrix)");
@@ -13298,17 +13298,17 @@ var j = class Bt {
           let D = d.getInt32(r, !1);
           r += 4;
           for (let b = 0; b < x; b++) {
-            const C = d.getInt32(r, !1);
-            r += 4, f.push(w, D, C), D = C;
+            const y = d.getInt32(r, !1);
+            r += 4, f.push(w, D, y), D = y;
           }
         }
       }
     } else
       throw new Error("Unsupported binary VTK datatype " + l[0]);
-    const g = new Uint32Array(f);
+    const m = new Uint32Array(f);
     return {
       positions: u,
-      indices: g
+      indices: m
     };
   }
   // readVTK()
@@ -13344,8 +13344,8 @@ var j = class Bt {
     c += n * 3 * 4;
     const u = new Float32Array(e, c, o * 3);
     for (let f = 0; f < o * 3; f += 3) {
-      const g = u[f];
-      u[f] = u[f + 1], u[f + 1] = g;
+      const m = u[f];
+      u[f] = u[f + 1], u[f + 1] = m;
     }
     let d;
     return l >= 0 && (d = new Float32Array(e, l, o * 3)), {
@@ -13371,13 +13371,13 @@ var j = class Bt {
       throw new Error("Invalid MZ3 file");
     const h = (n & 1) !== 0, u = (n & 2) !== 0, d = (n & 4) !== 0;
     let f = (n & 8) !== 0;
-    const g = (n & 16) !== 0, m = (n & 32) !== 0, p = (n & 64) !== 0;
+    const m = (n & 16) !== 0, g = (n & 32) !== 0, p = (n & 64) !== 0;
     if (Ot.debug(
-      `isFace=${h} isVert=${u} isRGBA=${d} isSCALAR=${f} isDOUBLE=${g} isAOMAP=${m} isLOOKUP=${p}`
+      `isFace=${h} isVert=${u} isRGBA=${d} isSCALAR=${f} isDOUBLE=${m} isAOMAP=${g} isLOOKUP=${p}`
     ), n > 127)
       throw new Error("Unsupported future version of MZ3 file");
     let v = 4;
-    g && (v = 8);
+    m && (v = 8);
     let A = 0;
     if (t > 0 && !h && o < 1 && !d && (f = !0), f) {
       const F = t || l, M = 16 + c + (h ? o * 12 : 0) + (u ? F * 12 : 0) + (d ? F * 4 : 0), S = Math.floor((r.byteLength - M) / v);
@@ -13400,18 +13400,18 @@ var j = class Bt {
       for (let F = 0; F < l * 3; F++)
         b[F] = w.getFloat32(x, !0), x += 4;
     }
-    let C = null;
+    let y = null;
     if (d) {
-      C = new Float32Array(l * 3);
+      y = new Float32Array(l * 3);
       for (let F = 0; F < l; F++) {
         for (let M = 0; M < 3; M++)
-          C[F * 3 + M] = w.getUint8(x++) / 255;
+          y[F * 3 + M] = w.getUint8(x++) / 255;
         x++;
       }
     }
     let E = new Float32Array();
     if (f && A > 0)
-      if (g) {
+      if (m) {
         const F = new Float64Array(A * l);
         for (let M = 0; M < A * l; M++)
           F[M] = w.getFloat64(x, !0), x += 8;
@@ -13434,13 +13434,13 @@ var j = class Bt {
         for (let k = 0; k < l; k++)
           if (T === E[k]) {
             const B = k * 3;
-            M.I.push(T), M.R.push(C[B] * 255), M.G.push(C[B + 1] * 255), M.B.push(C[B + 2] * 255), M.A.push(255), M.labels.push(`${T}`);
+            M.I.push(T), M.R.push(y[B] * 255), M.G.push(y[B + 1] * 255), M.B.push(y[B + 2] * 255), M.A.push(255), M.labels.push(`${T}`);
             break;
           }
       const S = oe.makeLabelLut(M);
       return { scalars: E, colormapLabel: S };
     }
-    return t > 0 ? { scalars: E } : { positions: b, indices: D, scalars: E, colors: C };
+    return t > 0 ? { scalars: E } : { positions: b, indices: D, scalars: E, colors: y };
   }
   // read PLY format
   // https://en.wikipedia.org/wiki/PLY_(file_format)
@@ -13472,7 +13472,7 @@ var j = class Bt {
       throw new Error("Unknown data type: " + E);
     }
     const c = n.includes("binary_little_endian");
-    let h = 0, u = !1, d = 0, f = 0, g = 0, m = 0, p = 0, v = 0, A = 0;
+    let h = 0, u = !1, d = 0, f = 0, m = 0, g = 0, p = 0, v = 0, A = 0;
     for (; r < t && !n.startsWith("end_header"); ) {
       if (n = a(), n.startsWith("comment"))
         continue;
@@ -13485,10 +13485,10 @@ var j = class Bt {
       if (n.startsWith("element face"))
         for (A = parseInt(E[E.length - 1]), n = a(), E = n.split(/\s/); n.startsWith("property"); ) {
           if (E[1] === "list")
-            g = l(E[2]), m = l(E[3]), f += g + 3 * m;
+            m = l(E[2]), g = l(E[3]), f += m + 3 * g;
           else {
             const F = l(E[1]);
-            f += F, m === 0 && (p += F, v++);
+            f += F, g === 0 && (p += F, v++);
           }
           n = a(), E = n.split(/\s/);
         }
@@ -13524,8 +13524,8 @@ var j = class Bt {
         indices: M
       };
     }
-    (d < 12 || g < 1 || m < 1 || A < 1) && R.warn(
-      `Malformed ply format: stride ${d} count ${g} iBytes ${m} iStrideBytes ${f} iPadBytes ${p} faces ${A}`
+    (d < 12 || m < 1 || g < 1 || A < 1) && R.warn(
+      `Malformed ply format: stride ${d} count ${m} iBytes ${g} iStrideBytes ${f} iPadBytes ${p} faces ${A}`
     );
     const x = new DataView(e);
     let w;
@@ -13538,20 +13538,20 @@ var j = class Bt {
         u ? (w[E] = x.getFloat64(r, c), w[E + 1] = x.getFloat64(r + 8, c), w[E + 2] = x.getFloat64(r + 16, c)) : (w[E] = x.getFloat32(r, c), w[E + 1] = x.getFloat32(r + 4, c), w[E + 2] = x.getFloat32(r + 8, c)), E += 3, r += d;
     }
     const D = new Uint32Array(A * 3);
-    let b = !0, C = 0;
-    if (g === 1 && m === 4 && f === 13)
+    let b = !0, y = 0;
+    if (m === 1 && g === 4 && f === 13)
       for (let E = 0; E < A; E++) {
         const F = x.getUint8(r);
-        r += g, F !== 3 && (b = !1), D[C] = x.getUint32(r, c), r += 4, D[C + 1] = x.getUint32(r, c), r += 4, D[C + 2] = x.getUint32(r, c), r += 4, C += 3;
+        r += m, F !== 3 && (b = !1), D[y] = x.getUint32(r, c), r += 4, D[y + 1] = x.getUint32(r, c), r += 4, D[y + 2] = x.getUint32(r, c), r += 4, y += 3;
       }
     else {
       let E = r;
       for (let F = 0; F < A; F++) {
         r = E + p;
         let M = 0;
-        g === 1 ? M = x.getUint8(r) : g === 2 ? M = x.getUint16(r, c) : g === 4 && (M = x.getUint32(r, c)), r += g, M !== 3 && (b = !1);
+        m === 1 ? M = x.getUint8(r) : m === 2 ? M = x.getUint16(r, c) : m === 4 && (M = x.getUint32(r, c)), r += m, M !== 3 && (b = !1);
         for (let S = 0; S < 3; S++)
-          m === 1 ? D[C] = x.getUint8(r) : m === 2 ? D[C] = x.getUint16(r, c) : m === 4 && (D[C] = x.getUint32(r, c)), C++, r += m;
+          g === 1 ? D[y] = x.getUint8(r) : g === 2 ? D[y] = x.getUint16(r, c) : g === 4 && (D[y] = x.getUint32(r, c)), y++, r += g;
         E += f;
       }
     }
@@ -13576,12 +13576,12 @@ var j = class Bt {
       const d = r[l].trim().split(/\s+/);
       l++;
       let f = parseInt(d[0]) - 1;
-      const g = parseFloat(d[1]), m = parseFloat(d[2]), p = parseFloat(d[3]);
+      const m = parseFloat(d[1]), g = parseFloat(d[2]), p = parseFloat(d[3]);
       if (f < 0 || f >= n) {
         R.error("ICO vertices corrupted");
         break;
       }
-      f *= 3, o[f] = g, o[f + 1] = m, o[f + 2] = p;
+      f *= 3, o[f] = m, o[f + 1] = g, o[f + 2] = p;
     }
     a = r[l].trim().split(/\s+/), l++;
     const c = parseInt(a[0]), h = new Uint32Array(c * 3);
@@ -13589,12 +13589,12 @@ var j = class Bt {
       const d = r[l].trim().split(/\s+/);
       l++;
       let f = parseInt(d[0]) - 1;
-      const g = parseInt(d[1]) - 1, m = parseInt(d[2]) - 1, p = parseInt(d[3]) - 1;
+      const m = parseInt(d[1]) - 1, g = parseInt(d[2]) - 1, p = parseInt(d[3]) - 1;
       if (f < 0 || f >= c) {
         R.error("ICO indices corrupted");
         break;
       }
-      f *= 3, h[f] = g, h[f + 1] = m, h[f + 2] = p;
+      f *= 3, h[f] = m, h[f + 1] = g, h[f + 2] = p;
     }
     for (let u = 0; u < h.length; u += 3) {
       const d = h[u];
@@ -13629,21 +13629,21 @@ var j = class Bt {
       for (let x = 0; x < A.length && (u.push(parseFloat(A[x])), d++, !(d >= l)); x++)
         ;
     }
-    const g = [];
+    const m = [];
     c *= 3;
-    let m = 0;
-    for (; m < c; ) {
+    let g = 0;
+    for (; g < c; ) {
       const A = a[f].trim().split(/\s+/);
       f++;
-      for (let x = 0; x < A.length && (g.push(Math.abs(parseInt(A[x])) - 1), m++, !(m >= c)); x++)
+      for (let x = 0; x < A.length && (m.push(Math.abs(parseInt(A[x])) - 1), g++, !(g >= c)); x++)
         ;
     }
     if (t)
-      for (let A = 0; A < g.length; A += 3) {
-        const x = g[A];
-        g[A] = g[A + 1], g[A + 1] = x;
+      for (let A = 0; A < m.length; A += 3) {
+        const x = m[A];
+        m[A] = m[A + 1], m[A + 1] = x;
       }
-    const p = new Float32Array(u), v = new Uint32Array(g);
+    const p = new Float32Array(u), v = new Uint32Array(m);
     return {
       positions: p,
       indices: v
@@ -13676,16 +13676,16 @@ var j = class Bt {
     (r.length < 1 || r[0] !== "P") && R.warn("This is not a valid MNI OBJ mesh.");
     let a = 6;
     const n = parseInt(r[a++]), o = n * 3, l = new Float32Array(o);
-    for (let g = 0; g < o; g++)
-      l[g] = parseFloat(r[a++]);
+    for (let m = 0; m < o; m++)
+      l[m] = parseFloat(r[a++]);
     a += o;
     const c = parseInt(r[a++]), h = parseInt(r[a++]);
     (c < 1 || h < 0 || h > 2) && R.warn("This is not a valid MNI OBJ mesh.");
     let u = 1;
     h === 1 ? u = c : h === 1 && (u = n), a += u * 4, a += c;
     const d = c * 3, f = new Uint32Array(d);
-    for (let g = 0; g < d; g++)
-      f[g] = parseInt(r[a++]);
+    for (let m = 0; m < d; m++)
+      f[m] = parseInt(r[a++]);
     return {
       positions: l,
       indices: f
@@ -13701,21 +13701,21 @@ var j = class Bt {
     const a = r.split(`
 `), n = a.length, o = [], l = [];
     for (let f = 0; f < n; f++) {
-      const g = a[f];
-      if (g[0] === "v" && g[1] === " ") {
-        const m = g.trim().split(/\s+/);
-        o.push(parseFloat(m[1])), o.push(parseFloat(m[2])), o.push(parseFloat(m[3]));
+      const m = a[f];
+      if (m[0] === "v" && m[1] === " ") {
+        const g = m.trim().split(/\s+/);
+        o.push(parseFloat(g[1])), o.push(parseFloat(g[2])), o.push(parseFloat(g[3]));
       }
-      if (g[0] === "f") {
-        const m = g.trim().split(/\s+/), p = m.length - 3;
+      if (m[0] === "f") {
+        const g = m.trim().split(/\s+/), p = g.length - 3;
         if (p < 1)
           break;
-        let v = m[1].split("/");
+        let v = g[1].split("/");
         const A = parseInt(v[0]) - 1;
-        v = m[2].split("/");
+        v = g[2].split("/");
         let x = parseInt(v[0]) - 1;
         for (let w = 0; w < p; w++) {
-          v = m[3 + w].split("/");
+          v = g[3 + w].split("/");
           const D = parseInt(v[0]) - 1;
           l.push(A), l.push(x), l.push(D), x = D;
         }
@@ -13763,18 +13763,18 @@ var j = class Bt {
     if (!d) {
       const f = s.getUint32(n, !1);
       n += 4;
-      const g = s.getUint32(n, !1);
-      n += 4, d = u === 2 && f === 0 && g === 20;
+      const m = s.getUint32(n, !1);
+      n += 4, d = u === 2 && f === 0 && m === 20;
     }
     if (!d)
       R.warn("Unknown FreeSurfer Mesh extension code.");
     else {
-      const g = new TextDecoder().decode(e.slice(n)).trim().split(`
+      const m = new TextDecoder().decode(e.slice(n)).trim().split(`
 `);
-      for (let m = 0; m < g.length; m++) {
-        if (!g[m].startsWith("cras"))
+      for (let g = 0; g < m.length; g++) {
+        if (!m[g].startsWith("cras"))
           continue;
-        const v = g[m].split("=")[1].trim().split(" ").map(Number), A = Math.floor(c.length / 3);
+        const v = m[g].split("=")[1].trim().split(" ").map(Number), A = Math.floor(c.length / 3);
         let x = 0;
         for (let w = 0; w < A; w++)
           c[x] += v[0], x++, c[x] += v[1], x++, c[x] += v[2], x++;
@@ -13804,18 +13804,18 @@ var j = class Bt {
     for (let b = 0; b < a; b++)
       h[d] = -s.getFloat32(u, !0) + c, d += 3, u += 4;
     u = 28 + 24 * a;
-    const f = s.getFloat32(u, !0), g = s.getFloat32(u + 4, !0), m = s.getFloat32(u + 8, !0), p = s.getFloat32(u + 16, !0), v = s.getFloat32(u + 20, !0), A = s.getFloat32(u + 24, !0);
+    const f = s.getFloat32(u, !0), m = s.getFloat32(u + 4, !0), g = s.getFloat32(u + 8, !0), p = s.getFloat32(u + 16, !0), v = s.getFloat32(u + 20, !0), A = s.getFloat32(u + 24, !0);
     u += 32;
     const x = new Float32Array(a * 3), w = new Uint32Array(e, u, a);
     d = 0;
     for (let b = 0; b < a; b++) {
-      const C = w[b];
-      C > 1056964608 && (x[d + 0] = (C >> 16 & 255) / 255, x[d + 1] = (C >> 8 & 255) / 255, x[d + 2] = (C & 255) / 255), C === 0 && (x[d + 0] = f, x[d + 1] = g, x[d + 2] = m), C === 1 && (x[d + 0] = p, x[d + 1] = v, x[d + 2] = A), d += 3;
+      const y = w[b];
+      y > 1056964608 && (x[d + 0] = (y >> 16 & 255) / 255, x[d + 1] = (y >> 8 & 255) / 255, x[d + 2] = (y & 255) / 255), y === 0 && (x[d + 0] = f, x[d + 1] = m, x[d + 2] = g), y === 1 && (x[d + 0] = p, x[d + 1] = v, x[d + 2] = A), d += 3;
     }
     u += a * 4;
     for (let b = 0; b < a; b++) {
-      const C = s.getUint32(u, !0);
-      u += 4 + 4 * C;
+      const y = s.getUint32(u, !0);
+      u += 4 + 4 * y;
     }
     const D = new Uint32Array(n * 3);
     for (let b = 0; b < n * 3; b++)
@@ -13902,10 +13902,10 @@ var j = class Bt {
     const d = o.getUint32(504, n), f = o.getUint16(12, n);
     if (f !== 2 && f !== 4 && f !== 8 && f !== 16)
       throw new Error("Unsupported NIfTI datatype " + f);
-    let g = 1;
-    const m = [1, 1, 1, 1, 1, 1, 1, 1];
+    let m = 1;
+    const g = [1, 1, 1, 1, 1, 1, 1, 1];
     for (let p = 1; p < 8; p++)
-      m[p] = Math.max(Number(o.getBigInt64(16 + p * 8, n)), 1), g *= m[p];
+      g[p] = Math.max(Number(o.getBigInt64(16 + p * 8, n)), 1), m *= g[p];
     if (d >= 3e3 && d <= 3099 && c > 580) {
       let p = function() {
         for (; F < a && E[F] === 10; )
@@ -13927,10 +13927,10 @@ var j = class Bt {
           return 1;
         const L = M.indexOf('"', P) + 1, q = M.indexOf('"', L), X = M.slice(L, q);
         return N ? X : parseInt(X);
-      }, x = 0, w = 0, D = 0, b = "", C = new Uint32Array();
+      }, x = 0, w = 0, D = 0, b = "", y = new Uint32Array();
       const E = new Uint8Array(e);
       let F = 552, M;
-      const S = m[5], T = new Float32Array(t * S);
+      const S = g[5], T = new Float32Array(t * S);
       for (; F < a && (M = v(), !M.includes("</CIFTI>")); )
         if (M.includes("<BrainModel")) {
           const V = A("SurfaceNumberOfVertices="), N = A("BrainStructure=", !0).toUpperCase();
@@ -13943,11 +13943,11 @@ var j = class Bt {
             return R.warn("Unable to find CIfTI <VertexIndices>"), T;
           M = M.slice(15, -16);
           const L = M.trim().split(/\s+/);
-          L.length < w && R.error("Error parsing VertexIndices"), C = new Uint32Array(w);
+          L.length < w && R.error("Error parsing VertexIndices"), y = new Uint32Array(w);
           for (let q = 0; q < w; q++)
-            C[q] = parseInt(L[q]);
+            y[q] = parseInt(L[q]);
         }
-      if (D === 0 || C.length === 0)
+      if (D === 0 || y.length === 0)
         return R.warn("Unable to find CIfTI structure that matches the mesh."), T;
       if (f !== 16)
         return R.warn("Only able to read float32 CIfTI (only known datatype)."), T;
@@ -13957,7 +13957,7 @@ var j = class Bt {
       let U = 0;
       for (let V = 0; V < w; V++)
         for (let N = 0; N < S; N++)
-          T[C[V] + N * t] = k[U], U++;
+          T[y[V] + N * t] = k[U], U++;
       return R.debug(
         "CIfTI diagnostics",
         D,
@@ -13968,24 +13968,24 @@ var j = class Bt {
         s
       ), T;
     }
-    if (g = this.decimateLayerVertices(g, t), g % t !== 0)
-      throw new Error("Vertices in layer (" + g + ") is not a multiple of number of vertices (" + t + ")");
+    if (m = this.decimateLayerVertices(m, t), m % t !== 0)
+      throw new Error("Vertices in layer (" + m + ") is not a multiple of number of vertices (" + t + ")");
     if (n)
-      f === 16 ? r = new Float32Array(e, c, g) : f === 8 ? r = new Int32Array(e, c, g) : f === 4 && (r = new Int16Array(e, c, g));
+      f === 16 ? r = new Float32Array(e, c, m) : f === 8 ? r = new Int32Array(e, c, m) : f === 4 && (r = new Int16Array(e, c, m));
     else if (f === 16) {
-      r = new Float32Array(g);
-      for (let p = 0; p < g; p++)
+      r = new Float32Array(m);
+      for (let p = 0; p < m; p++)
         r[p] = o.getFloat32(c + p * 4, n);
     } else if (f === 8) {
-      r = new Int32Array(g);
-      for (let p = 0; p < g; p++)
+      r = new Int32Array(m);
+      for (let p = 0; p < m; p++)
         r[p] = o.getInt32(c + p * 4, n);
     } else if (f === 4) {
-      r = new Int16Array(g);
-      for (let p = 0; p < g; p++)
+      r = new Int16Array(m);
+      for (let p = 0; p < m; p++)
         r[p] = o.getInt16(c + p * 2, n);
     }
-    return f === 2 && (r = new Uint8Array(e, c, g)), r;
+    return f === 2 && (r = new Uint8Array(e, c, m)), r;
   }
   // readNII2()
   // read NIfTI1/2 as vertex colors
@@ -14002,12 +14002,12 @@ var j = class Bt {
       l === 23553 && (n = !1, l = o.getUint16(0, n));
     }
     l !== 348 && R.error("Not a valid NIfTI image.");
-    const c = o.getFloat32(108, n), h = o.getFloat32(112, n), u = o.getFloat32(116, n), d = o.getUint16(252, n), f = o.getUint16(254, n), g = o.getUint16(70, n);
-    if (g !== 2 && g !== 4 && g !== 8 && g !== 16)
-      throw new Error("Unsupported NIfTI datatype " + g);
-    const m = ie();
+    const c = o.getFloat32(108, n), h = o.getFloat32(112, n), u = o.getFloat32(116, n), d = o.getUint16(252, n), f = o.getUint16(254, n), m = o.getUint16(70, n);
+    if (m !== 2 && m !== 4 && m !== 8 && m !== 16)
+      throw new Error("Unsupported NIfTI datatype " + m);
+    const g = ie();
     for (let w = 0; w < 12; w++)
-      m[w] = o.getFloat32(280 + w * 4, n);
+      g[w] = o.getFloat32(280 + w * 4, n);
     let p = 1;
     const v = new Array(8);
     for (let w = 0; w < 8; w++)
@@ -14019,21 +14019,21 @@ var j = class Bt {
       else
         throw new Error("Voxels in layer (" + p + ") is not a multiple of number of vertices (" + r + ")");
     if (p = x, n)
-      g === 16 ? a = new Float32Array(e, c, p) : g === 8 ? a = new Int32Array(e, c, p) : g === 4 && (a = new Int16Array(e, c, p));
-    else if (g === 16) {
+      m === 16 ? a = new Float32Array(e, c, p) : m === 8 ? a = new Int32Array(e, c, p) : m === 4 && (a = new Int16Array(e, c, p));
+    else if (m === 16) {
       a = new Float32Array(p);
       for (let w = 0; w < p; w++)
         a[w] = o.getFloat32(c + w * 4, n);
-    } else if (g === 8) {
+    } else if (m === 8) {
       a = new Int32Array(p);
       for (let w = 0; w < p; w++)
         a[w] = o.getInt32(c + w * 4, n);
-    } else if (g === 4) {
+    } else if (m === 4) {
       a = new Int16Array(p);
       for (let w = 0; w < p; w++)
         a[w] = o.getInt16(c + w * 2, n);
     }
-    if (g === 2 && (a = new Uint8Array(e, c, p)), h !== 1 || u !== 0) {
+    if (m === 2 && (a = new Uint8Array(e, c, p)), h !== 1 || u !== 0) {
       const w = new Float32Array(p);
       for (let D = 0; D < p; D++)
         w[D] = a[D] * h + u;
@@ -14049,17 +14049,17 @@ var j = class Bt {
       const D = new Float32Array(p);
       R.warn("Sampling voxel intensities at mesh vertices (assumes precise alignment)."), (d > f || f <= 0) && R.warn(`Requires valid sform (sform_code = ${f})`);
       const b = ie();
-      Re(b, m);
-      const C = v[1], E = v[2], F = v[3], M = C * E;
+      Re(b, g);
+      const y = v[1], E = v[2], F = v[3], M = y * E;
       let S = 0, T = 0, k = 0;
       for (; T < r; ) {
         const U = [t[S], t[S + 1], t[S + 2]], V = w(U, b);
         S += 3, T += 1;
         const N = Math.floor(V[0]), P = Math.floor(V[1]), L = Math.floor(V[2]), q = Math.ceil(V[0]), X = Math.ceil(V[1]), O = Math.ceil(V[2]);
-        if (N < 0 || q >= C || P < 0 || X >= E || L < 0 || O >= F)
+        if (N < 0 || q >= y || P < 0 || X >= E || L < 0 || O >= F)
           continue;
-        const Y = N + P * C + L * M, _ = new Float32Array(8);
-        _[0] = a[Y], _[1] = a[Y + 1], _[2] = a[Y + C], _[3] = a[Y + C + 1], _[4] = a[Y + M], _[5] = a[Y + M + 1], _[6] = a[Y + M + C], _[7] = a[Y + M + C + 1];
+        const Y = N + P * y + L * M, _ = new Float32Array(8);
+        _[0] = a[Y], _[1] = a[Y + 1], _[2] = a[Y + y], _[3] = a[Y + y + 1], _[4] = a[Y + M], _[5] = a[Y + M + 1], _[6] = a[Y + M + y], _[7] = a[Y + M + y + 1];
         let W = _[0], Q = W;
         for (let J = 1; J < 8; J++)
           W = Math.max(W, _[J]), Q = Math.min(Q, _[J]);
@@ -14076,39 +14076,39 @@ var j = class Bt {
   static async readMGH(e, t = 0, s = !1) {
     let r = new DataView(e), a = e;
     if (r.getUint8(0) === 31 && r.getUint8(1) === 139) {
-      const C = await j.decompress(new Uint8Array(e));
-      a = new ArrayBuffer(C.byteLength), new Uint8Array(a).set(new Uint8Array(C)), r = new DataView(C.buffer);
+      const y = await j.decompress(new Uint8Array(e));
+      a = new ArrayBuffer(y.byteLength), new Uint8Array(a).set(new Uint8Array(y)), r = new DataView(y.buffer);
     }
     const n = r.getInt32(0, !1), o = Math.max(1, r.getInt32(4, !1)), l = Math.max(1, r.getInt32(8, !1)), c = Math.max(1, r.getInt32(12, !1)), h = Math.max(1, r.getInt32(16, !1)), u = r.getInt32(20, !1);
     let d = 284;
     const f = !1;
     (n !== 1 || u < 0 || u > 4) && R.warn("Not a valid MGH file");
-    let g = o * l * c * h, m = [];
-    if (g = this.decimateLayerVertices(g, t), g % t !== 0)
-      return R.warn("Vertices in layer (" + g + ") is not a multiple of number of vertices (" + t + ")"), m;
+    let m = o * l * c * h, g = [];
+    if (m = this.decimateLayerVertices(m, t), m % t !== 0)
+      return R.warn("Vertices in layer (" + m + ") is not a multiple of number of vertices (" + t + ")"), g;
     if (u === 3) {
-      m = new Float32Array(g);
-      for (let C = 0; C < g; C++)
-        m[C] = r.getFloat32(d + C * 4, f);
+      g = new Float32Array(m);
+      for (let y = 0; y < m; y++)
+        g[y] = r.getFloat32(d + y * 4, f);
     } else if (u === 1) {
-      m = new Int32Array(g);
-      for (let C = 0; C < g; C++)
-        m[C] = r.getInt32(d + C * 4, f);
+      g = new Int32Array(m);
+      for (let y = 0; y < m; y++)
+        g[y] = r.getInt32(d + y * 4, f);
     } else if (u === 4) {
-      m = new Int16Array(g);
-      for (let C = 0; C < g; C++)
-        m[C] = r.getInt16(d + C * 2, f);
-    } else u === 0 && (m = new Uint8Array(e, d, g));
+      g = new Int16Array(m);
+      for (let y = 0; y < m; y++)
+        g[y] = r.getInt16(d + y * 2, f);
+    } else u === 0 && (g = new Uint8Array(e, d, m));
     if (!s)
-      return m;
+      return g;
     let p = 4;
-    u === 4 && (p = 2), u === 0 && (p = 1), d += p * g, d += 16;
+    u === 4 && (p = 2), u === 0 && (p = 1), d += p * m, d += 16;
     const v = 1, A = 2, x = 20, w = 30, D = a.byteLength;
     let b;
     for (; d < D - 8; ) {
-      const C = r.getInt32(d += 4, f);
+      const y = r.getInt32(d += 4, f);
       let E = 0;
-      switch (C) {
+      switch (y) {
         case w:
           E = r.getInt32(d += 4, f) - 1;
           break;
@@ -14122,17 +14122,17 @@ var j = class Bt {
           {
             let F = r.getInt32(d += 4, f);
             if (F > 0)
-              return R.warn("unsupported CTABreadFromBinaryV1"), m;
+              return R.warn("unsupported CTABreadFromBinaryV1"), g;
             if (F = -F, F !== 2)
-              return R.warn("CTABreadFromBinary: unknown version"), m;
+              return R.warn("CTABreadFromBinary: unknown version"), g;
             const M = r.getInt32(d += 4, f);
             if (M < 0)
-              return R.warn("CTABreadFromBinaryV2: nentries was ", M), m;
+              return R.warn("CTABreadFromBinaryV2: nentries was ", M), g;
             const S = r.getInt32(d += 4, f);
             d += S;
             const T = r.getInt32(d += 4, f);
             if (T < 0)
-              return m;
+              return g;
             const k = { R: [], G: [], B: [], A: [], I: [], labels: [] };
             for (let B = 0; B < T; B++) {
               const U = r.getInt32(d += 4, f), V = r.getInt32(d += 4, f);
@@ -14156,7 +14156,7 @@ var j = class Bt {
       d += E;
     }
     return {
-      scalars: m,
+      scalars: g,
       colormapLabel: b
       // TODO can we guarantee this?
     };
@@ -14184,15 +14184,15 @@ var j = class Bt {
       const w = n.indexOf(x + "=");
       if (w < 0)
         return "";
-      const D = n[w + x.length + 1], b = n.indexOf(D, w) + 1, C = n.indexOf(D, b);
-      return n.slice(b, C);
+      const D = n[w + x.length + 1], b = n.indexOf(D, w) + 1, y = n.indexOf(D, b);
+      return n.slice(b, y);
     }
     function l(x) {
       const w = n.indexOf(x + "=");
       if (w < 0)
         return 1;
-      const D = n[w + x.length + 1], b = n.indexOf(D, w) + 1, C = n.indexOf(D, b);
-      let E = n.slice(b, C).trim();
+      const D = n[w + x.length + 1], b = n.indexOf(D, w) + 1, y = n.indexOf(D, b);
+      let E = n.slice(b, y).trim();
       E = E.replace(/,\s*$/, "");
       const F = E.trim().split(/\s*,\s*|\s+/);
       if (F.length < 2)
@@ -14205,7 +14205,7 @@ var j = class Bt {
       return M = M.slice(0, S), M;
     }
     n.includes("xml version") || R.warn("Not a X3D image");
-    let c = [], h = [], u = [], d = [], f = [0, 0, 0, 0], g = [0, 0, 0, 0], m = [255, 255, 255, 255], p = [255, 255, 255, 255];
+    let c = [], h = [], u = [], d = [], f = [0, 0, 0, 0], m = [0, 0, 0, 0], g = [255, 255, 255, 255], p = [255, 255, 255, 255];
     const v = {};
     function A() {
       if (!n.endsWith("/>"))
@@ -14217,24 +14217,24 @@ var j = class Bt {
             n += a();
       const x = o("USE");
       if (x.length > 1) {
-        x in v ? m = v[x] : R.warn("Unable to find DEF for " + x);
+        x in v ? g = v[x] : R.warn("Unable to find DEF for " + x);
         return;
       }
       const w = l("diffuseColor");
       if (w.length < 3)
         return;
-      m[0] = Math.round(w[0] * 255), m[1] = Math.round(w[1] * 255), m[2] = Math.round(w[2] * 255);
+      g[0] = Math.round(w[0] * 255), g[1] = Math.round(w[1] * 255), g[2] = Math.round(w[2] * 255);
       const D = o("DEF");
-      D.length < 1 || (v[D] = m);
+      D.length < 1 || (v[D] = g);
     }
     for (; r < t; )
-      if (n = a(), m = p.slice(), n.startsWith("<Transform") && (f = l("translation"), g = l("rotation")), n.startsWith("<Appearance") && (A(), p = m.slice()), n.startsWith("<Shape")) {
+      if (n = a(), g = p.slice(), n.startsWith("<Transform") && (f = l("translation"), m = l("rotation")), n.startsWith("<Appearance") && (A(), p = g.slice()), n.startsWith("<Shape")) {
         let x = 1, w = 1, D = [], b = [];
         for (; r < t && (n = a(), n.startsWith("<Appearance") && A(), !n.startsWith("</Shape")); ) {
           if (n.startsWith("<Sphere") && (x = l("radius"), w = -1), n.startsWith("<Cylinder") && (x = l("radius"), w = l("height")), n.startsWith("<IndexedFaceSet") && (w = -2, D = l("coordIndex")), n.startsWith("<IndexedTriangleSet") && (w = -7, D = l("index")), n.startsWith("<IndexedTriangleStripSet") && (w = -3, D = l("index")), n.startsWith("<Coordinate")) {
             b = l("point");
-            const C = b.length % 3;
-            C !== 0 && (b = b.slice(0, -C));
+            const y = b.length % 3;
+            y !== 0 && (b = b.slice(0, -y));
           }
           n.startsWith("<Color") && (d = l("color")), n.startsWith("<Box") && (w = -4, R.warn("Unsupported x3d shape: Box")), n.startsWith("<Cone") && (w = -5, R.warn("Unsupported x3d shape: Cone")), n.startsWith("<ElevationGrid") && (w = -6, R.warn("Unsupported x3d shape: ElevationGrid"));
         }
@@ -14243,19 +14243,19 @@ var j = class Bt {
             R.warn("Indexed mesh must specify indices and points");
             break;
           }
-          const C = Math.floor(c.length / 3);
+          const y = Math.floor(c.length / 3);
           let E = 2;
           if (w === -7)
             h = [...h, ...D];
           else if (w === -2) {
             let S = 0;
             for (; E < D.length; )
-              D[E] >= 0 ? (h.push(D[S] + C), h.push(D[E - 1] + C), h.push(D[E - 0] + C), E += 1) : (E += 3, S = E - 2);
+              D[E] >= 0 ? (h.push(D[S] + y), h.push(D[E - 1] + y), h.push(D[E - 0] + y), E += 1) : (E += 3, S = E - 2);
           } else
             for (; E < D.length; )
-              D[E] >= 0 ? (h.push(D[E - 2] + C), h.push(D[E - 1] + C), h.push(D[E - 0] + C), E += 1) : E += 3;
+              D[E] >= 0 ? (h.push(D[E - 2] + y), h.push(D[E - 1] + y), h.push(D[E - 0] + y), E += 1) : E += 3;
           c = [...c, ...b];
-          const F = Math.floor(b.length / 3), M = Array(F).fill(m).flat();
+          const F = Math.floor(b.length / 3), M = Array(F).fill(g).flat();
           if (d.length === F * 3) {
             let S = 0, T = 0;
             for (let k = 0; k < F; k++) {
@@ -14266,14 +14266,14 @@ var j = class Bt {
           }
           u = [...u, ...M];
         } else if (w < 0)
-          xt.makeColoredSphere(c, h, u, x, f, m);
+          xt.makeColoredSphere(c, h, u, x, f, g);
         else {
-          const C = ie();
-          Ba(C, g[3], [g[0], g[1], g[2]]);
+          const y = ie();
+          Ba(y, m[3], [m[0], m[1], m[2]]);
           const E = pe(0, -w * 0.5, 0, 1), F = pe(0, +w * 0.5, 0, 1);
-          Me(E, E, C), Me(F, F, C), lr(E, E, f), lr(F, F, f);
+          Me(E, E, y), Me(F, F, y), lr(E, E, f), lr(F, F, f);
           const M = G(E[0], E[1], E[2]), S = G(F[0], F[1], F[2]);
-          xt.makeColoredCylinder(c, h, u, M, S, x, m);
+          xt.makeColoredCylinder(c, h, u, M, S, x, g);
         }
       }
     return {
@@ -14327,34 +14327,34 @@ var j = class Bt {
     if (!o.name.startsWith("GIFTI") || o.contentStartPos === o.contentEndPos)
       throw new Error("readGII: XML file does not include GIFTI tag");
     s = o.contentEndPos;
-    let l = new Float32Array(), c = new Uint32Array(), h = new Float32Array(), u = "", d = !1, f = !1, g = !1, m = !1, p = [1, 1, 1];
+    let l = new Float32Array(), c = new Uint32Array(), h = new Float32Array(), u = "", d = !1, f = !1, m = !1, g = !1, p = [1, 1, 1];
     const v = [0, 0, 0];
     let A = 0, x = !1, w = !1, D = 0, b = !1;
     o.endPos = o.contentStartPos;
-    let C = "";
+    let y = "";
     function E(T, k = !1) {
-      const B = C.indexOf(T);
+      const B = y.indexOf(T);
       if (B < 0)
         return 1;
-      const U = C.indexOf('"', B) + 1, V = C.indexOf('"', U), N = C.slice(U, V);
+      const U = y.indexOf('"', B) + 1, V = y.indexOf('"', U), N = y.slice(U, V);
       return k ? parseFloat(N) : parseInt(N);
     }
     function F(T) {
-      const k = C.indexOf(T);
+      const k = y.indexOf(T);
       if (k < 0)
         return "";
-      const B = k + T.length, U = C.indexOf("]", B);
-      return C.slice(B, U);
+      const B = k + T.length, U = y.indexOf("]", B);
+      return y.slice(B, U);
     }
     const M = { R: [], G: [], B: [], A: [], I: [], labels: [] };
     for (; o.endPos < s && o.name.length > 1; ) {
-      if (o = n(), o.name.startsWith("Label Key") && (C = o.name, M.I.push(E("Key=")), M.R.push(Math.round(255 * E("Red=", !0))), M.G.push(Math.round(255 * E("Green=", !0))), M.B.push(Math.round(255 * E("Blue=", !0))), M.A.push(Math.round(255 * E("Alpha", !0))), C = new TextDecoder().decode(e.slice(o.contentStartPos + 1, o.contentEndPos)).trim(), M.labels.push(F("<![CDATA["))), o.name.trim() === "Data") {
-        if (g)
+      if (o = n(), o.name.startsWith("Label Key") && (y = o.name, M.I.push(E("Key=")), M.R.push(Math.round(255 * E("Red=", !0))), M.G.push(Math.round(255 * E("Green=", !0))), M.B.push(Math.round(255 * E("Blue=", !0))), M.A.push(Math.round(255 * E("Alpha", !0))), y = new TextDecoder().decode(e.slice(o.contentStartPos + 1, o.contentEndPos)).trim(), M.labels.push(F("<![CDATA["))), o.name.trim() === "Data") {
+        if (m)
           continue;
-        C = new TextDecoder().decode(e.slice(o.contentStartPos + 1, o.contentEndPos)).trim();
+        y = new TextDecoder().decode(e.slice(o.contentStartPos + 1, o.contentEndPos)).trim();
         let T;
         if (w) {
-          const k = p[0] * p[1] * p[2], B = C.split(/\s+/);
+          const k = p[0] * p[1] * p[2], B = y.split(/\s+/);
           if (k !== B.length)
             throw new Error("Unable to parse ASCII GIfTI");
           if (A === 2 && (A = 8), A === 32 && (A = 16), A === 8) {
@@ -14375,17 +14375,17 @@ var j = class Bt {
             return N;
           };
           if (x) {
-            const B = k(C.slice());
+            const B = k(y.slice());
             T = await j.decompress(new Uint8Array(B));
           } else
-            T = k(C.slice());
+            T = k(y.slice());
         } else if (x) {
-          const k = Buffer.from(C.slice(), "base64");
+          const k = Buffer.from(y.slice(), "base64");
           T = await j.decompress(new Uint8Array(k));
         } else
-          T = Buffer.from(C.slice(), "base64");
+          T = Buffer.from(y.slice(), "base64");
         if (f) {
-          if (A !== 16 && R.warn("expect positions as FLOAT32"), l = new Float32Array(T.buffer), m) {
+          if (A !== 16 && R.warn("expect positions as FLOAT32"), l = new Float32Array(T.buffer), g) {
             const k = l.slice(), B = k.length / 3;
             let U = 0;
             for (let V = 0; V < B; V++)
@@ -14393,7 +14393,7 @@ var j = class Bt {
                 l[U] = k[N * B + V], U++;
           }
         } else if (d) {
-          if (A !== 8 && R.warn("expect indices as INT32"), c = new Uint32Array(T.buffer), m) {
+          if (A !== 8 && R.warn("expect indices as INT32"), c = new Uint32Array(T.buffer), g) {
             const k = c.slice(), B = k.length / 3;
             let U = 0;
             for (let V = 0; V < B; V++)
@@ -14424,13 +14424,13 @@ var j = class Bt {
         }
         continue;
       }
-      if (o.name.trim() === "DataSpace" && (C = new TextDecoder().decode(e.slice(o.contentStartPos + 1, o.contentEndPos)).trim(), C.includes("NIFTI_XFORM_SCANNER_ANAT") && (b = !0)), o.name.trim() === "MD" && (C = new TextDecoder().decode(e.slice(o.contentStartPos + 1, o.contentEndPos)).trim(), C.includes("AnatomicalStructurePrimary") && C.includes("CDATA[") && (u = F("<Value><![CDATA[").toUpperCase()), C.includes("VolGeom") && C.includes("CDATA["))) {
+      if (o.name.trim() === "DataSpace" && (y = new TextDecoder().decode(e.slice(o.contentStartPos + 1, o.contentEndPos)).trim(), y.includes("NIFTI_XFORM_SCANNER_ANAT") && (b = !0)), o.name.trim() === "MD" && (y = new TextDecoder().decode(e.slice(o.contentStartPos + 1, o.contentEndPos)).trim(), y.includes("AnatomicalStructurePrimary") && y.includes("CDATA[") && (u = F("<Value><![CDATA[").toUpperCase()), y.includes("VolGeom") && y.includes("CDATA["))) {
         let T = -1;
-        if (C.includes("VolGeomC_R") && (T = 0), C.includes("VolGeomC_A") && (T = 1), C.includes("VolGeomC_S") && (T = 2), T < 0)
+        if (y.includes("VolGeomC_R") && (T = 0), y.includes("VolGeomC_A") && (T = 1), y.includes("VolGeomC_S") && (T = 2), T < 0)
           continue;
         v[T] = parseFloat(F("<Value><![CDATA["));
       }
-      o.name.startsWith("DataArray") && (C = o.name, p = [1, 1, 1], x = C.includes('Encoding="GZipBase64Binary"'), w = C.includes('Encoding="ASCII"'), d = C.includes('Intent="NIFTI_INTENT_TRIANGLE"'), f = C.includes('Intent="NIFTI_INTENT_POINTSET"'), g = C.includes('Intent="NIFTI_INTENT_VECTOR"'), m = C.includes('ArrayIndexingOrder="ColumnMajorOrder"'), C.includes('DataType="NIFTI_TYPE_UINT8"') && (A = 2), C.includes('DataType="NIFTI_TYPE_INT32"') && (A = 8), C.includes('DataType="NIFTI_TYPE_FLOAT32"') && (A = 16), C.includes('DataType="NIFTI_TYPE_FLOAT64"') && (A = 32), p[0] = E("Dim0="), p[1] = E("Dim1="), p[2] = E("Dim2="));
+      o.name.startsWith("DataArray") && (y = o.name, p = [1, 1, 1], x = y.includes('Encoding="GZipBase64Binary"'), w = y.includes('Encoding="ASCII"'), d = y.includes('Intent="NIFTI_INTENT_TRIANGLE"'), f = y.includes('Intent="NIFTI_INTENT_POINTSET"'), m = y.includes('Intent="NIFTI_INTENT_VECTOR"'), g = y.includes('ArrayIndexingOrder="ColumnMajorOrder"'), y.includes('DataType="NIFTI_TYPE_UINT8"') && (A = 2), y.includes('DataType="NIFTI_TYPE_INT32"') && (A = 8), y.includes('DataType="NIFTI_TYPE_FLOAT32"') && (A = 16), y.includes('DataType="NIFTI_TYPE_FLOAT64"') && (A = 32), p[0] = E("Dim0="), p[1] = E("Dim1="), p[2] = E("Dim2="));
     }
     let S;
     if (M.I.length > 1 && (M.A.some((k) => k > 0) || M.A.fill(255), S = oe.makeLabelLut(M)), t > 0)
@@ -14542,7 +14542,7 @@ var j = class Bt {
     }
     return e;
   }
-}), Si = (i, e = "", t = "", s = "gray", r = 1, a = NaN, n = NaN, o = !0, l = 0.02, c = !1, h = !1, u = "", d = 0, f = $.UNKNOWN, g = NaN, m = NaN, p = !0, v = !1, A = null) => ({
+}), Si = (i, e = "", t = "", s = "gray", r = 1, a = NaN, n = NaN, o = !0, l = 0.02, c = !1, h = !1, u = "", d = 0, f = $.UNKNOWN, m = NaN, g = NaN, p = !0, v = !1, A = null) => ({
   url: i,
   urlImageData: e,
   name: t,
@@ -14557,8 +14557,8 @@ var j = class Bt {
   useQFormNotSForm: h,
   colormapNegative: u,
   imageType: f,
-  cal_minNeg: g,
-  cal_maxNeg: m,
+  cal_minNeg: m,
+  cal_maxNeg: g,
   colorbarVisible: p,
   frame4D: d,
   alphaThreshold: v,
@@ -14596,10 +14596,10 @@ function zc(i, e = !0) {
   for (let u = 0; u < o; u++) {
     n = 0;
     for (let f = 0; f < t; f++) {
-      const g = G(i[f * 3], i[f * 3 + 1], i[f * 3 + 2]);
-      f === 0 && (nr(r, g), nr(a, g)), Cs(r, r, g), Ds(a, a, g), de(g, g, s);
-      const m = ei(g);
-      n = Math.max(n, m);
+      const m = G(i[f * 3], i[f * 3 + 1], i[f * 3 + 2]);
+      f === 0 && (nr(r, m), nr(a, m)), Cs(r, r, m), Ds(a, a, m), de(m, m, s);
+      const g = ei(m);
+      n = Math.max(n, g);
     }
     if (u + 1 >= o)
       break;
@@ -14723,15 +14723,15 @@ function qn(i, e = null) {
           "Missing RAS transformation info (img2RASstep, img2RASstart, dimsRAS). Cannot reorient drawing reliably."
         ), c = p;
       else {
-        const D = i.img2RASstep, b = i.img2RASstart, C = i.dimsRAS, E = new Uint8Array(x);
+        const D = i.img2RASstep, b = i.img2RASstart, y = i.dimsRAS, E = new Uint8Array(x);
         E.fill(0);
         const F = p;
         let M = 0;
-        for (let S = 0; S < C[3]; S++) {
+        for (let S = 0; S < y[3]; S++) {
           const T = b[2] + S * D[2];
-          for (let k = 0; k < C[2]; k++) {
+          for (let k = 0; k < y[2]; k++) {
             const B = b[1] + k * D[1];
-            for (let U = 0; U < C[1]; U++) {
+            for (let U = 0; U < y[1]; U++) {
               const N = b[0] + U * D[0] + B + T;
               N >= 0 && N < x ? E[N] = F[M] : M < F.length && console.warn(
                 `Calculated native index ${N} is out of bounds [0..${x - 1}] during drawing reorientation.`
@@ -14748,9 +14748,9 @@ function qn(i, e = null) {
       throw new Error("NVImage image data is null when trying to save non-drawing.");
     c = new Uint8Array(i.img.buffer, i.img.byteOffset, i.img.byteLength);
   }
-  const h = l.length + a.length + n.length, u = Math.max(0, s.vox_offset - h), d = new Uint8Array(u), f = s.vox_offset + c.length, g = new Uint8Array(f);
-  let m = 0;
-  return g.set(l, m), m += l.length, g.set(a, m), m += a.length, g.set(n, m), m += n.length, g.set(d, m), m += d.length, g.set(c, s.vox_offset), g;
+  const h = l.length + a.length + n.length, u = Math.max(0, s.vox_offset - h), d = new Uint8Array(u), f = s.vox_offset + c.length, m = new Uint8Array(f);
+  let g = 0;
+  return m.set(l, g), g += l.length, m.set(a, g), g += a.length, m.set(n, g), g += n.length, m.set(d, g), g += d.length, m.set(c, s.vox_offset), m;
 }
 async function Hn(i, e, t = null) {
   const s = qn(i, t);
@@ -14797,11 +14797,11 @@ function Wn(i, e, t, s, r = 0, a = !1) {
     return i.img ? (h *= 4, h + 3 >= i.img.length ? (R.warn(`getValue: Calculated index ${h} out of bounds for RGBA data.`), [0]) : [i.img[h], i.img[h + 1], i.img[h + 2], i.img[h + 3]]) : [0];
   if (i.hdr.datatypeCode === 128)
     return i.img ? (h *= 3, h + 2 >= i.img.length ? (R.warn(`getValue: Calculated index ${h} out of bounds for RGB data.`), [0]) : [i.img[h], i.img[h + 1], i.img[h + 2]]) : [0];
-  const u = n * o * l, d = r * u, f = h + d, g = a ? i.imaginary : i.img;
-  if (f < 0 || f >= g.length)
+  const u = n * o * l, d = r * u, f = h + d, m = a ? i.imaginary : i.img;
+  if (f < 0 || f >= m.length)
     return [0];
-  const m = g[f], p = isNaN(i.hdr.scl_slope) || i.hdr.scl_slope === 0 ? 1 : i.hdr.scl_slope, v = isNaN(i.hdr.scl_inter) ? 0 : i.hdr.scl_inter;
-  return [p * m + v];
+  const g = m[f], p = isNaN(i.hdr.scl_slope) || i.hdr.scl_slope === 0 ? 1 : i.hdr.scl_slope, v = isNaN(i.hdr.scl_inter) ? 0 : i.hdr.scl_inter;
+  return [p * g + v];
 }
 function _c(i, e, t, s, r = 0, a = !1) {
   const n = Wn(i, e, t, s, r, a);
@@ -14842,16 +14842,16 @@ function qc(i, e = [-1, 0, 0], t = [0, 0, 0], s = "same") {
       const x = u[1] + A * h[1];
       for (let w = e[0]; w <= t[0]; w++) {
         const b = u[0] + w * h[0] + x + v;
-        let C = 0;
-        b >= 0 && b < d.length && (C = d[b]), c[f++] = C;
+        let y = 0;
+        b >= 0 && b < d.length && (y = d[b]), c[f++] = y;
       }
     }
   }
-  const g = isNaN(i.hdr.scl_slope) || i.hdr.scl_slope === 0 ? 1 : i.hdr.scl_slope, m = isNaN(i.hdr.scl_inter) ? 0 : i.hdr.scl_inter;
+  const m = isNaN(i.hdr.scl_slope) || i.hdr.scl_slope === 0 ? 1 : i.hdr.scl_slope, g = isNaN(i.hdr.scl_inter) ? 0 : i.hdr.scl_inter;
   if (s === "scaled" || s === "normalized" || s === "windowed") {
     c instanceof Float32Array || (R.warn(`getVolumeData: Converting output to Float32 for scaling type '${s}'.`), c = Float32Array.from(c));
     for (let p = 0; p < c.length; p++)
-      c[p] = c[p] * g + m;
+      c[p] = c[p] * m + g;
   }
   if (s === "normalized" || s === "windowed") {
     let p = i.cal_min, v = i.cal_max;
@@ -14901,9 +14901,9 @@ function Hc(i, e = [-1, 0, 0], t = [0, 0, 0], s = new Uint8Array()) {
   for (let u = e[2]; u <= t[2]; u++) {
     const d = l[2] + u * o[2];
     for (let f = e[1]; f <= t[1]; f++) {
-      const g = l[1] + f * o[1];
-      for (let m = e[0]; m <= t[0]; m++) {
-        const v = l[0] + m * o[0] + g + d;
+      const m = l[1] + f * o[1];
+      for (let g = e[0]; g <= t[0]; g++) {
+        const v = l[0] + g * o[0] + m + d;
         v >= 0 && v < c.length && (c[v] = s[h]), h++;
       }
     }
@@ -15004,7 +15004,7 @@ async function Wc(i, e) {
     }
   if (s.byteLength < 284)
     return R.error("File too small to be a valid MGH/MGZ header."), null;
-  const a = r.getInt32(0, !1), n = r.getInt32(4, !1), o = r.getInt32(8, !1), l = r.getInt32(12, !1), c = r.getInt32(16, !1), h = r.getInt32(20, !1), u = r.getFloat32(30, !1), d = r.getFloat32(34, !1), f = r.getFloat32(38, !1), g = r.getFloat32(42, !1), m = r.getFloat32(46, !1), p = r.getFloat32(50, !1), v = r.getFloat32(54, !1), A = r.getFloat32(58, !1), x = r.getFloat32(62, !1), w = r.getFloat32(66, !1), D = r.getFloat32(70, !1), b = r.getFloat32(74, !1), C = r.getFloat32(78, !1), E = r.getFloat32(82, !1), F = r.getFloat32(86, !1);
+  const a = r.getInt32(0, !1), n = r.getInt32(4, !1), o = r.getInt32(8, !1), l = r.getInt32(12, !1), c = r.getInt32(16, !1), h = r.getInt32(20, !1), u = r.getFloat32(30, !1), d = r.getFloat32(34, !1), f = r.getFloat32(38, !1), m = r.getFloat32(42, !1), g = r.getFloat32(46, !1), p = r.getFloat32(50, !1), v = r.getFloat32(54, !1), A = r.getFloat32(58, !1), x = r.getFloat32(62, !1), w = r.getFloat32(66, !1), D = r.getFloat32(70, !1), b = r.getFloat32(74, !1), y = r.getFloat32(78, !1), E = r.getFloat32(82, !1), F = r.getFloat32(86, !1);
   if (a !== 1 && R.warn(`Unexpected MGH version: ${a}.`), n <= 0 || o <= 0 || l <= 0)
     return R.error(`Invalid MGH dimensions: ${n}x${o}x${l}`), null;
   switch (h) {
@@ -15025,11 +15025,11 @@ async function Wc(i, e) {
   }
   t.dims[1] = n, t.dims[2] = o, t.dims[3] = l, t.dims[4] = Math.max(1, c), t.dims[0] = t.dims[4] > 1 ? 4 : 3, t.pixDims[1] = Math.abs(u), t.pixDims[2] = Math.abs(d), t.pixDims[3] = Math.abs(f), t.pixDims[4] = 0, t.sform_code = 1, t.qform_code = 0, t.sform_code = 1;
   const M = Le(
-    g * t.pixDims[1],
+    m * t.pixDims[1],
     v * t.pixDims[2],
     w * t.pixDims[3],
     0,
-    m * t.pixDims[1],
+    g * t.pixDims[1],
     A * t.pixDims[2],
     D * t.pixDims[3],
     0,
@@ -15048,7 +15048,7 @@ async function Wc(i, e) {
       T[N] = T[N] + M[P + N * 4] * S[P];
   }
   t.affine = [
-    [M[0], M[1], M[2], C - T[0]],
+    [M[0], M[1], M[2], y - T[0]],
     [M[4], M[5], M[6], E - T[1]],
     [M[8], M[9], M[10], F - T[2]],
     [0, 0, 0, 1]
@@ -15087,8 +15087,8 @@ async function Xc(i, e, t = null) {
   const n = new Uint8Array(e);
   for (let b = 1; b < r; b++)
     if (n[b - 1] === 10 && n[b] === 10) {
-      const C = e.slice(0, b - 1);
-      a = new TextDecoder().decode(C), s.vox_offset = b + 1;
+      const y = e.slice(0, b - 1);
+      a = new TextDecoder().decode(y), s.vox_offset = b + 1;
       break;
     }
   if (a === null)
@@ -15100,13 +15100,13 @@ async function Xc(i, e, t = null) {
   const l = o.length;
   let c = !1, h = !1, u = !1;
   const d = rt(NaN, 0, 0, 0, 1, 0, 0, 0, 1), f = G(0, 0, 0);
-  let g = ms();
+  let m = ms();
   for (let b = 1; b < l; b++) {
-    let C = o[b];
-    if ((C.length === 0 || C[0] === "#") && (C.startsWith("#") || C.trim().length === 0))
+    let y = o[b];
+    if ((y.length === 0 || y[0] === "#") && (y.startsWith("#") || y.trim().length === 0))
       continue;
-    C = C.toLowerCase();
-    const E = C.split(":");
+    y = y.toLowerCase();
+    const E = y.split(":");
     if (E.length < 2)
       continue;
     const F = E[0].trim();
@@ -15209,7 +15209,7 @@ async function Xc(i, e, t = null) {
         M.includes("microns") && (h = !0);
         break;
       case "space":
-        M.includes("right-anterior-superior") || M.includes("ras") ? g = rt(1, 0, 0, 0, 1, 0, 0, 0, 1) : M.includes("left-anterior-superior") || M.includes("las") ? g = rt(-1, 0, 0, 0, 1, 0, 0, 0, 1) : M.includes("left-posterior-superior") || M.includes("lps") ? g = rt(-1, 0, 0, 0, -1, 0, 0, 0, 1) : R.warn("Unsupported NRRD space value:", M);
+        M.includes("right-anterior-superior") || M.includes("ras") ? m = rt(1, 0, 0, 0, 1, 0, 0, 0, 1) : M.includes("left-anterior-superior") || M.includes("las") ? m = rt(-1, 0, 0, 0, 1, 0, 0, 0, 1) : M.includes("left-posterior-superior") || M.includes("lps") ? m = rt(-1, 0, 0, 0, -1, 0, 0, 0, 1) : R.warn("Unsupported NRRD space value:", M);
         break;
       default:
         R.warn("Unknown:", F);
@@ -15217,7 +15217,7 @@ async function Xc(i, e, t = null) {
     }
   }
   if (!isNaN(d[0])) {
-    s.sform_code = 2, h && (Ra(d, d, 1e-3), f[0] *= 1e-3, f[1] *= 1e-3, f[2] *= 1e-3), g[0] < 0 && (f[0] = -f[0]), g[4] < 0 && (f[1] = -f[1]), g[8] < 0 && (f[2] = -f[2]), gn(d, g, d);
+    s.sform_code = 2, h && (Ra(d, d, 1e-3), f[0] *= 1e-3, f[1] *= 1e-3, f[2] *= 1e-3), m[0] < 0 && (f[0] = -f[0]), m[4] < 0 && (f[1] = -f[1]), m[8] < 0 && (f[2] = -f[2]), gn(d, m, d);
     const b = Le(
       d[0],
       d[3],
@@ -15238,19 +15238,19 @@ async function Xc(i, e, t = null) {
     );
     if (!i.vox2mm)
       return null;
-    const C = i.vox2mm([0, 0, 0], b), E = i.vox2mm([1, 0, 0], b);
-    de(E, E, C);
+    const y = i.vox2mm([0, 0, 0], b), E = i.vox2mm([1, 0, 0], b);
+    de(E, E, y);
     const F = i.vox2mm([0, 1, 0], b);
-    de(F, F, C);
+    de(F, F, y);
     const M = i.vox2mm([0, 0, 1], b);
-    de(M, M, C), s.pixDims[1] = ot(E), s.pixDims[2] = ot(F), s.pixDims[3] = ot(M), s.affine = [
+    de(M, M, y), s.pixDims[1] = ot(E), s.pixDims[2] = ot(F), s.pixDims[3] = ot(M), s.affine = [
       [b[0], b[1], b[2], b[3]],
       [b[4], b[5], b[6], b[7]],
       [b[8], b[9], b[10], b[11]],
       [0, 0, 0, 1]
     ];
   }
-  let m = null;
+  let g = null;
   const p = u ? t : e, v = u ? 0 : s.vox_offset;
   if (u && !p)
     return R.warn("Missing data: NRRD header describes detached data file but only one URL provided"), null;
@@ -15263,11 +15263,11 @@ async function Xc(i, e, t = null) {
     } catch (b) {
       return R.error("Failed to decompress NRRD data.", b), null;
     }
-  const x = s.numBitsPerVoxel / 8, D = s.dims.slice(1, s.dims[0] + 1).reduce((b, C) => b * Math.max(1, C), 1) * x;
-  return A.byteLength < D ? (R.error(`NRRD image data size mismatch: expected ${D}, found ${A.byteLength}`), null) : (A.byteLength > D && (R.warn(`NRRD has extra ${A.byteLength - D} bytes after expected image data. Truncating.`), A = A.slice(0, D)), m = A, s.datatypeCode ? s.numBitsPerVoxel ? m : (R.error("NRRD parsing failed to set numBitsPerVoxel."), null) : (R.error("NRRD parsing failed to set datatypeCode."), null));
+  const x = s.numBitsPerVoxel / 8, D = s.dims.slice(1, s.dims[0] + 1).reduce((b, y) => b * Math.max(1, y), 1) * x;
+  return A.byteLength < D ? (R.error(`NRRD image data size mismatch: expected ${D}, found ${A.byteLength}`), null) : (A.byteLength > D && (R.warn(`NRRD has extra ${A.byteLength - D} bytes after expected image data. Truncating.`), A = A.slice(0, D)), g = A, s.datatypeCode ? s.numBitsPerVoxel ? g : (R.error("NRRD parsing failed to set numBitsPerVoxel."), null) : (R.error("NRRD parsing failed to set datatypeCode."), null));
 }
 var Se = class Ii {
-  constructor(e = null, t = "", s = "gray", r = 1, a = null, n = NaN, o = NaN, l = !0, c = 0.02, h = !1, u = !1, d = "", f = 0, g = $.UNKNOWN, m = NaN, p = NaN, v = !0, A = null, x = 0) {
+  constructor(e = null, t = "", s = "gray", r = 1, a = null, n = NaN, o = NaN, l = !0, c = 0.02, h = !1, u = !1, d = "", f = 0, m = $.UNKNOWN, g = NaN, p = NaN, v = !0, A = null, x = 0) {
     I(this, "name"), I(this, "id"), I(this, "url"), I(this, "headers"), I(this, "_colormap"), I(this, "_opacity"), I(this, "percentileFrac"), I(this, "ignoreZeroVoxels"), I(this, "trustCalMinMax"), I(this, "colormapNegative"), I(this, "colormapLabel"), I(this, "colormapInvert"), I(this, "nFrame4D"), I(this, "frame4D"), I(this, "nTotalFrame4D"), I(this, "cal_minNeg"), I(this, "cal_maxNeg"), I(this, "colorbarVisible", !0), I(this, "modulationImage", null), I(this, "modulateAlpha", 0), I(this, "series", []), I(this, "nVox3D"), I(this, "oblique_angle"), I(this, "maxShearDeg"), I(this, "useQFormNotSForm"), I(this, "colormapType"), I(this, "pixDims"), I(this, "matRAS"), I(this, "pixDimsRAS"), I(this, "obliqueRAS"), I(this, "dimsRAS"), I(this, "permRAS"), I(this, "img2RASstep"), I(this, "img2RASstart"), I(this, "toRAS"), I(this, "toRASvox"), I(this, "frac2mm"), I(this, "frac2mmOrtho"), I(this, "extentsMinOrtho"), I(this, "extentsMaxOrtho"), I(this, "mm2ortho"), I(this, "hdr", null), I(this, "extensions"), I(this, "imageType"), I(this, "img"), I(this, "imaginary"), I(this, "v1"), I(this, "fileObject"), I(this, "dims"), I(this, "onColormapChange", () => {
     }), I(this, "onOpacityChange", () => {
     }), I(this, "mm000"), I(this, "mm100"), I(this, "mm010"), I(this, "mm001"), I(this, "cal_min"), I(this, "cal_max"), I(this, "robust_min"), I(this, "robust_max"), I(this, "global_min"), I(this, "global_max"), I(this, "urlImgData"), I(this, "isManifest"), I(this, "limitFrames4D"), this.init(
@@ -15284,8 +15284,8 @@ var Se = class Ii {
       u,
       d,
       f,
-      g,
       m,
+      g,
       p,
       v,
       A,
@@ -15293,9 +15293,9 @@ var Se = class Ii {
     );
   }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  init(e = null, t = "", s = "", r = 1, a = null, n = NaN, o = NaN, l = !0, c = 0.02, h = !1, u = !1, d = "", f = 0, g = $.UNKNOWN, m = NaN, p = NaN, v = !0, A = null, x = 0, w = null) {
+  init(e = null, t = "", s = "", r = 1, a = null, n = NaN, o = NaN, l = !0, c = 0.02, h = !1, u = !1, d = "", f = 0, m = $.UNKNOWN, g = NaN, p = NaN, v = !0, A = null, x = 0, w = null) {
     const D = s === "";
-    if (D && (s = "gray"), this.name = t, this.imageType = g, this.id = gs(), this._colormap = s, this._opacity = r > 1 ? 1 : r, this.percentileFrac = c, this.ignoreZeroVoxels = h, this.trustCalMinMax = l, this.colormapNegative = d, this.colormapLabel = A, this.frame4D = f, this.cal_minNeg = m, this.cal_maxNeg = p, this.colorbarVisible = v, this.colormapType = x, this.useQFormNotSForm = u, !e)
+    if (D && (s = "gray"), this.name = t, this.imageType = m, this.id = gs(), this._colormap = s, this._opacity = r > 1 ? 1 : r, this.percentileFrac = c, this.ignoreZeroVoxels = h, this.trustCalMinMax = l, this.colormapNegative = d, this.colormapLabel = A, this.frame4D = f, this.cal_minNeg = g, this.cal_maxNeg = p, this.colorbarVisible = v, this.colormapType = x, this.useQFormNotSForm = u, !e)
       return;
     if (D && this.hdr && this.hdr.intent_code === 1002 && (s = "random", this._colormap = s), this.hdr && typeof this.hdr.magic == "number" && (this.hdr.magic = "n+1"), this.nFrame4D = 1, this.hdr)
       for (let F = 4; F < 7; F++)
@@ -15303,8 +15303,8 @@ var Se = class Ii {
     if (this.frame4D = Math.min(this.frame4D, this.nFrame4D - 1), this.nTotalFrame4D = this.nFrame4D, !this.hdr || !w)
       return;
     this.nVox3D = this.hdr.dims[1] * this.hdr.dims[2] * this.hdr.dims[3];
-    const b = this.nVox3D * (this.hdr.numBitsPerVoxel / 8), C = w.byteLength / b;
-    C !== this.nFrame4D && (C > 0 && C * b === w.byteLength ? R.debug("Loading the first " + C + " of " + this.nFrame4D + " volumes") : R.warn("This header does not match voxel data", this.hdr, w.byteLength), this.nFrame4D = C), (this.hdr.intent_code === 1007 || this.hdr.intent_code === 2003) && this.nFrame4D === 3 && this.hdr.datatypeCode === 16 && (w = this.float32V1asRGBA(new Float32Array(w)).buffer), (this.hdr.pixDims[1] === 0 || this.hdr.pixDims[2] === 0 || this.hdr.pixDims[3] === 0) && R.error("pixDims not plausible", this.hdr), (isNaN(this.hdr.scl_slope) || this.hdr.scl_slope === 0) && (this.hdr.scl_slope = 1), isNaN(this.hdr.scl_inter) && (this.hdr.scl_inter = 0);
+    const b = this.nVox3D * (this.hdr.numBitsPerVoxel / 8), y = w.byteLength / b;
+    y !== this.nFrame4D && (y > 0 && y * b === w.byteLength ? R.debug("Loading the first " + y + " of " + this.nFrame4D + " volumes") : R.warn("This header does not match voxel data", this.hdr, w.byteLength), this.nFrame4D = y), (this.hdr.intent_code === 1007 || this.hdr.intent_code === 2003) && this.nFrame4D === 3 && this.hdr.datatypeCode === 16 && (w = this.float32V1asRGBA(new Float32Array(w)).buffer), (this.hdr.pixDims[1] === 0 || this.hdr.pixDims[2] === 0 || this.hdr.pixDims[3] === 0) && R.error("pixDims not plausible", this.hdr), (isNaN(this.hdr.scl_slope) || this.hdr.scl_slope === 0) && (this.hdr.scl_slope = 1), isNaN(this.hdr.scl_inter) && (this.hdr.scl_inter = 0);
     let E = Ir(this.hdr.affine);
     if (u || !E || this.hdr.qform_code > this.hdr.sform_code) {
       R.debug("spatial transform based on QForm");
@@ -15436,16 +15436,16 @@ var Se = class Ii {
     }
     this.calculateRAS(), isNaN(n) || (this.hdr.cal_min = n), isNaN(o) || (this.hdr.cal_max = o), this.calMinMax();
   }
-  static async new(e = null, t = "", s = "", r = 1, a = null, n = NaN, o = NaN, l = !0, c = 0.02, h = !1, u = !1, d = "", f = 0, g = $.UNKNOWN, m = NaN, p = NaN, v = !0, A = null, x = 0, w) {
+  static async new(e = null, t = "", s = "", r = 1, a = null, n = NaN, o = NaN, l = !0, c = 0.02, h = !1, u = !1, d = "", f = 0, m = $.UNKNOWN, g = NaN, p = NaN, v = !0, A = null, x = 0, w) {
     const D = new Ii(), b = /(?:\.([^.]+))?$/;
-    let C = b.exec(t)[1] || "";
-    C = C.toUpperCase(), C === "GZ" && (C = b.exec(t.slice(0, -3))[1], C = C.toUpperCase());
+    let y = b.exec(t)[1] || "";
+    y = y.toUpperCase(), y === "GZ" && (y = b.exec(t.slice(0, -3))[1], y = y.toUpperCase());
     let E = null;
-    if (g === $.UNKNOWN && (g = $.parse(C)), e instanceof ArrayBuffer && e.byteLength >= 2 && g === $.DCM) {
+    if (m === $.UNKNOWN && (m = $.parse(y)), e instanceof ArrayBuffer && e.byteLength >= 2 && m === $.DCM) {
       const F = new Uint8Array(e);
-      (F[0] === 92 && F[1] === 1 || F[1] === 92 && F[0] === 1) && (g = $.NII);
+      (F[0] === 92 && F[1] === 1 || F[1] === 92 && F[0] === 1) && (m = $.NII);
     }
-    switch (D.imageType = g, g) {
+    switch (D.imageType = m, m) {
       case $.DCM_FOLDER:
       case $.DCM_MANIFEST:
       case $.DCM:
@@ -15519,8 +15519,8 @@ var Se = class Ii {
       u,
       d,
       f,
-      g,
       m,
+      g,
       p,
       v,
       A,
@@ -15555,9 +15555,9 @@ var Se = class Ii {
     for (let l = 0; l < this.nVox3D; l++) {
       const c = t[l], h = t[l + this.nVox3D], u = t[l + n];
       s[o] = Math.abs(c * a), s[o + 1] = Math.abs(h * a), s[o + 2] = Math.abs(u * a);
-      const d = +(c > 0) * 1, f = +(h > 0) * 2, g = +(u > 0) * 4;
-      let m = 248 + d + f + g;
-      Math.abs(c) + Math.abs(h) + Math.abs(u) < 0.1 && (m = 0), s[o + 3] = m, o += 4;
+      const d = +(c > 0) * 1, f = +(h > 0) * 2, m = +(u > 0) * 4;
+      let g = 248 + d + f + m;
+      Math.abs(c) + Math.abs(h) + Math.abs(u) < 0.1 && (g = 0), s[o + 3] = g, o += 4;
     }
     return s;
   }
@@ -15613,10 +15613,10 @@ var Se = class Ii {
     Ne(h, h);
     const u = pe(-0.5, -0.5, -0.5, 0);
     St(h, h, G(u[0], u[1], u[2])), h[0] *= c[0], h[1] *= c[0], h[2] *= c[0], h[4] *= c[1], h[5] *= c[1], h[6] *= c[1], h[8] *= c[2], h[9] *= c[2], h[10] *= c[2], this.frac2mm = xe(h);
-    const d = this.pixDimsRAS[1], f = this.pixDimsRAS[2], g = this.pixDimsRAS[3], m = xe(h);
-    m[0] = d * c[0], m[1] = 0, m[2] = 0, m[4] = 0, m[5] = f * c[1], m[6] = 0, m[8] = 0, m[9] = 0, m[10] = g * c[2];
+    const d = this.pixDimsRAS[1], f = this.pixDimsRAS[2], m = this.pixDimsRAS[3], g = xe(h);
+    g[0] = d * c[0], g[1] = 0, g[2] = 0, g[4] = 0, g[5] = f * c[1], g[6] = 0, g[8] = 0, g[9] = 0, g[10] = m * c[2];
     const p = this.mm2vox([0, 0, 0], !0);
-    m[12] = (-p[0] - 0.5) * d, m[13] = (-p[1] - 0.5) * f, m[14] = (-p[2] - 0.5) * g, this.frac2mmOrtho = xe(m), this.extentsMinOrtho = [m[12], m[13], m[14]], this.extentsMaxOrtho = [m[0] + m[12], m[5] + m[13], m[10] + m[14]], this.mm2ortho = ie(), Re(this.mm2ortho, a);
+    g[12] = (-p[0] - 0.5) * d, g[13] = (-p[1] - 0.5) * f, g[14] = (-p[2] - 0.5) * m, this.frac2mmOrtho = xe(g), this.extentsMinOrtho = [g[12], g[13], g[14]], this.extentsMaxOrtho = [g[0] + g[12], g[5] + g[13], g[10] + g[14]], this.mm2ortho = ie(), Re(this.mm2ortho, a);
   }
   // not included in public docs
   // convert AFNI head/brik space to NIfTI format
@@ -15815,30 +15815,30 @@ var Se = class Ii {
       const h = s.getInt32(n, !1), u = s.getInt32(n + 12, !1);
       if (h + u !== 31)
         break;
-      let d = n + 20, f = 0, g = 0;
-      for (; f < 31 && (g = s.getInt32(d, !1), d += 16, g !== 0); ) {
+      let d = n + 20, f = 0, m = 0;
+      for (; f < 31 && (m = s.getInt32(d, !1), d += 16, m !== 0); ) {
         f++;
-        let m = g * 512;
-        const p = m - 512, v = s.getUint16(p, !1);
+        let g = m * 512;
+        const p = g - 512, v = s.getUint16(p, !1);
         t.dims[1] = s.getUint16(p + 4, !1), t.dims[2] = s.getUint16(p + 6, !1), t.dims[3] = s.getUint16(p + 8, !1);
         const A = s.getFloat32(p + 26, !1);
         t.pixDims[1] = s.getFloat32(p + 34, !1) * 10, t.pixDims[2] = s.getFloat32(p + 38, !1) * 10, t.pixDims[3] = s.getFloat32(p + 42, !1) * 10, t.pixDims[4] = s.getUint32(p + 46, !1) / 1e3, l.push(t.pixDims[4]);
         const x = t.dims[1] * t.dims[2] * t.dims[3], w = new Float32Array(x);
         if (v === 1)
           for (let b = 0; b < x; b++)
-            w[b] = s.getUint8(m) * A, m++;
+            w[b] = s.getUint8(g) * A, g++;
         else if (v === 6)
           for (let b = 0; b < x; b++)
-            w[b] = s.getUint16(m, !1) * A, m += 2;
+            w[b] = s.getUint16(g, !1) * A, g += 2;
         else if (v === 7)
           for (let b = 0; b < x; b++)
-            w[b] = s.getUint32(m, !1) * A, m += 4;
+            w[b] = s.getUint32(g, !1) * A, g += 4;
         else
           R.warn("Unknown ECAT data type " + v);
         const D = c.slice(0);
         c = new Float32Array(D.length + w.length), c.set(D), c.set(w, D.length), o++;
       }
-      if (g === 0)
+      if (m === 0)
         break;
       n += 512;
     }
@@ -15924,7 +15924,7 @@ var Se = class Ii {
     const h = c[1].split(",").map((w) => w.trim()).filter((w) => w !== "").map(Number), u = l.match(/'descr': '([^']+)'/);
     if (!u)
       throw new Error("Invalid NPY header: Data type not found");
-    const d = u[1], f = h.reduce((w, D) => w * D, 1), g = 10 + o, m = e.slice(g, g + f * t(d)), p = h.length > 0 ? h[h.length - 1] : 1, v = h.length > 1 ? h[h.length - 2] : 1, A = h.length > 2 ? h[h.length - 3] : 1;
+    const d = u[1], f = h.reduce((w, D) => w * D, 1), m = 10 + o, g = e.slice(m, m + f * t(d)), p = h.length > 0 ? h[h.length - 1] : 1, v = h.length > 1 ? h[h.length - 2] : 1, A = h.length > 2 ? h[h.length - 3] : 1;
     this.hdr = new H();
     const x = this.hdr;
     return x.dims = [3, p, v, A, 0, 0, 0, 0], x.pixDims = [1, 1, 1, 1, 1, 0, 0, 0], x.affine = [
@@ -15932,7 +15932,7 @@ var Se = class Ii {
       [0, -x.pixDims[2], 0, (x.dims[2] - 2) * 0.5 * x.pixDims[2]],
       [0, 0, -x.pixDims[3], (x.dims[3] - 2) * 0.5 * x.pixDims[3]],
       [0, 0, 0, 1]
-    ], x.numBitsPerVoxel = t(d) * 8, x.datatypeCode = s(d), m;
+    ], x.numBitsPerVoxel = t(d) * 8, x.datatypeCode = s(d), g;
   }
   async readNPZ(e) {
     const t = new Gn(e);
@@ -16000,20 +16000,20 @@ var Se = class Ii {
       [0, 0, 0, 1]
     ], !l) {
       if (c.numBitsPerVoxel = 8, c.datatypeCode = 2, n instanceof Uint8Array) {
-        const g = new ArrayBuffer(n.length);
-        return new Uint8Array(g).set(n), g;
+        const m = new ArrayBuffer(n.length);
+        return new Uint8Array(m).set(n), m;
       }
       return n;
     }
     c.numBitsPerVoxel = 24, c.datatypeCode = 128;
-    function h(g, m, p, v) {
-      const A = m * p, x = new Uint8Array(A * v * 3), w = new Array(v);
-      for (let C = 0; C < v; C++)
-        w[C] = A * 3 * C;
+    function h(m, g, p, v) {
+      const A = g * p, x = new Uint8Array(A * v * 3), w = new Array(v);
+      for (let y = 0; y < v; y++)
+        w[y] = A * 3 * y;
       let D = 0, b = 0;
-      for (let C = 0; C < A; C++) {
+      for (let y = 0; y < A; y++) {
         for (let E = 0; E < v; E++)
-          x[w[E] + b] = g[D++], x[w[E] + b + 1] = g[D++], x[w[E] + b + 2] = g[D++];
+          x[w[E] + b] = m[D++], x[w[E] + b + 1] = m[D++], x[w[E] + b + 2] = m[D++];
         b += 3;
       }
       return x;
@@ -16080,8 +16080,8 @@ var Se = class Ii {
     ], t.littleEndian = !0;
     const l = t.dims[1] * t.dims[2] * t.dims[3], c = l * Math.ceil(t.numBitsPerVoxel / 8), h = c * t.dims[4], u = new Uint8Array(new ArrayBuffer(l * 4 * 3));
     if (r) {
-      const m = t.dims[1] * t.dims[2] * t.dims[3], p = new Float32Array(m), v = new Float32Array(m), A = new Float32Array(m), x = s.index0, w = s.odf_vertices;
-      for (let D = 0; D < m; D++) {
+      const g = t.dims[1] * t.dims[2] * t.dims[3], p = new Float32Array(g), v = new Float32Array(g), A = new Float32Array(g), x = s.index0, w = s.odf_vertices;
+      for (let D = 0; D < g; D++) {
         const b = x[D] * 3;
         p[D] = w[b + 0], v[D] = w[b + 1], A[D] = -w[b + 2];
       }
@@ -16090,18 +16090,18 @@ var Se = class Ii {
     "report" in s && (t.description = new TextDecoder().decode(s.report.subarray(0, Math.min(79, s.report.byteLength))));
     const d = new Uint8Array(new ArrayBuffer(h)), f = Float32Array.from(s.dti_fa);
     if ("mask" in s) {
-      let m = 1;
-      "dti_fa_slope" in s && (m = s.dti_fa_slope[0]);
+      let g = 1;
+      "dti_fa_slope" in s && (g = s.dti_fa_slope[0]);
       let p = 1;
       "dti_fa_inter" in s && (p = s.dti_fa_inter[0]);
       const v = t.dims[1] * t.dims[2] * t.dims[3], A = s.mask, x = new Float32Array(v);
       let w = 0;
       for (let D = 0; D < v; D++)
-        A[D] !== 0 && (x[D] = f[w] * m + p, w++);
+        A[D] !== 0 && (x[D] = f[w] * g + p, w++);
       return [x.buffer, new Float32Array(u.buffer)];
     }
-    const g = new Uint8Array(f.buffer, f.byteOffset, f.byteLength);
-    return d.set(g, 0), [d.buffer, new Float32Array(u.buffer)];
+    const m = new Uint8Array(f.buffer, f.byteOffset, f.byteLength);
+    return d.set(m, 0), [d.buffer, new Float32Array(u.buffer)];
   }
   // readFIB()
   // not included in public docs
@@ -16116,9 +16116,9 @@ var Se = class Ii {
     if (!("dimension" in s) || !("image0" in s))
       throw new Error("Not a valid DSIstudio SRC file");
     let r = 0, a = 0;
-    for (const [f, g] of Object.entries(s))
+    for (const [f, m] of Object.entries(s))
       if (f.startsWith("image")) {
-        if (r === 0 ? a = g.length : a !== g.length && (a = -1), g.constructor !== Uint16Array)
+        if (r === 0 ? a = m.length : a !== m.length && (a = -1), m.constructor !== Uint16Array)
           throw new Error("DSIstudio SRC files always use Uint16 datatype");
         r++;
       }
@@ -16135,8 +16135,8 @@ var Se = class Ii {
     const c = t.dims[1] * t.dims[2] * t.dims[3] * (t.numBitsPerVoxel / 8), h = c * t.dims[4], u = new Uint8Array(new ArrayBuffer(h));
     let d = 0;
     for (let f = 0; f < r; f++) {
-      const g = s[`image${f}`], m = new Uint8Array(g.buffer, g.byteOffset, g.byteLength);
-      u.set(m, d), d += c;
+      const m = s[`image${f}`], g = new Uint8Array(m.buffer, m.byteOffset, m.byteLength);
+      u.set(g, d), d += c;
     }
     return "report" in s && (t.description = new TextDecoder().decode(s.report.subarray(0, Math.min(79, s.report.byteLength)))), u.buffer;
   }
@@ -16155,27 +16155,27 @@ var Se = class Ii {
     const d = new Sn(h + 8, 42, u, !0);
     s.addExtension(d), s.extensionCode = 42, s.extensionFlag[0] = 1, s.extensionSize = h + 8;
     const f = l.length;
-    let g = 0, m = !1;
-    for (; g < f; ) {
-      let v = l[g];
-      if (g++, !v.startsWith("type"))
+    let m = 0, g = !1;
+    for (; m < f; ) {
+      let v = l[m];
+      if (m++, !v.startsWith("type"))
         continue;
       const A = v.includes("integer-attribute"), x = v.includes("float-attribute");
-      if (v = l[g], g++, !v.startsWith("name"))
+      if (v = l[m], m++, !v.startsWith("name"))
         continue;
       let w = v.split("= ");
       const D = w[1];
-      v = l[g], g++, w = v.split("= ");
+      v = l[m], m++, w = v.split("= ");
       let b = parseInt(w[1]);
       if (!(b < 1)) {
-        if (v = l[g], g++, w = v.trim().split(/\s+/), x || A) {
+        if (v = l[m], m++, w = v.trim().split(/\s+/), x || A) {
           for (; w.length < b; ) {
-            v = l[g], g++;
-            const C = v.trim().split(/\s+/);
-            w.push(...C);
+            v = l[m], m++;
+            const y = v.trim().split(/\s+/);
+            w.push(...y);
           }
-          for (let C = 0; C < b; C++)
-            w[C] = parseFloat(w[C]);
+          for (let y = 0; y < b; y++)
+            w[y] = parseFloat(w[y]);
         }
         switch (D) {
           case "BYTEORDER_STRING":
@@ -16184,14 +16184,14 @@ var Se = class Ii {
           case "BRICK_TYPES":
             {
               s.dims[4] = b;
-              const C = parseInt(w[0]);
-              C === 0 ? (s.numBitsPerVoxel = 8, s.datatypeCode = 2) : C === 1 ? (s.numBitsPerVoxel = 16, s.datatypeCode = 4) : C === 3 ? (s.numBitsPerVoxel = 32, s.datatypeCode = 16) : R.warn("Unknown BRICK_TYPES ", C);
+              const y = parseInt(w[0]);
+              y === 0 ? (s.numBitsPerVoxel = 8, s.datatypeCode = 2) : y === 1 ? (s.numBitsPerVoxel = 16, s.datatypeCode = 4) : y === 3 ? (s.numBitsPerVoxel = 32, s.datatypeCode = 16) : R.warn("Unknown BRICK_TYPES ", y);
             }
             break;
           case "IJK_TO_DICOM_REAL":
             if (b < 12)
               break;
-            m = !0, s.sform_code = 2, s.affine = [
+            g = !0, s.sform_code = 2, s.affine = [
               [-w[0], -w[1], -w[2], -w[3]],
               [-w[4], -w[5], -w[6], -w[7]],
               // TODO don't reuse items for numeric values
@@ -16201,8 +16201,8 @@ var Se = class Ii {
             break;
           case "DATASET_DIMENSIONS":
             b = Math.max(b, 3);
-            for (let C = 0; C < b; C++)
-              s.dims[C + 1] = w[C];
+            for (let y = 0; y < b; y++)
+              s.dims[y + 1] = w[y];
             break;
           case "ORIENT_SPECIFIC":
             r = w;
@@ -16221,7 +16221,7 @@ var Se = class Ii {
         }
       }
     }
-    m ? this.SetPixDimFromSForm() : this.THD_daxes_to_NIFTI(n, a, r);
+    g ? this.SetPixDimFromSForm() : this.THD_daxes_to_NIFTI(n, a, r);
     const p = s.numBitsPerVoxel / 8 * s.dims[1] * s.dims[2] * s.dims[3] * s.dims[4];
     if (!t)
       throw new Error("pairedImgData not set");
@@ -16236,16 +16236,16 @@ var Se = class Ii {
       throw new Error("File too small to be VTK: bytes = " + e.byteLength);
     const r = new Uint8Array(e);
     let a = 0;
-    function n(m) {
-      return m === 10 || m === 13;
+    function n(g) {
+      return g === 10 || g === 13;
     }
     function o() {
       for (; a < s && n(r[a]); )
         a++;
-      const m = a;
+      const g = a;
       for (; a < s && !n(r[a]); )
         a++;
-      return a - m < 2 ? "" : new TextDecoder().decode(e.slice(m, a));
+      return a - g < 2 ? "" : new TextDecoder().decode(e.slice(g, a));
     }
     let l = o();
     this.hdr = new H();
@@ -16254,23 +16254,23 @@ var Se = class Ii {
     let h = !1, u = !1;
     const d = rt(NaN, 0, 0, 0, 1, 0, 0, 0, 1), f = G(0, 0, 0);
     for (; l !== ""; ) {
-      let m = l.split(" ");
-      if (m.length > 2 && (m = m.slice(2)), l.startsWith("BinaryDataByteOrderMSB") && m[0].includes("False") && (c.littleEndian = !0), l.startsWith("BinaryDataByteOrderMSB") && m[0].includes("True") && (c.littleEndian = !1), l.startsWith("CompressedData") && m[0].includes("True") && (h = !0), l.startsWith("TransformMatrix"))
+      let g = l.split(" ");
+      if (g.length > 2 && (g = g.slice(2)), l.startsWith("BinaryDataByteOrderMSB") && g[0].includes("False") && (c.littleEndian = !0), l.startsWith("BinaryDataByteOrderMSB") && g[0].includes("True") && (c.littleEndian = !1), l.startsWith("CompressedData") && g[0].includes("True") && (h = !0), l.startsWith("TransformMatrix"))
         for (let p = 0; p < 9; p++)
-          d[p] = parseFloat(m[p]);
+          d[p] = parseFloat(g[p]);
       if (l.startsWith("Offset"))
-        for (let p = 0; p < Math.min(m.length, 3); p++)
-          f[p] = parseFloat(m[p]);
+        for (let p = 0; p < Math.min(g.length, 3); p++)
+          f[p] = parseFloat(g[p]);
       if (l.startsWith("ElementSpacing"))
-        for (let p = 0; p < m.length; p++)
-          c.pixDims[p + 1] = parseFloat(m[p]);
+        for (let p = 0; p < g.length; p++)
+          c.pixDims[p + 1] = parseFloat(g[p]);
       if (l.startsWith("DimSize")) {
-        c.dims[0] = m.length;
-        for (let p = 0; p < m.length; p++)
-          c.dims[p + 1] = parseInt(m[p]);
+        c.dims[0] = g.length;
+        for (let p = 0; p < g.length; p++)
+          c.dims[p + 1] = parseInt(g[p]);
       }
       if (l.startsWith("ElementType"))
-        switch (m[0]) {
+        switch (g[0]) {
           case "MET_UCHAR":
             c.numBitsPerVoxel = 8, c.datatypeCode = 2;
             break;
@@ -16296,16 +16296,16 @@ var Se = class Ii {
             c.numBitsPerVoxel = 64, c.datatypeCode = 64;
             break;
           default:
-            throw new Error("Unsupported MHA data type: " + m[0]);
+            throw new Error("Unsupported MHA data type: " + g[0]);
         }
-      if (l.startsWith("ObjectType") && !m[0].includes("Image") && R.warn("Only able to read ObjectType = Image, not " + l), l.startsWith("ElementDataFile")) {
-        m[0] !== "LOCAL" && (u = !0);
+      if (l.startsWith("ObjectType") && !g[0].includes("Image") && R.warn("Only able to read ObjectType = Image, not " + l), l.startsWith("ElementDataFile")) {
+        g[0] !== "LOCAL" && (u = !0);
         break;
       }
       l = o();
     }
-    const g = rt(c.pixDims[1], 0, 0, 0, c.pixDims[2], 0, 0, 0, c.pixDims[3]);
-    for (gn(d, d, g), c.affine = [
+    const m = rt(c.pixDims[1], 0, 0, 0, c.pixDims[2], 0, 0, 0, c.pixDims[3]);
+    for (gn(d, d, m), c.affine = [
       [-d[0], -d[3], -d[6], -f[0]],
       [-d[1], -d[4], -d[7], -f[1]],
       [d[2], d[5], d[8], f[2]],
@@ -16390,11 +16390,11 @@ var Se = class Ii {
           break;
       }
     }
-    const g = s.dims[0];
-    g > 5 && R.warn("reader only designed for a maximum of 5 dimensions (XYZTD)");
-    let m = 1;
-    for (let T = 0; T < g; T++)
-      m *= Math.max(s.dims[T + 1], 1);
+    const m = s.dims[0];
+    m > 5 && R.warn("reader only designed for a maximum of 5 dimensions (XYZTD)");
+    let g = 1;
+    for (let T = 0; T < m; T++)
+      g *= Math.max(s.dims[T + 1], 1);
     for (let T = 0; T < 3; T++)
       for (let k = 0; k < 3; k++)
         s.affine[T][k] *= s.pixDims[k + 1];
@@ -16404,15 +16404,15 @@ var Se = class Ii {
       p = t.slice(0);
     else if (h) {
       s.numBitsPerVoxel = 8;
-      const T = new Uint8Array(m), k = e.slice(s.vox_offset, s.vox_offset + Math.ceil(m / 8)), B = new Uint8Array(k);
+      const T = new Uint8Array(g), k = e.slice(s.vox_offset, s.vox_offset + Math.ceil(g / 8)), B = new Uint8Array(k);
       let U = 0;
-      for (let V = 0; V < m; V++) {
+      for (let V = 0; V < g; V++) {
         const N = V % 8;
         T[V] = B[U] >> 7 - N & 1, N === 7 && U++;
       }
       p = T.buffer;
     } else
-      p = e.slice(s.vox_offset, s.vox_offset + m * (s.numBitsPerVoxel / 8));
+      p = e.slice(s.vox_offset, s.vox_offset + g * (s.numBitsPerVoxel / 8));
     c.length !== s.dims[0] && R.warn("dims does not match layout");
     let v = 1;
     const A = [1, 1, 1, 1, 1], x = [!1, !1, !1, !1, !1];
@@ -16431,10 +16431,10 @@ var Se = class Ii {
     x[2] && (b = j.range(s.dims[3] - 1, 0, -1));
     for (let T = 0; T < s.dims[3]; T++)
       b[T] *= A[2];
-    let C = j.range(0, s.dims[4] - 1, 1);
-    x[3] && (C = j.range(s.dims[4] - 1, 0, -1));
+    let y = j.range(0, s.dims[4] - 1, 1);
+    x[3] && (y = j.range(s.dims[4] - 1, 0, -1));
     for (let T = 0; T < s.dims[4]; T++)
-      C[T] *= A[3];
+      y[T] *= A[3];
     let E = j.range(0, s.dims[5] - 1, 1);
     x[4] && (E = j.range(s.dims[5] - 1, 0, -1));
     for (let T = 0; T < s.dims[5]; T++)
@@ -16442,28 +16442,28 @@ var Se = class Ii {
     let F = 0, M, S;
     switch (s.datatypeCode) {
       case 256:
-        M = new Int8Array(p), S = new Int8Array(m);
+        M = new Int8Array(p), S = new Int8Array(g);
         break;
       case 2:
-        M = new Uint8Array(p), S = new Uint8Array(m);
+        M = new Uint8Array(p), S = new Uint8Array(g);
         break;
       case 4:
-        M = new Int16Array(p), S = new Int16Array(m);
+        M = new Int16Array(p), S = new Int16Array(g);
         break;
       case 512:
-        M = new Uint16Array(p), S = new Uint16Array(m);
+        M = new Uint16Array(p), S = new Uint16Array(g);
         break;
       case 8:
-        M = new Int32Array(p), S = new Int32Array(m);
+        M = new Int32Array(p), S = new Int32Array(g);
         break;
       case 768:
-        M = new Uint32Array(p), S = new Uint32Array(m);
+        M = new Uint32Array(p), S = new Uint32Array(g);
         break;
       case 16:
-        M = new Float32Array(p), S = new Float32Array(m);
+        M = new Float32Array(p), S = new Float32Array(g);
         break;
       case 64:
-        M = new Float64Array(p), S = new Float64Array(m);
+        M = new Float64Array(p), S = new Float64Array(g);
         break;
       default:
         throw new Error("unknown datatypeCode");
@@ -16473,7 +16473,7 @@ var Se = class Ii {
         for (let B = 0; B < s.dims[3]; B++)
           for (let U = 0; U < s.dims[2]; U++)
             for (let V = 0; V < s.dims[1]; V++)
-              S[F] = M[w[V] + D[U] + b[B] + C[k] + E[T]], F++;
+              S[F] = M[w[V] + D[U] + b[B] + y[k] + E[T]], F++;
     return S.buffer;
   }
   // readMIF()
@@ -16533,10 +16533,10 @@ var Se = class Ii {
     Re(c, n), mt(c, c, o), this.matRAS = xe(c), n = Le(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1), n[a[0] - 1 + 0] = -l[0] * 2 + 1, n[a[1] - 1 + 4] = -l[1] * 2 + 1, n[a[2] - 1 + 8] = -l[2] * 2 + 1, n[3] = l[0], n[7] = l[1], n[11] = l[2], this.toRAS = xe(n), n[3] = 0, n[7] = 0, n[11] = 0, n[12] = 0, (this.permRAS[0] === -1 || this.permRAS[1] === -1 || this.permRAS[2] === -1) && (n[12] = t.dims[1] - 1), n[13] = 0, (this.permRAS[0] === -2 || this.permRAS[1] === -2 || this.permRAS[2] === -2) && (n[13] = t.dims[2] - 1), n[14] = 0, (this.permRAS[0] === -3 || this.permRAS[1] === -3 || this.permRAS[2] === -3) && (n[14] = t.dims[3] - 1), this.toRASvox = xe(n), R.debug(this.hdr.dims), R.debug(this.dimsRAS);
     const h = this.hdr;
     a = this.permRAS;
-    const u = [Math.abs(a[0]), Math.abs(a[1]), Math.abs(a[2])], d = [h.dims[u[0]], h.dims[u[1]], h.dims[u[2]]], f = [1, h.dims[1], h.dims[1] * h.dims[2]], g = [f[u[0] - 1], f[u[1] - 1], f[u[2] - 1]], m = [0, 0, 0];
+    const u = [Math.abs(a[0]), Math.abs(a[1]), Math.abs(a[2])], d = [h.dims[u[0]], h.dims[u[1]], h.dims[u[2]]], f = [1, h.dims[1], h.dims[1] * h.dims[2]], m = [f[u[0] - 1], f[u[1] - 1], f[u[2] - 1]], g = [0, 0, 0];
     for (let p = 0; p < 3; p++)
-      a[p] < 0 && (m[p] = g[p] * (d[p] - 1), g[p] = -g[p]);
-    this.img2RASstep = g, this.img2RASstart = m, this.calculateOblique();
+      a[p] < 0 && (g[p] = m[p] * (d[p] - 1), m[p] = -m[p]);
+    this.img2RASstep = m, this.img2RASstart = g, this.calculateOblique();
   }
   // Reorient raw header data to RAS
   // assume single volume, use nVolumes to specify, set nVolumes = 0 for same as input
@@ -16582,12 +16582,12 @@ var Se = class Ii {
       t[f] < 0 && (u[f] = h[f] * (l[f] - 1), h[f] = -h[f]);
     let d = 0;
     for (let f = 0; f < l[2]; f++) {
-      const g = u[2] + f * h[2];
-      for (let m = 0; m < l[1]; m++) {
-        const p = u[1] + m * h[1];
+      const m = u[2] + f * h[2];
+      for (let g = 0; g < l[1]; g++) {
+        const p = u[1] + g * h[1];
         for (let v = 0; v < l[0]; v++) {
           const A = u[0] + v * h[0];
-          n[d] = this.img[A + p + g + a], d++;
+          n[d] = this.img[A + p + m + a], d++;
         }
       }
     }
@@ -16707,12 +16707,12 @@ var Se = class Ii {
         h[T] === 0 && (a++, this.ignoreZeroVoxels) || (s = Math.min(h[T], s), r = Math.max(h[T], r));
       }
     this.ignoreZeroVoxels && s === r && a > 0 && (s = 0);
-    const d = this.intensityRaw2Scaled(s), f = this.intensityRaw2Scaled(r), g = oe.colormapFromKey(this._colormap);
-    let m = 0, p = 0;
-    if (g.min !== void 0 && (m = g.min), g.max !== void 0 && (p = g.max), m === p && this.trustCalMinMax && isFinite(this.hdr.cal_min) && isFinite(this.hdr.cal_max) && this.hdr.cal_max > this.hdr.cal_min)
+    const d = this.intensityRaw2Scaled(s), f = this.intensityRaw2Scaled(r), m = oe.colormapFromKey(this._colormap);
+    let g = 0, p = 0;
+    if (m.min !== void 0 && (g = m.min), m.max !== void 0 && (p = m.max), g === p && this.trustCalMinMax && isFinite(this.hdr.cal_min) && isFinite(this.hdr.cal_max) && this.hdr.cal_max > this.hdr.cal_min)
       return this.cal_min = this.hdr.cal_min, this.cal_max = this.hdr.cal_max, this.robust_min = this.cal_min, this.robust_max = this.cal_max, this.global_min = d, this.global_max = f, [this.hdr.cal_min, this.hdr.cal_max, this.hdr.cal_min, this.hdr.cal_max];
-    if (m !== p)
-      return this.cal_min = m, this.cal_max = p, this.robust_min = this.cal_min, this.robust_max = this.cal_max, [m, p, m, p];
+    if (g !== p)
+      return this.cal_min = g, this.cal_max = p, this.robust_min = this.cal_min, this.robust_max = this.cal_max, [g, p, g, p];
     const v = 100 * a / (o - 0);
     let A = !1;
     v > 60 && !this.ignoreZeroVoxels && (R.warn(`${Math.round(v)}% of voxels are zero: ignoring zeros for cal_max`), A = !0, this.ignoreZeroVoxels = !0), this.ignoreZeroVoxels || (a = 0), a += n;
@@ -16731,13 +16731,13 @@ var Se = class Ii {
     else
       for (let T = 0; T < o; T++)
         isNaN(h[T]) || b[Math.round((h[T] - s) * D)]++;
-    let C = 0, E = 0;
-    for (; C < x; )
-      C += b[E], E++;
-    E--, C = 0;
+    let y = 0, E = 0;
+    for (; y < x; )
+      y += b[E], E++;
+    E--, y = 0;
     let F = w;
-    for (; C < x; )
-      F--, C += b[F];
+    for (; y < x; )
+      F--, y += b[F];
     if (E === F) {
       let T = -1;
       for (; T !== 0; )
@@ -16785,11 +16785,11 @@ var Se = class Ii {
     const c = (await o.text()).split(`
 `), u = /(.*\/).*/.exec(r)[0], d = [];
     for (const f of c) {
-      const g = new URL(f, u);
-      if (o = await fetch(g, { headers: t }), !o.ok)
+      const m = new URL(f, u);
+      if (o = await fetch(m, { headers: t }), !o.ok)
         throw Error(o.statusText);
-      const m = await o.arrayBuffer();
-      d.push({ name: f, data: m });
+      const g = await o.arrayBuffer();
+      d.push({ name: f, data: g });
     }
     return d;
   }
@@ -16802,8 +16802,8 @@ var Se = class Ii {
     function u() {
       const d = new Uint8Array(n);
       let f = 0;
-      for (const g of a)
-        d.set(g, f), f += g.length;
+      for (const m of a)
+        d.set(m, f), f += m.length;
       l(d);
     }
     return r.ondata = (d) => {
@@ -16845,8 +16845,8 @@ var Se = class Ii {
     const d = await Ht(n.buffer);
     if (!d)
       throw new Error("Could not read NIfTI header");
-    const f = d.numBitsPerVoxel / 8, g = [1, 2, 3].reduce((w, D) => w * (d.dims[D] > 1 ? d.dims[D] : 1), 1), m = [4, 5, 6].reduce((w, D) => w * (d.dims[D] > 1 ? d.dims[D] : 1), 1), p = Math.max(Math.min(s, m), 1), v = d.vox_offset + p * g * f;
-    if (p === m)
+    const f = d.numBitsPerVoxel / 8, m = [1, 2, 3].reduce((w, D) => w * (d.dims[D] > 1 ? d.dims[D] : 1), 1), g = [4, 5, 6].reduce((w, D) => w * (d.dims[D] > 1 ? d.dims[D] : 1), 1), p = Math.max(Math.min(s, g), 1), v = d.vox_offset + p * m * f;
+    if (p === g)
       return null;
     const A = await fetch(e, { headers: t, cache: "force-cache" });
     return (await this.readFirstDecompressedBytes(A.body, v)).buffer.slice(0, v);
@@ -16864,8 +16864,8 @@ var Se = class Ii {
     const d = h === 348;
     if (!d && !(h === 23553))
       return await a.cancel(), null;
-    let g = 352;
-    for (l.length > 111 && (g = c.getFloat32(108, d)); l.length < g; ) {
+    let m = 352;
+    for (l.length > 111 && (m = c.getFloat32(108, d)); l.length < m; ) {
       let E = function(S, T) {
         const k = new Uint8Array(S.length + T.length);
         return k.set(S, 0), k.set(T, S.length), k;
@@ -16875,18 +16875,18 @@ var Se = class Ii {
         break;
       l = E(l, F);
     }
-    const m = await Ht(l.buffer);
-    if (!m)
+    const g = await Ht(l.buffer);
+    if (!g)
       throw new Error("Could not read NIfTI header");
-    const p = m.numBitsPerVoxel / 8, v = [1, 2, 3].reduce((E, F) => E * (m.dims[F] > 1 ? m.dims[F] : 1), 1), A = [4, 5, 6].reduce((E, F) => E * (m.dims[F] > 1 ? m.dims[F] : 1), 1), x = Math.max(Math.min(s, A), 1), w = m.vox_offset + x * v * p, D = new Uint8Array(w), b = Math.min(l.length, w);
+    const p = g.numBitsPerVoxel / 8, v = [1, 2, 3].reduce((E, F) => E * (g.dims[F] > 1 ? g.dims[F] : 1), 1), A = [4, 5, 6].reduce((E, F) => E * (g.dims[F] > 1 ? g.dims[F] : 1), 1), x = Math.max(Math.min(s, A), 1), w = g.vox_offset + x * v * p, D = new Uint8Array(w), b = Math.min(l.length, w);
     D.set(l.subarray(0, b), 0);
-    let C = b;
-    for (; C < w; ) {
+    let y = b;
+    for (; y < w; ) {
       const { value: E, done: F } = await a.read();
       if (F || !E)
         return await a.cancel(), null;
-      const M = Math.min(E.length, w - C);
-      D.set(E.subarray(0, M), C), C += M;
+      const M = Math.min(E.length, w - y);
+      D.set(E.subarray(0, M), y), y += M;
     }
     return await a.cancel(), D.buffer;
   }
@@ -16907,8 +16907,8 @@ var Se = class Ii {
     ignoreZeroVoxels: u = !1,
     useQFormNotSForm: d = !1,
     colormapNegative: f = "",
-    frame4D: g = 0,
-    isManifest: m = !1,
+    frame4D: m = 0,
+    isManifest: g = !1,
     limitFrames4D: p = NaN,
     imageType: v = $.UNKNOWN,
     colorbarVisible: A = !0,
@@ -16924,16 +16924,16 @@ var Se = class Ii {
         const S = new Uint8Array(D);
         e = S[0] === 31 && S[1] === 139 ? "array.nii.gz" : "array.nii";
       }
-    function C(S) {
+    function y(S) {
       const T = S.match(/\.([^.]+)(?:\.gz|\.bz2|\.xz)?$/);
       return T ? T[1] : "";
     }
     let E = "";
-    if (r === "" ? E = C(e) : E = C(r), v === $.UNKNOWN && (v = $.parse(E)), v === $.UNKNOWN && typeof e == "string") {
+    if (r === "" ? E = y(e) : E = y(r), v === $.UNKNOWN && (v = $.parse(E)), v === $.UNKNOWN && typeof e == "string") {
       const S = await fetch(e, {});
       if (S.redirected) {
         const T = this.extractFilenameFromUrl(S.url);
-        T && T.length > 0 && r === "" && (r = T, E = C(r), v = $.parse(E));
+        T && T.length > 0 && r === "" && (r = T, E = y(r), v = $.parse(E));
       }
     }
     if (v === $.ZARR) {
@@ -16962,7 +16962,7 @@ var Se = class Ii {
     }
     const F = v === $.DCM || $.NII;
     if (!D && F && (D = await this.loadInitialVolumes(e, s, p)), !D)
-      if (m)
+      if (g)
         D = await Ii.fetchDicomData(e, s), v = $.DCM_MANIFEST;
       else {
         const S = await fetch(e, { headers: s });
@@ -17031,7 +17031,7 @@ var Se = class Ii {
       u,
       d,
       f,
-      g,
+      m,
       v,
       NaN,
       NaN,
@@ -17048,13 +17048,13 @@ var Se = class Ii {
     if (!isNaN(t)) {
       let u = 0;
       const d = new TransformStream({
-        transform(f, g) {
+        transform(f, m) {
           if (u >= t) {
-            g.terminate();
+            m.terminate();
             return;
           }
-          const m = t - u;
-          f.length > m ? (g.enqueue(f.slice(0, m)), g.terminate()) : g.enqueue(f), u += f.length;
+          const g = t - u;
+          f.length > g ? (m.enqueue(f.slice(0, g)), m.terminate()) : m.enqueue(f), u += f.length;
         }
       });
       s = s.pipeThrough(d);
@@ -17090,15 +17090,15 @@ var Se = class Ii {
     useQFormNotSForm: u = !1,
     colormapNegative: d = "",
     frame4D: f = 0,
-    limitFrames4D: g = NaN,
-    imageType: m = $.UNKNOWN
+    limitFrames4D: m = NaN,
+    imageType: g = $.UNKNOWN
   }) {
     let p = null, v = [];
     try {
       if (Array.isArray(e))
         v = await Promise.all(e.map((x) => this.readFileAsync(x)));
       else {
-        if (isNaN(g))
+        if (isNaN(m))
           v = await this.readFileAsync(e);
         else {
           const x = await this.readFileAsync(e, 512), w = new Uint8Array(x);
@@ -17108,7 +17108,7 @@ var Se = class Ii {
             const b = await Ht(x);
             if (!b)
               throw new Error("could not read nifti header");
-            const C = b.numBitsPerVoxel / 8, E = [1, 2, 3].reduce((T, k) => T * (b.dims[k] > 1 ? b.dims[k] : 1), 1), F = [4, 5, 6].reduce((T, k) => T * (b.dims[k] > 1 ? b.dims[k] : 1), 1), M = Math.max(Math.min(g, F), 1), S = b.vox_offset + M * E * C;
+            const y = b.numBitsPerVoxel / 8, E = [1, 2, 3].reduce((T, k) => T * (b.dims[k] > 1 ? b.dims[k] : 1), 1), F = [4, 5, 6].reduce((T, k) => T * (b.dims[k] > 1 ? b.dims[k] : 1), 1), M = Math.max(Math.min(m, F), 1), S = b.vox_offset + M * E * y;
             v = await this.readFileAsync(e, S);
           }
         }
@@ -17129,7 +17129,7 @@ var Se = class Ii {
         u,
         d,
         f,
-        m,
+        g,
         NaN,
         NaN,
         !0,
@@ -17200,16 +17200,16 @@ var Se = class Ii {
     colormapNegative: u = "",
     frame4D: d = 0,
     imageType: f = $.UNKNOWN,
-    cal_minNeg: g = NaN,
-    cal_maxNeg: m = NaN,
+    cal_minNeg: m = NaN,
+    cal_maxNeg: g = NaN,
     colorbarVisible: p = !0,
     colormapLabel: v = null
   }) {
     function A(w) {
-      const D = window.atob(w), b = D.length, C = new Uint8Array(b);
+      const D = window.atob(w), b = D.length, y = new Uint8Array(b);
       for (let E = 0; E < b; E++)
-        C[E] = D.charCodeAt(E);
-      return C.buffer;
+        y[E] = D.charCodeAt(E);
+      return y.buffer;
     }
     let x = null;
     try {
@@ -17229,8 +17229,8 @@ var Se = class Ii {
         u,
         d,
         f,
-        g,
         m,
+        g,
         p,
         v,
         0,
@@ -18009,15 +18009,15 @@ var es = class it {
    * @param colorbarVisible - does this mesh display a colorbar
    * @param anatomicalStructurePrimary - region for mesh. Default is an empty string
    */
-  constructor(e, t, s = "", r = new Uint8Array([255, 255, 255, 255]), a = 1, n = !0, o, l = null, c = null, h = null, u = null, d = null, f = !0, g = "") {
+  constructor(e, t, s = "", r = new Uint8Array([255, 255, 255, 255]), a = 1, n = !0, o, l = null, c = null, h = null, u = null, d = null, f = !0, m = "") {
     I(this, "id"), I(this, "name"), I(this, "anatomicalStructurePrimary"), I(this, "colorbarVisible"), I(this, "furthestVertexFromOrigin"), I(this, "extentsMin"), I(this, "extentsMax"), I(this, "opacity"), I(this, "visible"), I(this, "meshShaderIndex", 0), I(this, "offsetPt0", null), I(this, "colormapInvert", !1), I(this, "fiberGroupColormap", null), I(this, "indexBuffer"), I(this, "vertexBuffer"), I(this, "vao"), I(this, "vaoFiber"), I(this, "pts"), I(this, "tris"), I(this, "layers"), I(
       this,
       "type",
       "mesh"
       /* MESH */
-    ), I(this, "data_type"), I(this, "rgba255"), I(this, "fiberLength"), I(this, "fiberLengths"), I(this, "fiberDensity"), I(this, "fiberDither", 0.1), I(this, "fiberColor", "Global"), I(this, "fiberDecimationStride", 1), I(this, "fiberSides", 5), I(this, "fiberRadius", 0), I(this, "fiberOcclusion", 0), I(this, "f32PerVertex", 5), I(this, "dpsThreshold", NaN), I(this, "fiberMask"), I(this, "colormap"), I(this, "dpg"), I(this, "dps"), I(this, "dpv"), I(this, "groups"), I(this, "hasConnectome", !1), I(this, "connectome"), I(this, "indexCount"), I(this, "vertexCount", 1), I(this, "nodeScale", 4), I(this, "edgeScale", 1), I(this, "legendLineThickness", 0), I(this, "showLegend", !0), I(this, "nodeColormap", "warm"), I(this, "edgeColormap", "warm"), I(this, "nodeColormapNegative"), I(this, "edgeColormapNegative"), I(this, "nodeMinColor"), I(this, "nodeMaxColor"), I(this, "edgeMin"), I(this, "edgeMax"), I(this, "nodes"), I(this, "edges"), I(this, "points"), this.anatomicalStructurePrimary = g, this.name = s, this.colorbarVisible = f, this.id = gs();
-    const m = gt.getExtents(e);
-    if (this.furthestVertexFromOrigin = m.mxDx, this.extentsMin = m.extentsMin, this.extentsMax = m.extentsMax, this.opacity = a > 1 ? 1 : a, this.visible = n, this.meshShaderIndex = 0, this.indexBuffer = o.createBuffer(), this.vertexBuffer = o.createBuffer(), this.vao = o.createVertexArray(), o.bindVertexArray(this.vao), o.bindBuffer(o.ELEMENT_ARRAY_BUFFER, this.indexBuffer), o.bindBuffer(o.ARRAY_BUFFER, this.vertexBuffer), o.enableVertexAttribArray(0), o.enableVertexAttribArray(1), this.f32PerVertex !== 7 ? (o.vertexAttribPointer(0, 3, o.FLOAT, !1, 20, 0), o.vertexAttribPointer(1, 4, o.BYTE, !0, 20, 12), o.enableVertexAttribArray(2), o.vertexAttribPointer(2, 4, o.UNSIGNED_BYTE, !0, 20, 16)) : (o.vertexAttribPointer(0, 3, o.FLOAT, !1, 28, 0), o.vertexAttribPointer(1, 3, o.FLOAT, !1, 28, 12), o.enableVertexAttribArray(2), o.vertexAttribPointer(2, 4, o.UNSIGNED_BYTE, !0, 28, 24)), o.bindVertexArray(null), this.vaoFiber = o.createVertexArray(), this.offsetPt0 = null, this.hasConnectome = !1, this.colormapInvert = !1, this.fiberGroupColormap = null, this.pts = e, this.layers = [], this.type = "mesh", this.tris = t, r[3] < 1) {
+    ), I(this, "data_type"), I(this, "rgba255"), I(this, "fiberLength"), I(this, "fiberLengths"), I(this, "fiberDensity"), I(this, "fiberDither", 0.1), I(this, "fiberColor", "Global"), I(this, "fiberDecimationStride", 1), I(this, "fiberSides", 5), I(this, "fiberRadius", 0), I(this, "fiberOcclusion", 0), I(this, "f32PerVertex", 5), I(this, "dpsThreshold", NaN), I(this, "fiberMask"), I(this, "colormap"), I(this, "dpg"), I(this, "dps"), I(this, "dpv"), I(this, "groups"), I(this, "hasConnectome", !1), I(this, "connectome"), I(this, "indexCount"), I(this, "vertexCount", 1), I(this, "nodeScale", 4), I(this, "edgeScale", 1), I(this, "legendLineThickness", 0), I(this, "showLegend", !0), I(this, "nodeColormap", "warm"), I(this, "edgeColormap", "warm"), I(this, "nodeColormapNegative"), I(this, "edgeColormapNegative"), I(this, "nodeMinColor"), I(this, "nodeMaxColor"), I(this, "edgeMin"), I(this, "edgeMax"), I(this, "nodes"), I(this, "edges"), I(this, "points"), this.anatomicalStructurePrimary = m, this.name = s, this.colorbarVisible = f, this.id = gs();
+    const g = gt.getExtents(e);
+    if (this.furthestVertexFromOrigin = g.mxDx, this.extentsMin = g.extentsMin, this.extentsMax = g.extentsMax, this.opacity = a > 1 ? 1 : a, this.visible = n, this.meshShaderIndex = 0, this.indexBuffer = o.createBuffer(), this.vertexBuffer = o.createBuffer(), this.vao = o.createVertexArray(), o.bindVertexArray(this.vao), o.bindBuffer(o.ELEMENT_ARRAY_BUFFER, this.indexBuffer), o.bindBuffer(o.ARRAY_BUFFER, this.vertexBuffer), o.enableVertexAttribArray(0), o.enableVertexAttribArray(1), this.f32PerVertex !== 7 ? (o.vertexAttribPointer(0, 3, o.FLOAT, !1, 20, 0), o.vertexAttribPointer(1, 4, o.BYTE, !0, 20, 12), o.enableVertexAttribArray(2), o.vertexAttribPointer(2, 4, o.UNSIGNED_BYTE, !0, 20, 16)) : (o.vertexAttribPointer(0, 3, o.FLOAT, !1, 28, 0), o.vertexAttribPointer(1, 3, o.FLOAT, !1, 28, 12), o.enableVertexAttribArray(2), o.vertexAttribPointer(2, 4, o.UNSIGNED_BYTE, !0, 28, 24)), o.bindVertexArray(null), this.vaoFiber = o.createVertexArray(), this.offsetPt0 = null, this.hasConnectome = !1, this.colormapInvert = !1, this.fiberGroupColormap = null, this.pts = e, this.layers = [], this.type = "mesh", this.tris = t, r[3] < 1) {
       this.rgba255 = r, this.fiberLength = 2, this.fiberDither = 0.1, this.fiberColor = "Global", this.fiberDecimationStride = 1, this.fiberMask = [], this.colormap = l, this.dpg = c, this.dps = h, this.dpv = u, this.groups = d, c && this.initValuesArray(c), h && this.initValuesArray(h), u && this.initValuesArray(u), d && this.initValuesArray(d), this.offsetPt0 = new Uint32Array(t), this.tris = new Uint32Array(0), this.updateFibers(o), o.bindVertexArray(this.vaoFiber), o.bindBuffer(o.ELEMENT_ARRAY_BUFFER, this.indexBuffer), o.bindBuffer(o.ARRAY_BUFFER, this.vertexBuffer), o.enableVertexAttribArray(0), o.vertexAttribPointer(0, 3, o.FLOAT, !1, 16, 0), o.enableVertexAttribArray(1), o.vertexAttribPointer(1, 4, o.UNSIGNED_BYTE, !0, 16, 12), o.bindVertexArray(null);
       return;
     }
@@ -18054,7 +18054,7 @@ var es = class it {
     if (u !== 5)
       throw Error("fiberSides > 1 requires f32PerVertex == 5");
     const d = new Float32Array(h * u), f = new Uint8Array(d.buffer);
-    let g = 0, m = Je(), p = Je(), v = Je();
+    let m = 0, g = Je(), p = Je(), v = Je();
     const A = le();
     let x = le(), w = 0;
     const D = this.fiberRadius;
@@ -18064,10 +18064,10 @@ var es = class it {
         continue;
       let S = s[F] * 4;
       if (w++, w <= 1) {
-        m = pe(t[S + 0], t[S + 1], t[S + 2], t[S + 3]), p = nt(m), F + 1 < n && s[F + 1] !== a && (S = s[F + 1] * 4, v = pe(t[S + 0], t[S + 1], t[S + 2], t[S + 3]), de(A, r(m), r(v)), Pe(A, A), x = xt.getFirstPerpVector(A));
+        g = pe(t[S + 0], t[S + 1], t[S + 2], t[S + 3]), p = nt(g), F + 1 < n && s[F + 1] !== a && (S = s[F + 1] * 4, v = pe(t[S + 0], t[S + 1], t[S + 2], t[S + 3]), de(A, r(g), r(v)), Pe(A, A), x = xt.getFirstPerpVector(A));
         continue;
       }
-      M ? v = nt(p) : v = pe(t[S + 0], t[S + 1], t[S + 2], t[S + 3]), de(A, r(m), r(v)), Pe(A, A);
+      M ? v = nt(p) : v = pe(t[S + 0], t[S + 1], t[S + 2], t[S + 3]), de(A, r(g), r(v)), Pe(A, A);
       const T = le();
       Ci(T, x, A);
       const k = le();
@@ -18078,32 +18078,32 @@ var es = class it {
       for (let V = 0; V < c; V++) {
         const N = Math.cos(V / c * 2 * Math.PI), P = Math.sin(V / c * 2 * Math.PI);
         U[0] = D * (N * k[0] + P * B[0]), U[1] = D * (N * k[1] + P * B[1]), U[2] = D * (N * k[2] + P * B[2]), At(U, r(p), U);
-        const L = g * u;
+        const L = m * u;
         d[L + 0] = U[0], d[L + 1] = U[1], d[L + 2] = U[2];
         const q = le();
         de(q, U, r(p)), Pe(q, q);
         const X = (L + 3) * 4;
-        f[X + 0] = q[0] * 127, f[X + 1] = q[1] * 127, f[X + 2] = q[2] * 127, d[L + 4] = p[3], g++;
+        f[X + 0] = q[0] * 127, f[X + 1] = q[1] * 127, f[X + 2] = q[2] * 127, d[L + 4] = p[3], m++;
       }
-      m = nt(p), p = nt(v), M && (w = 0);
+      g = nt(p), p = nt(v), M && (w = 0);
     }
-    const b = (o - l) * c * 2 * 3, C = new Uint32Array(b);
+    const b = (o - l) * c * 2 * 3, y = new Uint32Array(b);
     let E = 0;
-    g = 0;
+    m = 0;
     for (let F = 1; F < n; F++) {
       if (s[F] === a) {
-        g += c;
+        m += c;
         continue;
       }
       if (s[F - 1] === a)
         continue;
-      let M = g, S = g + c;
+      let M = m, S = m + c;
       const T = S, k = S + c;
       for (let B = 0; B < c; B++)
-        C[E++] = M, C[E++] = S++, S === k && (S = k - c), C[E++] = S, C[E++] = M++, M === T && (M = T - c), C[E++] = S, C[E++] = M;
-      g += c;
+        y[E++] = M, y[E++] = S++, S === k && (S = k - c), y[E++] = S, y[E++] = M++, M === T && (M = T - c), y[E++] = S, y[E++] = M;
+      m += c;
     }
-    e.bindBuffer(e.ELEMENT_ARRAY_BUFFER, this.indexBuffer), e.bufferData(e.ELEMENT_ARRAY_BUFFER, Uint32Array.from(C), e.STATIC_DRAW), e.bindBuffer(e.ARRAY_BUFFER, this.vertexBuffer), e.bufferData(e.ARRAY_BUFFER, f, e.STATIC_DRAW), this.indexCount = b;
+    e.bindBuffer(e.ELEMENT_ARRAY_BUFFER, this.indexBuffer), e.bufferData(e.ELEMENT_ARRAY_BUFFER, Uint32Array.from(y), e.STATIC_DRAW), e.bindBuffer(e.ARRAY_BUFFER, this.vertexBuffer), e.bufferData(e.ARRAY_BUFFER, f, e.STATIC_DRAW), this.indexCount = b;
   }
   // linesToCylinders
   createFiberDensityMap() {
@@ -18126,7 +18126,7 @@ var es = class it {
       const x = h[0] + h[1] * r + h[2] * d;
       x !== u && l[x]++;
     }
-    function g(A, x) {
+    function m(A, x) {
       let w = A.slice(), D = -1;
       const b = x - 1;
       for (let E = 0; E < x; E++)
@@ -18138,28 +18138,28 @@ var es = class it {
         for (let F = 0; F < x; F++)
           for (let M = 0; M < x; M++)
             D++, !(F < 1 || F >= b) && (A[D] = w[D - x] + w[D] + w[D] + w[D + x]);
-      const C = x * x;
+      const y = x * x;
       D = -1, w = A.slice();
       for (let E = 0; E < x; E++)
         for (let F = 0; F < x; F++)
           for (let M = 0; M < x; M++)
-            D++, !(E < 1 || E >= b) && (A[D] = w[D - C] + w[D] + w[D] + w[C]);
+            D++, !(E < 1 || E >= b) && (A[D] = w[D - y] + w[D] + w[D] + w[y]);
       return A;
     }
-    l = g(l, r), l = g(l, r);
-    let m = 0, p = 1 / 0;
+    l = m(l, r), l = m(l, r);
+    let g = 0, p = 1 / 0;
     const v = r * r * r;
     for (let A = 0; A < v; A++)
-      l[A] <= 0 || (m = Math.max(m, l[A]), p = Math.min(p, l[A]));
-    if (!(m <= 1 || m <= p)) {
+      l[A] <= 0 || (g = Math.max(g, l[A]), p = Math.min(p, l[A]));
+    if (!(g <= 1 || g <= p)) {
       f = 0;
       for (let A = 0; A < v; A++)
         l[A] = Math.max(0, l[A] - p);
-      m -= p;
+      g -= p;
       for (let A = 0; A < t; A++) {
         h[0] = Math.round((e[f++] - c[0]) * o), h[1] = Math.round((e[f++] - c[1]) * o), h[2] = Math.round((e[f++] - c[2]) * o);
         const x = h[0] + h[1] * r + h[2] * d;
-        this.fiberDensity[A] = l[x] / m;
+        this.fiberDensity[A] = l[x] / g;
       }
     }
   }
@@ -18172,9 +18172,9 @@ var es = class it {
     if (!this.fiberLengths) {
       this.fiberLengths = new Uint32Array(r);
       for (let b = 0; b < r; b++) {
-        const C = s[b] * 3, E = (s[b + 1] - 1) * 3;
+        const y = s[b] * 3, E = (s[b + 1] - 1) * 3;
         let F = 0;
-        for (let M = C; M < E; M += 3) {
+        for (let M = y; M < E; M += 3) {
           const S = G(t[M + 0] - t[M + 3], t[M + 1] - t[M + 4], t[M + 2] - t[M + 5]);
           F += ei(S);
         }
@@ -18186,53 +18186,53 @@ var es = class it {
     for (let b = 0; b < a; b++)
       n[c + 0] = t[l + 0], n[c + 1] = t[l + 1], n[c + 2] = t[l + 2], l += 3, c += 4;
     const h = this.fiberDither, u = h * 0.5;
-    function d(b, C, E) {
+    function d(b, y, E) {
       const M = 255 * (h * Math.random() - u);
-      return b = Math.max(Math.min(b + M, 255), 0), C = Math.max(Math.min(C + M, 255), 0), E = Math.max(Math.min(E + M, 255), 0), b + (C << 8) + (E << 16);
+      return b = Math.max(Math.min(b + M, 255), 0), y = Math.max(Math.min(y + M, 255), 0), E = Math.max(Math.min(E + M, 255), 0), b + (y << 8) + (E << 16);
     }
-    function f(b, C, E, F, M, S, T) {
-      const k = G(Math.abs(b - F), Math.abs(C - M), Math.abs(E - S));
+    function f(b, y, E, F, M, S, T) {
+      const k = G(Math.abs(b - F), Math.abs(y - M), Math.abs(E - S));
       Pe(k, k);
       const B = T - u;
       for (let U = 0; U < 3; U++)
         k[U] = 255 * Math.max(Math.min(Math.abs(k[U]) + B, 1), 0);
       return k[0] + (k[1] << 8) + (k[2] << 16);
     }
-    const g = this.fiberColor.toLowerCase();
-    let m = null, p = null;
-    if (g.startsWith("dps") && this.dps && this.dps.length > 0) {
-      const b = parseInt(g.substring(3));
-      b < this.dps.length && this.dps[b].vals.length === r && (m = this.dps[b].vals);
+    const m = this.fiberColor.toLowerCase();
+    let g = null, p = null;
+    if (m.startsWith("dps") && this.dps && this.dps.length > 0) {
+      const b = parseInt(m.substring(3));
+      b < this.dps.length && this.dps[b].vals.length === r && (g = this.dps[b].vals);
     }
-    if (g.startsWith("dpv") && this.dpv && this.dpv.length > 0) {
-      const b = parseInt(g.substring(3));
+    if (m.startsWith("dpv") && this.dpv && this.dpv.length > 0) {
+      const b = parseInt(m.substring(3));
       b < this.dpv.length && this.dpv[b].vals.length === a && (p = this.dpv[b]);
     }
     const v = new Int16Array(r);
-    if (this.groups && this.fiberGroupColormap !== null || g.startsWith("dpg") && this.dpg.length > 0) {
-      const b = new Uint8ClampedArray(this.groups.length * 4), C = new Array(this.groups.length).fill(!1);
+    if (this.groups && this.fiberGroupColormap !== null || m.startsWith("dpg") && this.dpg.length > 0) {
+      const b = new Uint8ClampedArray(this.groups.length * 4), y = new Array(this.groups.length).fill(!1);
       if (this.fiberGroupColormap) {
         const E = this.fiberGroupColormap;
         E.A === void 0 && (E.A = Array.from(new Uint8ClampedArray(E.I.length).fill(255)));
         for (let F = 0; F < E.I.length; F++) {
           let M = E.I[F];
-          M < 0 || M >= this.groups.length || E.A[F] < 1 || (C[M] = !0, M *= 4, b[M] = E.R[F], b[M + 1] = E.G[F], b[M + 2] = E.B[F], b[M + 3] = 255);
+          M < 0 || M >= this.groups.length || E.A[F] < 1 || (y[M] = !0, M *= 4, b[M] = E.R[F], b[M + 1] = E.G[F], b[M + 2] = E.B[F], b[M + 3] = 255);
         }
-      } else if (g.startsWith("dpg") && this.dpg.length > 0) {
-        const E = parseInt(g.substring(3)), F = E < this.dpg.length ? this.dpg[E] : this.dpg[0], M = oe.colormap(this.colormap, this.colormapInvert), S = F.cal_min, T = F.cal_max, k = this.groups.length;
+      } else if (m.startsWith("dpg") && this.dpg.length > 0) {
+        const E = parseInt(m.substring(3)), F = E < this.dpg.length ? this.dpg[E] : this.dpg[0], M = oe.colormap(this.colormap, this.colormapInvert), S = F.cal_min, T = F.cal_max, k = this.groups.length;
         for (let B = 0; B < k; B++) {
           const U = F.vals[B];
           if (U < S)
             continue;
           let V = Math.round(255 * Math.min(Math.max((U - S) / (T - S), 0), 1));
-          C[B] = !0;
+          y[B] = !0;
           const N = B * 4;
           V *= 4, b[N] = M[V + 0], b[N + 1] = M[V + 1], b[N + 2] = M[V + 2], b[N + 3] = 255;
         }
       }
       v.fill(-1);
       for (let E = 0; E < this.groups.length; E++)
-        if (C[E])
+        if (y[E])
           for (let F = 0; F < this.groups[E].vals.length; F++)
             v[this.groups[E].vals[F]] = E;
       for (let E = 0; E < r; E++) {
@@ -18243,52 +18243,52 @@ var es = class it {
           o[U] = M;
       }
     } else if (p) {
-      const b = oe.colormap(this.colormap, this.colormapInvert), C = p.cal_min, E = p.cal_max;
+      const b = oe.colormap(this.colormap, this.colormapInvert), y = p.cal_min, E = p.cal_max;
       let F = 3;
       for (let M = 0; M < a; M++) {
-        let S = Math.min(Math.max((p.vals[M] - C) / (E - C), 0), 1);
+        let S = Math.min(Math.max((p.vals[M] - y) / (E - y), 0), 1);
         S = Math.round(Math.max(Math.min(255, S * 255))) * 4;
         const T = b[S] + (b[S + 1] << 8) + (b[S + 2] << 16);
         o[F] = T, F += 4;
       }
-    } else if (m) {
+    } else if (g) {
       const b = oe.colormap(this.colormap, this.colormapInvert);
-      let C = m[0], E = m[0];
+      let y = g[0], E = g[0];
       for (let F = 0; F < r; F++)
-        C = Math.min(C, m[F]), E = Math.max(E, m[F]);
-      E === C && (C -= 1);
+        y = Math.min(y, g[F]), E = Math.max(E, g[F]);
+      E === y && (y -= 1);
       for (let F = 0; F < r; F++) {
-        let M = (m[F] - C) / (E - C);
+        let M = (g[F] - y) / (E - y);
         M = Math.round(Math.max(Math.min(255, M * 255))) * 4;
         const S = b[M] + (b[M + 1] << 8) + (b[M + 2] << 16), T = s[F], k = s[F + 1] - 1, B = T * 4 + 3, U = k * 4 + 3;
         for (let V = B; V <= U; V += 4)
           o[V] = S;
       }
-    } else if (g.includes("fixed"))
+    } else if (m.includes("fixed"))
       if (h === 0) {
         const b = this.rgba255[0] + (this.rgba255[1] << 8) + (this.rgba255[2] << 16);
-        let C = 3;
+        let y = 3;
         for (let E = 0; E < a; E++)
-          o[C] = b, C += 4;
+          o[y] = b, y += 4;
       } else
         for (let b = 0; b < r; b++) {
-          const C = d(this.rgba255[0], this.rgba255[1], this.rgba255[2]), E = s[b], F = s[b + 1] - 1, M = E * 4 + 3, S = F * 4 + 3;
+          const y = d(this.rgba255[0], this.rgba255[1], this.rgba255[2]), E = s[b], F = s[b + 1] - 1, M = E * 4 + 3, S = F * 4 + 3;
           for (let T = M; T <= S; T += 4)
-            o[T] = C;
+            o[T] = y;
         }
-    else if (g.includes("local"))
+    else if (m.includes("local"))
       for (let b = 0; b < r; b++) {
-        const C = s[b], E = s[b + 1] - 1;
-        let F = C * 3;
+        const y = s[b], E = s[b + 1] - 1;
+        let F = y * 3;
         const M = E * 3, S = h * Math.random();
-        let T = f(t[F], t[F + 1], t[F + 2], t[F + 4], t[F + 5], t[F + 6], S), k = C * 4 + 3;
+        let T = f(t[F], t[F + 1], t[F + 2], t[F + 4], t[F + 5], t[F + 6], S), k = y * 4 + 3;
         for (; F < M; )
           o[k] = T, k += 4, F += 3, T = f(t[F - 3], t[F - 2], t[F - 1], t[F + 3], t[F + 4], t[F + 5], S);
         o[k] = o[k - 4];
       }
     else
       for (let b = 0; b < r; b++) {
-        const C = s[b], E = s[b + 1] - 1, F = C * 3, M = E * 3, S = f(
+        const y = s[b], E = s[b + 1] - 1, F = y * 3, M = E * 3, S = f(
           t[F],
           t[F + 1],
           t[F + 2],
@@ -18296,18 +18296,18 @@ var es = class it {
           t[M + 1],
           t[M + 2],
           h * Math.random()
-        ), T = C * 4 + 3, k = E * 4 + 3;
+        ), T = y * 4 + 3, k = E * 4 + 3;
         for (let B = T; B <= k; B += 4)
           o[B] = S;
       }
     if (this.fiberOcclusion > 0) {
-      let b = function(C, E) {
-        const F = E * (C & 255), M = E * (C >> 8 & 255), S = E * (C >> 16 & 255);
+      let b = function(y, E) {
+        const F = E * (y & 255), M = E * (y >> 8 & 255), S = E * (y >> 16 & 255);
         return F + (M << 8) + (S << 16);
       };
       this.createFiberDensityMap();
-      for (let C = 0; C < r; C++) {
-        const E = s[C], F = s[C + 1] - 1, M = E * 4 + 3, S = F * 4 + 3;
+      for (let y = 0; y < r; y++) {
+        const E = s[y], F = s[y + 1] - 1, M = E * 4 + 3, S = F * 4 + 3;
         let T = E;
         const k = Math.min(this.fiberOcclusion, 0.99);
         for (let B = M; B <= S; B += 4) {
@@ -18321,15 +18321,15 @@ var es = class it {
         }
       }
     }
-    if (Number.isFinite(this.dpsThreshold) && this.dps && (m || this.dps[0].vals.length === r && (m = this.dps[0].vals), m))
+    if (Number.isFinite(this.dpsThreshold) && this.dps && (g || this.dps[0].vals.length === r && (g = this.dps[0].vals), g))
       for (let b = 0; b < r; b++)
-        m[b] < this.dpsThreshold && (v[b] = -1);
+        g[b] < this.dpsThreshold && (v[b] = -1);
     const A = this.fiberLength, x = Math.pow(2, 32) - 1, w = [];
     let D = -1;
     for (let b = 0; b < r; b++)
       if (!(v[b] < 0) && !(this.fiberLengths[b] < A) && (D++, D % this.fiberDecimationStride === 0)) {
-        for (let C = s[b]; C < s[b + 1]; C++)
-          w.push(C);
+        for (let y = s[b]; y < s[b + 1]; y++)
+          w.push(y);
         w.push(x);
       }
     this.fiberSides > 2 && this.fiberRadius > 0 ? this.linesToCylinders(e, n, w) : (this.indexCount = w.length, e.bindBuffer(e.ARRAY_BUFFER, this.vertexBuffer), e.bufferData(e.ARRAY_BUFFER, Uint32Array.from(o), e.STATIC_DRAW), e.bindBuffer(e.ELEMENT_ARRAY_BUFFER, this.indexBuffer), e.bufferData(e.ELEMENT_ARRAY_BUFFER, Uint32Array.from(w), e.STATIC_DRAW));
@@ -18376,21 +18376,21 @@ var es = class it {
     const d = t.colormapType === 2;
     t.colormapType !== 0 && (o = Math.min(o, 0));
     const f = 255 / (l - o);
-    for (let g = 0; g < a; g++) {
-      let m = s[g] * h;
-      if (isNaN(m))
+    for (let m = 0; m < a; m++) {
+      let g = s[m] * h;
+      if (isNaN(g))
         continue;
       let p = n;
-      if (m < u)
-        if (m > 0 && d)
-          p = Math.round(t.opacity * 255 * Math.pow(m / u, 2));
+      if (g < u)
+        if (g > 0 && d)
+          p = Math.round(t.opacity * 255 * Math.pow(g / u, 2));
         else
           continue;
-      if (m = (m - o) * f, m < 0 && t.isTransparentBelowCalMin)
+      if (g = (g - o) * f, g < 0 && t.isTransparentBelowCalMin)
         continue;
-      m = Math.min(255, Math.max(0, Math.round(m))) * 4;
-      const v = g * 4;
-      e[v + 0] = c[m + 0], e[v + 1] = c[m + 1], e[v + 2] = c[m + 2], e[v + 3] = p;
+      g = Math.min(255, Math.max(0, Math.round(g))) * 4;
+      const v = m * 4;
+      e[v + 0] = c[g + 0], e[v + 1] = c[g + 1], e[v + 2] = c[g + 2], e[v + 3] = p;
     }
     return e;
   }
@@ -18402,30 +18402,30 @@ var es = class it {
     function u(x, w) {
       return Math.min(x + w, 255);
     }
-    const d = o ? -1 : 1, f = Math.min(Math.max(s.frame4D, 0), s.nFrame4D - 1), g = l * f;
-    let m = r;
-    s.isTransparentBelowCalMin || (m = Number.NEGATIVE_INFINITY), s.colormapType !== 0 && (r = Math.min(r, 0));
+    const d = o ? -1 : 1, f = Math.min(Math.max(s.frame4D, 0), s.nFrame4D - 1), m = l * f;
+    let g = r;
+    s.isTransparentBelowCalMin || (g = Number.NEGATIVE_INFINITY), s.colormapType !== 0 && (r = Math.min(r, 0));
     const p = 255 / (a - r);
     let v = new Array(l).fill(!1);
     if (s.outlineBorder !== 0) {
       const x = new Uint8Array(l).fill(0);
       for (let w = 0; w < l; w++)
-        d * s.values[w + g] >= m && (x[w] = 1);
+        d * s.values[w + m] >= g && (x[w] = 1);
       v = gt.getClusterBoundaryU8(x, this.tris);
       for (let w = 0; w < l; w++)
-        d * s.values[w + g] < m && (v[w] = !1);
+        d * s.values[w + m] < g && (v[w] = !1);
     }
     const A = new Float32Array(256).fill(c);
-    if (m > r && s.colormapType === 2) {
-      let x = Math.round((m - r) * p);
+    if (g > r && s.colormapType === 2) {
+      let x = Math.round((g - r) * p);
       x = Math.max(x, 1);
       for (let w = 1; w < x; w++)
         A[w] = c * Math.pow(w / x, 2);
-      A[0] = 0, m = r + Number.EPSILON;
+      A[0] = 0, g = r + Number.EPSILON;
     }
     for (let x = 0; x < l; x++) {
-      const w = d * s.values[x + g];
-      if (w < m)
+      const w = d * s.values[x + m];
+      if (w < g)
         continue;
       let D = Math.round((w - r) * p);
       if (D < 0 && s.isTransparentBelowCalMin)
@@ -18433,16 +18433,16 @@ var es = class it {
       D = Math.max(0, D), D = Math.min(255, D);
       let b = A[D];
       D *= 4;
-      let C = x * 28 + 24;
-      if (this.f32PerVertex !== 7 && (C = x * 20 + 16), s.isAdditiveBlend) {
+      let y = x * 28 + 24;
+      if (this.f32PerVertex !== 7 && (y = x * 20 + 16), s.isAdditiveBlend) {
         const E = x * 4;
         t[E + 0] = u(t[E + 0], n[D + 0]), t[E + 1] = u(t[E + 1], n[D + 1]), t[E + 2] = u(t[E + 2], n[D + 2]), t[E + 3] = u(t[E + 3], 255);
       } else {
         if (v[x] && (b = s.outlineBorder, s.outlineBorder < 0)) {
-          e[C + 0] = 0, e[C + 1] = 0, e[C + 2] = 0;
+          e[y + 0] = 0, e[y + 1] = 0, e[y + 2] = 0;
           continue;
         }
-        e[C + 0] = h(e[C + 0], n[D + 0], b), e[C + 1] = h(e[C + 1], n[D + 1], b), e[C + 2] = h(e[C + 2], n[D + 2], b);
+        e[y + 0] = h(e[y + 0], n[D + 0], b), e[y + 1] = h(e[y + 1], n[D + 1], b), e[y + 2] = h(e[y + 2], n[D + 2], b);
       }
     }
   }
@@ -18473,24 +18473,24 @@ var es = class it {
           continue;
         if (h.outlineBorder === void 0 && (h.outlineBorder = 0), h.isAdditiveBlend === void 0 && (h.isAdditiveBlend = !1), h.colormapLabel && h.colormapLabel.R && !h.colormapLabel.lut && (h.colormapLabel = oe.makeLabelLut(h.colormapLabel, 255, h.global_max)), h.colormapLabel && h.colormapLabel.lut) {
           const f = h.colormapLabel;
-          let g = 0;
-          h.colormapLabel.min && (g = h.colormapLabel.min);
-          let m = f.lut;
-          const p = Math.floor(m.length / 4);
+          let m = 0;
+          h.colormapLabel.min && (m = h.colormapLabel.min);
+          let g = f.lut;
+          const p = Math.floor(g.length / 4);
           if (h.atlasValues && p > 0 && p === h.atlasValues.length && h.colormap) {
             const b = h.atlasValues;
-            let C = !1, E = !0;
+            let y = !1, E = !0;
             for (let F = 0; F < p; F++)
-              isNaN(b[F]) ? C = !0 : E = !1;
+              isNaN(b[F]) ? y = !0 : E = !1;
             if (E) {
               R.debug("invisible mesh: all atlasValues are NaN.");
               return;
             }
-            if (C) {
+            if (y) {
               R.debug("some vertices have NaN atlasValues (mesh will be decimated).");
               const F = new Array(r).fill(!1);
               for (let B = 0; B < r; B++) {
-                const U = Math.round(h.values[B]) - g;
+                const U = Math.round(h.values[B]) - m;
                 isNaN(b[U]) && (F[B] = !0);
               }
               const M = new Array(l.length).fill(!1);
@@ -18505,30 +18505,30 @@ var es = class it {
               for (let B = 0; B < S.length; B += 3)
                 !M[B] && !M[B + 1] && !M[B + 2] && (l[k++] = S[B], l[k++] = S[B + 1], l[k++] = S[B + 2]);
             }
-            m.fill(0), m = this.scalars2RGBA(m, h, b), h.useNegativeCmap && (m = this.scalars2RGBA(m, h, b, !0));
+            g.fill(0), g = this.scalars2RGBA(g, h, b), h.useNegativeCmap && (g = this.scalars2RGBA(g, h, b, !0));
           } else h.atlasValues && R.warn(`Expected ${p} atlasValues but got ${h.atlasValues.length} for mesh layer`);
           if (h.showLegend && p === h.colormapLabel.labels.length) {
             h.labels = [];
             for (let b = 0; b < p; b++) {
-              const C = Array.from(m.slice(b * 4, b * 4 + 4)).map((T) => T / 255), E = h.colormapLabel.labels[b], F = [0, 0, 0];
+              const y = Array.from(g.slice(b * 4, b * 4 + 4)).map((T) => T / 255), E = h.colormapLabel.labels[b], F = [0, 0, 0];
               let M = 0;
               for (let T = 0; T < r; T++)
                 if (h.values[T] === b) {
                   const k = T * 3;
                   F[0] += this.pts[k], F[1] += this.pts[k + 1], F[2] += this.pts[k + 2], M++;
                 }
-              if (M > 0 && (F[0] /= M, F[1] /= M, F[2] /= M), C[3] === 0 || !E || // handles empty string, null, undefined
+              if (M > 0 && (F[0] /= M, F[1] /= M, F[2] /= M), y[3] === 0 || !E || // handles empty string, null, undefined
               E.startsWith("_"))
                 continue;
-              C[3] = 1;
+              y[3] = 1;
               const S = new Ys(
                 E,
                 {
-                  textColor: C,
+                  textColor: y,
                   bulletScale: 1,
-                  bulletColor: C,
+                  bulletColor: y,
                   lineWidth: 0,
-                  lineColor: C,
+                  lineColor: y,
                   textScale: 1,
                   textAlignment: "left",
                   lineTerminator: "none"
@@ -18543,37 +18543,37 @@ var es = class it {
           const v = Math.min(Math.max(h.frame4D, 0), h.nFrame4D - 1), A = r * v, x = new Uint8Array(r * 4);
           let w = 0;
           for (let b = 0; b < r; b++) {
-            const C = h.values[b + A] - g, E = 4 * Math.min(Math.max(C, 0), p - 1);
-            x[w + 0] = m[E + 0], x[w + 1] = m[E + 1], x[w + 2] = m[E + 2], x[w + 3] = Math.round(m[E + 3] / 255 * h.opacity * 255), w += 4;
+            const y = h.values[b + A] - m, E = 4 * Math.min(Math.max(y, 0), p - 1);
+            x[w + 0] = g[E + 0], x[w + 1] = g[E + 1], x[w + 2] = g[E + 2], x[w + 3] = Math.round(g[E + 3] / 255 * h.opacity * 255), w += 4;
           }
           let D = new Array(r).fill(!1);
           h.outlineBorder !== 0 && (D = gt.getClusterBoundary(x, this.tris)), w = 0;
           for (let b = 0; b < r; b++) {
-            let C = b * 28 + 24;
-            this.f32PerVertex !== 7 && (C = b * 20 + 16);
+            let y = b * 28 + 24;
+            this.f32PerVertex !== 7 && (y = b * 20 + 16);
             let E = x[w + 3] / 255;
             if (D[b] && (E = h.outlineBorder, h.outlineBorder < 0)) {
-              a[C + 0] = 0, a[C + 1] = 0, a[C + 2] = 0, w += 4;
+              a[y + 0] = 0, a[y + 1] = 0, a[y + 2] = 0, w += 4;
               continue;
             }
-            a[C + 0] = t(a[C + 0], x[w + 0], E), a[C + 1] = t(a[C + 1], x[w + 1], E), a[C + 2] = t(a[C + 2], x[w + 2], E), w += 4;
+            a[y + 0] = t(a[y + 0], x[w + 0], E), a[y + 1] = t(a[y + 1], x[w + 1], E), a[y + 2] = t(a[y + 2], x[w + 2], E), w += 4;
           }
           continue;
         }
         if (h.values instanceof Uint8Array) {
           const f = new Uint8Array(h.values.buffer);
-          let g = new Array(r).fill(!0);
-          h.outlineBorder !== 0 && (g = gt.getClusterBoundary(f, this.tris));
-          let m = 0;
+          let m = new Array(r).fill(!0);
+          h.outlineBorder !== 0 && (m = gt.getClusterBoundary(f, this.tris));
+          let g = 0;
           for (let p = 0; p < h.values.length; p++) {
             let v = p * 28 + 24;
             this.f32PerVertex !== 7 && (v = p * 20 + 16);
             let A = u;
-            if (g[p] && (A = h.outlineBorder, h.outlineBorder < 0)) {
-              a[v + 0] = 0, a[v + 1] = 0, a[v + 2] = 0, m += 4;
+            if (m[p] && (A = h.outlineBorder, h.outlineBorder < 0)) {
+              a[v + 0] = 0, a[v + 1] = 0, a[v + 2] = 0, g += 4;
               continue;
             }
-            a[v + 0] = t(a[v + 0], f[m + 0], A), a[v + 1] = t(a[v + 1], f[m + 1], A), a[v + 2] = t(a[v + 2], f[m + 2], A), m += 4;
+            a[v + 0] = t(a[v + 0], f[g + 0], A), a[v + 1] = t(a[v + 1], f[g + 1], A), a[v + 2] = t(a[v + 2], f[g + 2], A), g += 4;
           }
           continue;
         }
@@ -18581,14 +18581,14 @@ var es = class it {
         const d = oe.colormap(h.colormap, h.colormapInvert);
         if (h.isAdditiveBlend && n++, this.blendColormap(a, o, h, h.cal_min, h.cal_max, d), h.useNegativeCmap) {
           const f = oe.colormap(h.colormapNegative, h.colormapInvert);
-          let g = h.cal_min, m = h.cal_max;
-          isFinite(h.cal_minNeg) && isFinite(h.cal_minNeg) && (g = -h.cal_minNeg, m = -h.cal_maxNeg), this.blendColormap(a, o, h, g, m, f, !0);
+          let m = h.cal_min, g = h.cal_max;
+          isFinite(h.cal_minNeg) && isFinite(h.cal_minNeg) && (m = -h.cal_minNeg, g = -h.cal_maxNeg), this.blendColormap(a, o, h, m, g, f, !0);
         }
       }
     if (n > 0)
       for (let c = 0; c < r; c++) {
-        let h = function(g, m) {
-          return Math.min(g * m * 0.00392156862745098, 255);
+        let h = function(m, g) {
+          return Math.min(m * g * 0.00392156862745098, 255);
         }, u = c * 28 + 24;
         this.f32PerVertex !== 7 && (u = c * 20 + 16);
         const d = c * 4, f = Math.min(n, o[d + 3] / 255);
@@ -18631,10 +18631,10 @@ var es = class it {
     for (let n = e - 1; n >= t; n--) {
       const o = Math.pow(4, n + 1) * (r - 2) + 2, l = Math.pow(4, n) * (r - 2) + 2, c = s.length / 3, h = Math.pow(4, n) * a;
       R.info(`order ${n + 1} -> ${n} vertices ${o} -> ${l} faces ${c} -> ${h}`);
-      const u = Array.from({ length: o }, (f, g) => g + 1);
+      const u = Array.from({ length: o }, (f, m) => m + 1);
       for (let f = 0; f < c; f++) {
-        const g = s[3 * f], m = s[3 * f + 1], p = s[3 * f + 2];
-        u[g - 1] = Math.min(u[g - 1], m, p);
+        const m = s[3 * f], g = s[3 * f + 1], p = s[3 * f + 2];
+        u[m - 1] = Math.min(u[m - 1], g, p);
       }
       const d = new Uint32Array(h * 3);
       for (let f = 0; f < h; f++)
@@ -18694,7 +18694,7 @@ var es = class it {
     (e.length < 3 || s.length < 4) && (R.error("Catastrophic failure generatePosNormClr()"), R.debug("this", this), R.debug("pts", e), R.debug("rgba", s));
     const r = gt.generateNormals(e, t), a = e.length / 3, n = a === s.length / 4, o = this.f32PerVertex, l = new Float32Array(a * o), c = new Uint8Array(l.buffer);
     let h = 0, u = 0, d = 0, f = (o - 1) * 4;
-    for (let g = 0; g < a; g++)
+    for (let m = 0; m < a; m++)
       l[d + 0] = e[h + 0], l[d + 1] = e[h + 1], l[d + 2] = e[h + 2], o !== 7 ? (c[f - 4] = r[h + 0] * 127, c[f - 3] = r[h + 1] * 127, c[f - 2] = r[h + 2] * 127) : (l[d + 3] = r[h + 0], l[d + 4] = r[h + 1], l[d + 5] = r[h + 2]), c[f] = s[u + 0], c[f + 1] = s[u + 1], c[f + 2] = s[u + 2], c[f + 3] = s[u + 3], n && (u += 4), h += 3, d += o, f += o * 4;
     return l;
   }
@@ -18785,7 +18785,7 @@ var es = class it {
     if (o.length / 3 < 1 || f < 3)
       throw new Error("Mesh should have at least one triangle and three vertices");
     a[3] = Math.max(1, a[3]);
-    const m = new _e(
+    const g = new _e(
       l,
       o,
       t,
@@ -18811,17 +18811,17 @@ var es = class it {
       c
     );
     if ("scalars" in h && h.scalars.length > 0) {
-      const p = await ge.readLayer(t, e, m, r, "gray");
-      typeof p > "u" ? R.warn("readLayer() failed to convert scalars") : (m.layers.push(p), m.updateMesh(s));
+      const p = await ge.readLayer(t, e, g, r, "gray");
+      typeof p > "u" ? R.warn("readLayer() failed to convert scalars") : (g.layers.push(p), g.updateMesh(s));
     }
-    return m;
+    return g;
   }
   static async loadLayer(e, t) {
     let s = new Uint8Array().buffer;
-    function r(g) {
-      const m = window.atob(g), p = m.length, v = new Uint8Array(p);
+    function r(m) {
+      const g = window.atob(m), p = g.length, v = new Uint8Array(p);
       for (let A = 0; A < p; A++)
-        v[A] = m.charCodeAt(A);
+        v[A] = g.charCodeAt(A);
       return v.buffer;
     }
     if (e.base64 !== void 0)
@@ -18829,10 +18829,10 @@ var es = class it {
     else {
       if (!e.url)
         throw new Error("layer: missing url");
-      const g = await fetch(e.url, { headers: e.headers });
-      if (!g.ok)
-        throw Error(g.statusText);
-      s = await g.arrayBuffer();
+      const m = await fetch(e.url, { headers: e.headers });
+      if (!m.ok)
+        throw Error(m.statusText);
+      s = await m.arrayBuffer();
     }
     let a, n = [];
     if (e.name && e.name !== "")
@@ -18969,10 +18969,10 @@ var es = class it {
     if (!t)
       throw new Error("rendering context must be set");
     function l(u) {
-      const d = window.atob(u), f = d.length, g = new Uint8Array(f);
-      for (let m = 0; m < f; m++)
-        g[m] = d.charCodeAt(m);
-      return g.buffer;
+      const d = window.atob(u), f = d.length, m = new Uint8Array(f);
+      for (let g = 0; g < f; g++)
+        m[g] = d.charCodeAt(g);
+      return m.buffer;
     }
     const c = l(e), h = await _e.readMesh(c, s, t, r, new Uint8Array(a), n);
     if (!o || o.length < 1)
@@ -20694,14 +20694,14 @@ var es = class it {
         A = Math.round(Math.max(Math.min(255, A * 255))) * 4;
         let D = [a[A], a[A + 1], a[A + 2], 255];
         x && (D = [n[A], n[A + 1], n[A + 2], 255]);
-        const b = G(h[v.first].x, h[v.first].y, h[v.first].z), C = G(h[v.second].x, h[v.second].y, h[v.second].z);
-        xt.makeColoredCylinder(s, t, r, b, C, w, D);
+        const b = G(h[v.first].x, h[v.first].y, h[v.first].z), y = G(h[v.second].x, h[v.second].y, h[v.second].z);
+        xt.makeColoredCylinder(s, t, r, b, y, w, D);
       }
     }
-    const f = new Float32Array(s), g = new Uint32Array(t), m = gt.getExtents(f);
-    this.furthestVertexFromOrigin = m.mxDx, this.extentsMin = m.extentsMin, this.extentsMax = m.extentsMax;
-    const p = this.generatePosNormClr(f, g, new Uint8Array(r));
-    e.bindBuffer(e.ELEMENT_ARRAY_BUFFER, this.indexBuffer), e.bufferData(e.ELEMENT_ARRAY_BUFFER, Uint32Array.from(g), e.STATIC_DRAW), e.bindBuffer(e.ARRAY_BUFFER, this.vertexBuffer), e.bufferData(e.ARRAY_BUFFER, Float32Array.from(p), e.STATIC_DRAW), this.indexCount = t.length;
+    const f = new Float32Array(s), m = new Uint32Array(t), g = gt.getExtents(f);
+    this.furthestVertexFromOrigin = g.mxDx, this.extentsMin = g.extentsMin, this.extentsMax = g.extentsMax;
+    const p = this.generatePosNormClr(f, m, new Uint8Array(r));
+    e.bindBuffer(e.ELEMENT_ARRAY_BUFFER, this.indexBuffer), e.bufferData(e.ELEMENT_ARRAY_BUFFER, Uint32Array.from(m), e.STATIC_DRAW), e.bindBuffer(e.ARRAY_BUFFER, this.vertexBuffer), e.bufferData(e.ARRAY_BUFFER, Float32Array.from(p), e.STATIC_DRAW), this.indexCount = t.length;
   }
   updateMesh(e) {
     this.updateConnectome(e), this.updateLabels();
@@ -20723,9 +20723,9 @@ var es = class it {
 function Jc(i, e, t) {
   if (!i.dimsRAS || !i.matRAS || !i.pixDimsRAS || !i.vox2mm)
     throw new Error("Cannot create NiivueObject3D: Missing required RAS properties or vox2mm access on NVImage.");
-  const s = i.dimsRAS, r = i.matRAS, a = i.pixDimsRAS, n = -0.5, o = -0.5, l = -0.5, c = s[1] - 1 + 0.5, h = s[2] - 1 + 0.5, u = s[3] - 1 + 0.5, d = i.vox2mm, f = d.call(i, [n, o, l], r), g = d.call(i, [n, h, l], r), m = d.call(i, [n, o, u], r), p = d.call(i, [n, h, u], r), v = d.call(i, [c, o, l], r), A = d.call(i, [c, h, l], r), x = d.call(i, [c, o, u], r), w = d.call(i, [c, h, u], r), D = [
+  const s = i.dimsRAS, r = i.matRAS, a = i.pixDimsRAS, n = -0.5, o = -0.5, l = -0.5, c = s[1] - 1 + 0.5, h = s[2] - 1 + 0.5, u = s[3] - 1 + 0.5, d = i.vox2mm, f = d.call(i, [n, o, l], r), m = d.call(i, [n, h, l], r), g = d.call(i, [n, o, u], r), p = d.call(i, [n, h, u], r), v = d.call(i, [c, o, l], r), A = d.call(i, [c, h, l], r), x = d.call(i, [c, o, u], r), w = d.call(i, [c, h, u], r), D = [
     // Superior face vertices (Indices 0-3)
-    ...m,
+    ...g,
     0,
     0,
     1,
@@ -20751,7 +20751,7 @@ function Jc(i, e, t) {
     0,
     0,
     // 4
-    ...g,
+    ...m,
     0,
     1,
     0,
@@ -20770,7 +20770,7 @@ function Jc(i, e, t) {
   if (!b)
     throw new Error("Failed to create GL index buffer");
   t.bindBuffer(t.ELEMENT_ARRAY_BUFFER, b);
-  const C = [
+  const y = [
     0,
     3,
     2,
@@ -20814,7 +20814,7 @@ function Jc(i, e, t) {
     4
     // Left -> Corresponds to LPI(4), LAI(5), LAS(3) / LAS(3), LPS(0), LPI(4)
   ];
-  t.bufferData(t.ELEMENT_ARRAY_BUFFER, new Uint16Array(C), t.STATIC_DRAW);
+  t.bufferData(t.ELEMENT_ARRAY_BUFFER, new Uint16Array(y), t.STATIC_DRAW);
   const E = t.createBuffer();
   if (!E)
     throw new Error("Failed to create GL vertex buffer");
@@ -20825,7 +20825,7 @@ function Jc(i, e, t) {
   t.bindVertexArray(F), t.bindBuffer(t.ELEMENT_ARRAY_BUFFER, b), t.bindBuffer(t.ARRAY_BUFFER, E);
   const M = 24;
   t.enableVertexAttribArray(0), t.vertexAttribPointer(0, 3, t.FLOAT, !1, M, 0), t.enableVertexAttribArray(1), t.vertexAttribPointer(1, 3, t.FLOAT, !1, M, 12), t.bindVertexArray(null);
-  const S = new xt(e, E, t.TRIANGLES, C.length, b, F), T = [...m, ...x, ...w, ...p, ...f, ...g, ...A, ...v], k = zc(T);
+  const S = new xt(e, E, t.TRIANGLES, y.length, b, F), T = [...g, ...x, ...w, ...p, ...f, ...m, ...A, ...v], k = zc(T);
   return S.extentsMin = k.min.slice(), S.extentsMax = k.max.slice(), S.furthestVertexFromOrigin = k.furthestVertexFromOrigin, S.originNegate = Ye(k.origin), Na(S.originNegate, S.originNegate), S.fieldOfViewDeObliqueMM = [s[1] * a[1], s[2] * a[2], s[3] * a[3]], S;
 }
 function $c(i) {
@@ -21040,23 +21040,23 @@ function nh(i, e, t, s, r, a, n, o, l, c) {
         l[d],
         c[d],
         n.intensitySigma
-      ), g = n.intensityWeight, m = g * f + (1 - g) * u, p = 1 - m;
-      a[d] = i[d] * m + e[d] * p;
+      ), m = n.intensityWeight, g = m * f + (1 - m) * u, p = 1 - g;
+      a[d] = i[d] * g + e[d] * p;
     } else
       a[d] = i[d] * u + e[d] * h;
 }
 function ah(i, e, t, s, r, a, n, o) {
   const { dimX: l, dimY: c, dimZ: h } = e, u = n.sliceType ?? 0;
-  let d, f, g;
+  let d, f, m;
   if (u === 0)
-    d = l, f = c, g = h - 1;
+    d = l, f = c, m = h - 1;
   else if (u === 1)
-    d = l, f = h, g = c - 1;
+    d = l, f = h, m = c - 1;
   else if (u === 2)
-    d = c, f = h, g = l - 1;
+    d = c, f = h, m = l - 1;
   else
     throw new Error("Invalid slice type. Must be AXIAL, CORONAL, or SAGITTAL");
-  const m = {
+  const g = {
     intensityWeight: n.intensityWeight ?? 0.7,
     binaryThreshold: n.binaryThreshold ?? 0.375,
     intensitySigma: n.intensitySigma ?? 0.1,
@@ -21066,11 +21066,11 @@ function ah(i, e, t, s, r, a, n, o) {
   if (r !== void 0 && a !== void 0) {
     if (r >= a)
       throw new Error("Low slice index must be less than high slice index");
-    if (r < 0 || a > g)
-      throw new Error(`Slice indices out of bounds [0, ${g}]`);
+    if (r < 0 || a > m)
+      throw new Error(`Slice indices out of bounds [0, ${m}]`);
   }
   const p = /* @__PURE__ */ new Map();
-  for (let v = 0; v <= g; v++) {
+  for (let v = 0; v <= m; v++) {
     const A = ts(v, u, i, e);
     for (let x = 0; x < A.length; x++) {
       const w = A[x];
@@ -21087,29 +21087,29 @@ function ah(i, e, t, s, r, a, n, o) {
     const x = r !== void 0 ? Math.max(r, A.min) : A.min, w = a !== void 0 ? Math.min(a, A.max) : A.max;
     if (x >= w || w - x < 2)
       continue;
-    const D = ts(x, u, i, e), b = ts(w, u, i, e), C = new Float32Array(D.length), E = new Float32Array(b.length);
+    const D = ts(x, u, i, e), b = ts(w, u, i, e), y = new Float32Array(D.length), E = new Float32Array(b.length);
     for (let F = 0; F < D.length; F++)
-      C[F] = D[F] === v ? 1 : 0, E[F] = b[F] === v ? 1 : 0;
-    m.applySmoothingToSlices && (Vr(C, d, f), Vr(E, d, f));
+      y[F] = D[F] === v ? 1 : 0, E[F] = b[F] === v ? 1 : 0;
+    g.applySmoothingToSlices && (Vr(y, d, f), Vr(E, d, f));
     for (let F = x + 1; F < w; F++) {
       const M = new Float32Array(d * f);
-      if (m.useIntensityGuided && t) {
+      if (g.useIntensityGuided && t) {
         const S = is(x, u, t, e, s), T = is(w, u, t, e, s), k = is(F, u, t, e, s);
         nh(
-          C,
+          y,
           E,
           F,
           x,
           w,
           M,
-          m,
+          g,
           S,
           T,
           k
         );
       } else
-        rh(C, E, F, x, w, M);
-      ih(M, F, u, i, e, m.binaryThreshold, v);
+        rh(y, E, F, x, w, M);
+      ih(M, F, u, i, e, g.binaryThreshold, v);
     }
   }
   o();
@@ -23331,13 +23331,13 @@ function a0(i) {
 function o0(i) {
   const e = i.hdr.dims, t = i.permRAS, s = e[1] * e[2] * e[3], r = new Int16Array(s), a = [0, 0, 0];
   for (let f = 0; f < 3; f++)
-    for (let g = 0; g < 3; g++)
-      Math.abs(t[f]) - 1 === g && (a[g] = f * Math.sign(t[f]));
+    for (let m = 0; m < 3; m++)
+      Math.abs(t[f]) - 1 === m && (a[m] = f * Math.sign(t[f]));
   let n = 1;
   const o = [1, 1, 1], l = [!1, !1, !1];
   for (let f = 0; f < a.length; f++)
-    for (let g = 0; g < a.length; g++)
-      Math.abs(a[g]) === f && (o[g] = n, (a[g] < 0 || Object.is(a[g], -0)) && (l[g] = !0), n *= e[g + 1]);
+    for (let m = 0; m < a.length; m++)
+      Math.abs(a[m]) === f && (o[m] = n, (a[m] < 0 || Object.is(a[m], -0)) && (l[m] = !0), n *= e[m + 1]);
   let c = j.range(0, e[1] - 1, 1);
   l[0] && (c = j.range(e[1] - 1, 0, -1));
   for (let f = 0; f < e[1]; f++)
@@ -23352,9 +23352,9 @@ function o0(i) {
     u[f] *= o[2];
   let d = 0;
   for (let f = 0; f < e[3]; f++)
-    for (let g = 0; g < e[2]; g++)
-      for (let m = 0; m < e[1]; m++)
-        r[c[m] + h[g] + u[f]] = i.img[d], d++;
+    for (let m = 0; m < e[2]; m++)
+      for (let g = 0; g < e[1]; g++)
+        r[c[g] + h[m] + u[f]] = i.img[d], d++;
   return r;
 }
 function l0(i) {
@@ -24021,21 +24021,21 @@ var { version: Yr } = vl, ut = [
             s[1]
           ], o = this.canvasPos2frac([this.uiData.angleFirstLine[0], this.uiData.angleFirstLine[1]]), l = this.canvasPos2frac([this.uiData.angleFirstLine[2], this.uiData.angleFirstLine[3]]), c = this.canvasPos2frac([n[0], n[1]]), h = this.canvasPos2frac([n[2], n[3]]);
           if (o[0] >= 0 && l[0] >= 0 && c[0] >= 0 && h[0] >= 0) {
-            const u = this.frac2mm(o), d = this.frac2mm(l), f = this.frac2mm(c), g = this.frac2mm(h), m = {
+            const u = this.frac2mm(o), d = this.frac2mm(l), f = this.frac2mm(c), m = this.frac2mm(h), g = {
               firstLineMM: {
                 start: G(u[0], u[1], u[2]),
                 end: G(d[0], d[1], d[2])
               },
               secondLineMM: {
                 start: G(f[0], f[1], f[2]),
-                end: G(g[0], g[1], g[2])
+                end: G(m[0], m[1], m[2])
               },
               sliceIndex: a.sliceIndex,
               sliceType: a.sliceType,
               slicePosition: a.slicePosition,
               angle: this.calculateAngleBetweenLines(this.uiData.angleFirstLine, n)
             };
-            this.document.completedAngles.push(m);
+            this.document.completedAngles.push(g);
           }
           this.resetAngleMeasurement(), this.uiData.angleState = "complete", this.drawScene();
           return;
@@ -24076,8 +24076,8 @@ var { version: Yr } = vl, ut = [
     if (!c || !h)
       return;
     const u = c.dims[1], d = c.dims[2];
-    for (let m = l[0]; m < l[1]; m++) {
-      const p = m * u * d;
+    for (let g = l[0]; g < l[1]; g++) {
+      const p = g * u * d;
       for (let v = o[0]; v < o[1]; v++) {
         const A = v * u;
         for (let x = n[0]; x < n[1]; x++) {
@@ -24088,8 +24088,8 @@ var { version: Yr } = vl, ut = [
     }
     if (a >= r)
       return;
-    const f = zr(c, a), g = zr(c, r);
-    this.volumes[i].cal_min = f, this.volumes[i].cal_max = g, this.onIntensityChange(this.volumes[i]);
+    const f = zr(c, a), m = zr(c, r);
+    this.volumes[i].cal_min = f, this.volumes[i].cal_max = m, this.onIntensityChange(this.volumes[i]);
   }
   /**
    * Triggers a drag-release callback with voxel, mm, and tile info from the drag gesture.
@@ -24993,8 +24993,8 @@ var { version: Yr } = vl, ut = [
     for (let e = 0; e < i.length; e++) {
       const [t, s, r, a] = i[e].position, n = t + r, o = s + a;
       for (let l = e + 1; l < i.length; l++) {
-        const [c, h, u, d] = i[l].position, f = c + u, g = h + d, m = t < f && n > c, p = s < g && o > h;
-        if (m && p)
+        const [c, h, u, d] = i[l].position, f = c + u, m = h + d, g = t < f && n > c, p = s < m && o > h;
+        if (g && p)
           throw new Error(`Custom layout is invalid. Tile ${e} overlaps with tile ${l}.`);
       }
     }
@@ -25213,32 +25213,32 @@ var { version: Yr } = vl, ut = [
     const t = i.permRAS, s = e[1] * e[2] * e[3];
     this.drawBitmap = new Uint8Array(s), this.opts.is2DSliceShader ? this.drawTexture = this.r8Tex2D(this.drawTexture, tt, this.back.dims, !0) : this.drawTexture = this.r8Tex(this.drawTexture, tt, this.back.dims, !0);
     const r = [0, 0, 0];
-    for (let g = 0; g < 3; g++)
-      for (let m = 0; m < 3; m++)
-        Math.abs(t[g]) - 1 === m && (r[m] = g * Math.sign(t[g]));
+    for (let m = 0; m < 3; m++)
+      for (let g = 0; g < 3; g++)
+        Math.abs(t[m]) - 1 === g && (r[g] = m * Math.sign(t[m]));
     let a = 1;
     const n = [1, 1, 1], o = [!1, !1, !1];
-    for (let g = 0; g < r.length; g++)
-      for (let m = 0; m < r.length; m++)
-        Math.abs(r[m]) === g && (n[m] = a, (r[m] < 0 || Object.is(r[m], -0)) && (o[m] = !0), a *= e[m + 1]);
+    for (let m = 0; m < r.length; m++)
+      for (let g = 0; g < r.length; g++)
+        Math.abs(r[g]) === m && (n[g] = a, (r[g] < 0 || Object.is(r[g], -0)) && (o[g] = !0), a *= e[g + 1]);
     let l = j.range(0, e[1] - 1, 1);
     o[0] && (l = j.range(e[1] - 1, 0, -1));
-    for (let g = 0; g < e[1]; g++)
-      l[g] *= n[0];
+    for (let m = 0; m < e[1]; m++)
+      l[m] *= n[0];
     let c = j.range(0, e[2] - 1, 1);
     o[1] && (c = j.range(e[2] - 1, 0, -1));
-    for (let g = 0; g < e[2]; g++)
-      c[g] *= n[1];
+    for (let m = 0; m < e[2]; m++)
+      c[m] *= n[1];
     let h = j.range(0, e[3] - 1, 1);
     o[2] && (h = j.range(e[3] - 1, 0, -1));
-    for (let g = 0; g < e[3]; g++)
-      h[g] *= n[2];
+    for (let m = 0; m < e[3]; m++)
+      h[m] *= n[2];
     const u = i.img, d = this.drawBitmap;
     let f = 0;
-    for (let g = 0; g < e[3]; g++)
-      for (let m = 0; m < e[2]; m++)
+    for (let m = 0; m < e[3]; m++)
+      for (let g = 0; g < e[2]; g++)
         for (let p = 0; p < e[1]; p++)
-          d[l[p] + c[m] + h[g]] = u[f], f++;
+          d[l[p] + c[g] + h[m]] = u[f], f++;
     return this.drawAddUndoBitmap(), this.refreshDrawing(!1), this.drawScene(), !0;
   }
   /**
@@ -25293,36 +25293,36 @@ var { version: Yr } = vl, ut = [
       let A = e[v] * d + u;
       A = Math.min(Math.max(A, n), o), A = Math.round((A - n) * h), a[A]++;
     }
-    const f = Array(s).fill(0).map(() => Array(s).fill(0)), g = Array(s).fill(0).map(() => Array(s).fill(0));
+    const f = Array(s).fill(0).map(() => Array(s).fill(0)), m = Array(s).fill(0).map(() => Array(s).fill(0));
     for (let v = 1; v < s; ++v)
-      f[v][v] = a[v], g[v][v] = v * a[v];
+      f[v][v] = a[v], m[v][v] = v * a[v];
     for (let v = 1; v < s - 1; ++v)
-      f[1][v + 1] = f[1][v] + a[v + 1], g[1][v + 1] = g[1][v] + (v + 1) * a[v + 1];
+      f[1][v + 1] = f[1][v] + a[v + 1], m[1][v + 1] = m[1][v] + (v + 1) * a[v + 1];
     for (let v = 2; v < s; v++)
       for (let A = v + 1; A < s; A++)
-        f[v][A] = f[1][A] - f[1][v - 1], g[v][A] = g[1][A] - g[1][v - 1];
+        f[v][A] = f[1][A] - f[1][v - 1], m[v][A] = m[1][A] - m[1][v - 1];
     for (let v = 1; v < s; ++v)
       for (let A = v + 1; A < s; A++)
-        f[v][A] !== 0 && (f[v][A] = g[v][A] * g[v][A] / f[v][A]);
-    let m = 0;
+        f[v][A] !== 0 && (f[v][A] = m[v][A] * m[v][A] / f[v][A]);
+    let g = 0;
     const p = [1 / 0, 1 / 0, 1 / 0];
     if (i > 3)
       for (let v = 0; v < s - 3; v++)
         for (let A = v + 1; A < s - 2; A++)
           for (let x = A + 1; x < s - 1; x++) {
             const w = f[0][v] + f[v + 1][A] + f[A + 1][x] + f[x + 1][r];
-            w > m && (p[0] = v, p[1] = A, p[2] = x, m = w);
+            w > g && (p[0] = v, p[1] = A, p[2] = x, g = w);
           }
     else if (i === 3)
       for (let v = 0; v < s - 2; v++)
         for (let A = v + 1; A < s - 1; A++) {
           const x = f[0][v] + f[v + 1][A] + f[A + 1][r];
-          x > m && (p[0] = v, p[1] = A, m = x);
+          x > g && (p[0] = v, p[1] = A, g = x);
         }
     else
       for (let v = 0; v < s - 1; v++) {
         const A = f[0][v] + f[v + 1][r];
-        A > m && (p[0] = v, m = A);
+        A > g && (p[0] = v, g = A);
       }
     return [c(p[0]), c(p[1]), c(p[2])];
   }
@@ -25940,9 +25940,9 @@ var { version: Yr } = vl, ut = [
     for (let c = 0; c < e.dims[3]; c++)
       for (let h = 0; h < e.dims[2]; h++)
         for (let u = 0; u < e.dims[1]; u++) {
-          const d = Math.abs(u - a), f = Math.abs(h - n), g = Math.abs(c - o), m = Math.sqrt(d * d + f * f + g * g);
+          const d = Math.abs(u - a), f = Math.abs(h - n), m = Math.abs(c - o), g = Math.sqrt(d * d + f * f + m * m);
           let p = 0;
-          m < r && (p = 255), s[l++] = 0, s[l++] = p, s[l++] = 0, s[l++] = p * 0.5;
+          g < r && (p = 255), s[l++] = 0, s[l++] = p, s[l++] = 0, s[l++] = p * 0.5;
         }
     return s;
   }
@@ -26268,12 +26268,12 @@ var { version: Yr } = vl, ut = [
         if (l = l.split("/").pop(), typeof s.url == "string") {
           const f = s.url;
           try {
-            const g = await fetch(f);
-            if (!g.ok)
-              throw new Error(`Failed to load file: ${g.statusText}`);
-            n = await g.arrayBuffer();
-          } catch (g) {
-            throw new Error(`Failed to load url ${f}: ${g}`);
+            const m = await fetch(f);
+            if (!m.ok)
+              throw new Error(`Failed to load file: ${m.statusText}`);
+            n = await m.arrayBuffer();
+          } catch (m) {
+            throw new Error(`Failed to load url ${f}: ${m}`);
           }
         }
         const { positions: c, indices: h, colors: u = null } = await this.loaders[r].loader(n);
@@ -26460,21 +26460,21 @@ var { version: Yr } = vl, ut = [
       }
     }
     e.drawBuffers([e.COLOR_ATTACHMENT0]);
-    const f = e.COLOR_ATTACHMENT1, g = n;
+    const f = e.COLOR_ATTACHMENT1, m = n;
     e.readBuffer(f);
-    const m = e.getParameter(e.IMPLEMENTATION_COLOR_READ_FORMAT), p = e.getParameter(e.IMPLEMENTATION_COLOR_READ_TYPE);
-    (m !== e.RED_INTEGER || p !== e.SHORT) && R.debug("readPixels will fail."), r = new Int16Array();
+    const g = e.getParameter(e.IMPLEMENTATION_COLOR_READ_FORMAT), p = e.getParameter(e.IMPLEMENTATION_COLOR_READ_TYPE);
+    (g !== e.RED_INTEGER || p !== e.SHORT) && R.debug("readPixels will fail."), r = new Int16Array();
     const v = this.back.dims[1] * this.back.dims[2], A = new Int16Array(v);
     for (let w = 0; w < this.back.dims[3]; w++)
       e.framebufferTextureLayer(
         e.FRAMEBUFFER,
         f,
         // gl.COLOR_ATTACHMENT1,//COLOR_ATTACHMENT1
-        g,
+        m,
         // strength1,//strength0
         0,
         w
-      ), e.readPixels(0, 0, this.back.dims[1], this.back.dims[2], m, p, A), r = Int16Array.from([...r, ...A]);
+      ), e.readPixels(0, 0, this.back.dims[1], this.back.dims[2], g, p, A), r = Int16Array.from([...r, ...A]);
     let x = r[0];
     for (let w = 0; w < r.length; w++)
       x = Math.max(x, r[w]);
@@ -26508,19 +26508,19 @@ var { version: Yr } = vl, ut = [
     let n = -1, o = -1, l = -1;
     e[0] > i[0] && (n = 1), e[1] > i[1] && (o = 1), e[2] > i[2] && (l = 1);
     let c = i[0], h = i[1], u = i[2];
-    const d = e[0], f = e[1], g = e[2];
+    const d = e[0], f = e[1], m = e[2];
     if (s >= r && s >= a) {
-      let m = 2 * r - s, p = 2 * a - s;
+      let g = 2 * r - s, p = 2 * a - s;
       for (; c !== d; )
-        c += n, m >= 0 && (h += o, m -= 2 * s), p >= 0 && (u += l, p -= 2 * s), m += 2 * r, p += 2 * a, this.drawPt(c, h, u, t);
+        c += n, g >= 0 && (h += o, g -= 2 * s), p >= 0 && (u += l, p -= 2 * s), g += 2 * r, p += 2 * a, this.drawPt(c, h, u, t);
     } else if (r >= s && r >= a) {
-      let m = 2 * s - r, p = 2 * a - r;
+      let g = 2 * s - r, p = 2 * a - r;
       for (; h !== f; )
-        h += o, m >= 0 && (c += n, m -= 2 * r), p >= 0 && (u += l, p -= 2 * r), m += 2 * s, p += 2 * a, this.drawPt(c, h, u, t);
+        h += o, g >= 0 && (c += n, g -= 2 * r), p >= 0 && (u += l, p -= 2 * r), g += 2 * s, p += 2 * a, this.drawPt(c, h, u, t);
     } else {
-      let m = 2 * r - a, p = 2 * s - a;
-      for (; u !== g; )
-        u += l, m >= 0 && (h += o, m -= 2 * a), p >= 0 && (c += n, p -= 2 * a), m += 2 * r, p += 2 * s, this.drawPt(c, h, u, t);
+      let g = 2 * r - a, p = 2 * s - a;
+      for (; u !== m; )
+        u += l, g >= 0 && (h += o, g -= 2 * a), p >= 0 && (c += n, p -= 2 * a), g += 2 * r, p += 2 * s, this.drawPt(c, h, u, t);
     }
   }
   /**
@@ -26533,8 +26533,8 @@ var { version: Yr } = vl, ut = [
     const s = this.back.dims[1], r = this.back.dims[2], a = this.back.dims[3], n = Math.min(Math.max(Math.min(i[0], e[0]), 0), s - 1), o = Math.min(Math.max(Math.min(i[1], e[1]), 0), r - 1), l = Math.min(Math.max(Math.min(i[2], e[2]), 0), a - 1), c = Math.min(Math.max(Math.max(i[0], e[0]), 0), s - 1), h = Math.min(Math.max(Math.max(i[1], e[1]), 0), r - 1), u = Math.min(Math.max(Math.max(i[2], e[2]), 0), a - 1);
     for (let d = l; d <= u; d++)
       for (let f = o; f <= h; f++)
-        for (let g = n; g <= c; g++)
-          this.drawPt(g, f, d, t);
+        for (let m = n; m <= c; m++)
+          this.drawPt(m, f, d, t);
   }
   /**
    * Draw an ellipse from point A to point B (treating them as opposite corners of bounding box)
@@ -26543,12 +26543,12 @@ var { version: Yr } = vl, ut = [
   drawEllipseMask(i, e, t) {
     if (!this.back?.dims)
       throw new Error("back.dims not set");
-    const s = this.back.dims[1], r = this.back.dims[2], a = this.back.dims[3], n = Math.min(Math.max(Math.min(i[0], e[0]), 0), s - 1), o = Math.min(Math.max(Math.min(i[1], e[1]), 0), r - 1), l = Math.min(Math.max(Math.min(i[2], e[2]), 0), a - 1), c = Math.min(Math.max(Math.max(i[0], e[0]), 0), s - 1), h = Math.min(Math.max(Math.max(i[1], e[1]), 0), r - 1), u = Math.min(Math.max(Math.max(i[2], e[2]), 0), a - 1), d = (n + c) / 2, f = (o + h) / 2, g = (l + u) / 2, m = Math.abs(c - n) / 2, p = Math.abs(h - o) / 2, v = Math.abs(u - l) / 2;
+    const s = this.back.dims[1], r = this.back.dims[2], a = this.back.dims[3], n = Math.min(Math.max(Math.min(i[0], e[0]), 0), s - 1), o = Math.min(Math.max(Math.min(i[1], e[1]), 0), r - 1), l = Math.min(Math.max(Math.min(i[2], e[2]), 0), a - 1), c = Math.min(Math.max(Math.max(i[0], e[0]), 0), s - 1), h = Math.min(Math.max(Math.max(i[1], e[1]), 0), r - 1), u = Math.min(Math.max(Math.max(i[2], e[2]), 0), a - 1), d = (n + c) / 2, f = (o + h) / 2, m = (l + u) / 2, g = Math.abs(c - n) / 2, p = Math.abs(h - o) / 2, v = Math.abs(u - l) / 2;
     for (let A = l; A <= u; A++)
       for (let x = o; x <= h; x++)
         for (let w = n; w <= c; w++) {
-          const D = (w - d) / (m + 0.5), b = (x - f) / (p + 0.5), C = (A - g) / (v + 0.5);
-          D * D + b * b + C * C <= 1 && this.drawPt(w, x, A, t);
+          const D = (w - d) / (g + 0.5), b = (x - f) / (p + 0.5), y = (A - m) / (v + 0.5);
+          D * D + b * b + y * y <= 1 && this.drawPt(w, x, A, t);
         }
   }
   /**
@@ -26572,8 +26572,8 @@ var { version: Yr } = vl, ut = [
       for (let p = 0; p < c; p++)
         d[p] = d[p] === u ? 1 : 0;
       this.drawFloodFillCore(d, h, e);
-      const f = s.slice(), g = [], m = [-l, l, -r, r, -1, 1];
-      g.push(...m), e > 6 && g.push(
+      const f = s.slice(), m = [], g = [-l, l, -r, r, -1, 1];
+      m.push(...g), e > 6 && m.push(
         -r - 1,
         -r + 1,
         r - 1,
@@ -26586,7 +26586,7 @@ var { version: Yr } = vl, ut = [
         l + r,
         l - 1,
         l + 1
-      ), e > 18 && g.push(
+      ), e > 18 && m.push(
         -l - r - 1,
         -l - r + 1,
         -l + r - 1,
@@ -26599,12 +26599,12 @@ var { version: Yr } = vl, ut = [
       for (let p = 0; p < c; p++)
         if (d[p] === 2) {
           const v = p % r, A = Math.floor(p % l / r), x = Math.floor(p / l);
-          for (const w of g) {
+          for (const w of m) {
             const D = p + w;
             if (D < 0 || D >= c)
               continue;
-            const b = D % r, C = Math.floor(D % l / r), E = Math.floor(D / l);
-            Math.abs(b - v) > 1 || Math.abs(C - A) > 1 || Math.abs(E - x) > 1 || s[D] === 0 && (f[D] = u);
+            const b = D % r, y = Math.floor(D % l / r), E = Math.floor(D / l);
+            Math.abs(b - v) > 1 || Math.abs(y - A) > 1 || Math.abs(E - x) > 1 || s[D] === 0 && (f[D] = u);
           }
         }
       this.drawBitmap = f, this.drawAddUndoBitmap(), this.refreshDrawing(!0);
@@ -26636,8 +26636,8 @@ var { version: Yr } = vl, ut = [
         const f = u.slice();
         if (f[0] += d[0], f[1] += d[1], f[2] += d[2], f[0] < 0 || f[1] < 0 || f[2] < 0 || f[0] >= s[0] || f[1] >= s[1] || f[2] >= s[2])
           return;
-        const g = n(f);
-        i[g] === 1 && (i[g] = 2, l.push(g));
+        const m = n(f);
+        i[m] === 1 && (i[m] = 2, l.push(m));
       };
       const h = l[0];
       l.shift();
@@ -26679,12 +26679,12 @@ var { version: Yr } = vl, ut = [
     const h = [this.back.dims[1], this.back.dims[2], this.back.dims[3]];
     if (i[0] < 0 || i[1] < 0 || i[2] < 0 || i[0] >= h[0] || i[1] >= h[1] || i[2] >= h[2])
       return;
-    const u = h[0], d = u * h[1], f = d * h[2], g = this.clickToSegmentIsGrowing ? this.drawBitmap : l;
-    if (!g) {
+    const u = h[0], d = u * h[1], f = d * h[2], m = this.clickToSegmentIsGrowing ? this.drawBitmap : l;
+    if (!m) {
       R.error("Could not determine original bitmap state.");
       return;
     }
-    const m = new Uint8Array(f).fill(0);
+    const g = new Uint8Array(f).fill(0);
     let p = -1;
     o && this.drawPenAxCorSag === 0 ? p = 2 : o && this.drawPenAxCorSag === 1 ? p = 1 : o && this.drawPenAxCorSag === 2 && (p = 0);
     function v(M) {
@@ -26702,7 +26702,7 @@ var { version: Yr } = vl, ut = [
       const T = x(S);
       return (T[0] - w[0]) ** 2 + (T[1] - w[1]) ** 2 + (T[2] - w[2]) ** 2 <= D;
     }
-    const C = A(i), E = g[C];
+    const y = A(i), E = m[y];
     if (c && E === 0) {
       R.debug("Grow/Erase Cluster tool requires starting on a masked voxel."), this.clickToSegmentIsGrowing && this.clickToSegmentGrowingBitmap && this.drawBitmap && (this.clickToSegmentGrowingBitmap.set(this.drawBitmap), this.refreshDrawing(!0, !0));
       return;
@@ -26711,60 +26711,60 @@ var { version: Yr } = vl, ut = [
       return;
     let F = NaN;
     if (c && (t === Number.POSITIVE_INFINITY || t === Number.NEGATIVE_INFINITY)) {
-      const M = g.slice();
+      const M = m.slice();
       for (let V = 0; V < f; V++)
         M[V] = M[V] === E && b(V) ? 1 : 0;
-      if (M[C] !== 1) {
+      if (M[y] !== 1) {
         R.error("Seed voxel could not be marked for cluster ID.");
         return;
       }
-      this.drawFloodFillCore(M, C, a);
+      this.drawFloodFillCore(M, y, a);
       const S = this.volumes[0].img2RAS();
       let T = 0, k = 0;
       for (let V = 0; V < f; V++)
         M[V] === 2 && (T += S[V], k++);
-      F = k > 0 ? T / k : S[C], R.debug(`Grow Cluster using mean intensity: ${F.toFixed(2)} from ${k} voxels.`);
+      F = k > 0 ? T / k : S[y], R.debug(`Grow Cluster using mean intensity: ${F.toFixed(2)} from ${k} voxels.`);
       let B = -1 / 0, U = 1 / 0;
       t === Number.POSITIVE_INFINITY && (B = F), t === Number.NEGATIVE_INFINITY && (U = F);
       for (let V = 0; V < f; V++)
         if (M[V] === 2)
-          m[V] = 1;
-        else if (g[V] === 0) {
+          g[V] = 1;
+        else if (m[V] === 0) {
           const N = S[V];
-          N >= B && N <= U && b(V) && (m[V] = 1);
+          N >= B && N <= U && b(V) && (g[V] = 1);
         }
       e = E;
     } else if (t === 0)
       if (c && e === 0) {
         R.debug(`Erase Cluster: Identifying cluster with color ${E}`);
         for (let M = 0; M < f; M++)
-          m[M] = g[M] === E && b(M) ? 1 : 0;
+          g[M] = m[M] === E && b(M) ? 1 : 0;
       } else
         for (let M = 0; M < f; M++)
-          g[M] === E && b(M) && E !== 0 && (m[M] = 1);
+          m[M] === E && b(M) && E !== 0 && (g[M] = 1);
     else {
       const M = this.volumes[0].img2RAS();
-      F = M[C];
+      F = M[y];
       let S = -1 / 0, T = 1 / 0;
       isFinite(s) && isFinite(r) ? (S = s, T = r) : t === Number.POSITIVE_INFINITY ? S = F : t === Number.NEGATIVE_INFINITY && (T = F);
       for (let k = 0; k < f; k++) {
         const B = M[k];
-        B >= S && B <= T && b(k) && (m[k] = 1);
+        B >= S && B <= T && b(k) && (g[k] = 1);
       }
-      e = g[C], e === 0 && (e = this.opts.penValue, (e < 1 || !isFinite(e)) && (e = 1));
+      e = m[y], e === 0 && (e = this.opts.penValue, (e < 1 || !isFinite(e)) && (e = 1));
     }
-    if (m[C] !== 1) {
+    if (g[y] !== 1) {
       let M = !1;
-      if (c && t !== 0 ? E !== 0 && (M = !0) : (E !== 0 || e === 0) && (M = !0), M && b(C))
-        m[C] = 1, R.debug("Forcing seed voxel to 1 in working buffer.");
+      if (c && t !== 0 ? E !== 0 && (M = !0) : (E !== 0 || e === 0) && (M = !0), M && b(y))
+        g[y] = 1, R.debug("Forcing seed voxel to 1 in working buffer.");
       else {
         R.debug("Seed voxel not marked as candidate '1' and not valid originally."), this.clickToSegmentIsGrowing && this.clickToSegmentGrowingBitmap && this.drawBitmap && this.clickToSegmentGrowingBitmap.set(this.drawBitmap);
         return;
       }
     }
-    this.drawFloodFillCore(m, C, a);
+    this.drawFloodFillCore(g, y, a);
     for (let M = 0; M < f; M++)
-      m[M] === 2 ? l[M] = e : this.clickToSegmentIsGrowing && l === this.clickToSegmentGrowingBitmap && (l[M] = g[M]);
+      g[M] === 2 ? l[M] = e : this.clickToSegmentIsGrowing && l === this.clickToSegmentGrowingBitmap && (l[M] = m[M]);
     this.clickToSegmentIsGrowing ? this.refreshDrawing(!0, !0) : (this.drawAddUndoBitmap(), this.refreshDrawing(!0, !1));
   }
   /**
@@ -26782,7 +26782,7 @@ var { version: Yr } = vl, ut = [
       const A = p + v * r;
       i[A] === 0 && (i[A] = 2, h[d] = p, h[d + 1] = v, d = (d + 2) % h.length);
     }
-    function g() {
+    function m() {
       if (u === d)
         return null;
       const p = h[u], v = h[u + 1];
@@ -26792,9 +26792,9 @@ var { version: Yr } = vl, ut = [
       f(p, n), f(p, l);
     for (let p = n + 1; p <= l - 1; p++)
       f(a, p), f(o, p);
-    let m;
-    for (; (m = g()) !== null; ) {
-      const [p, v] = m;
+    let g;
+    for (; (g = m()) !== null; ) {
+      const [p, v] = g;
       f(p - 1, v), f(p + 1, v), f(p, v - 1), f(p, v + 1);
     }
   }
@@ -26819,16 +26819,16 @@ var { version: Yr } = vl, ut = [
       a[p[0] + p[1] * r[0]] = n, a[v[0] + v[1] * r[0]] = n;
       let w = -1, D = -1;
       v[0] > p[0] && (w = 1), v[1] > p[1] && (D = 1);
-      let b = p[0], C = p[1];
+      let b = p[0], y = p[1];
       const E = v[0], F = v[1];
       if (A >= x) {
         let M = 2 * x - A;
         for (; b !== E; )
-          b += w, M >= 0 && (C += D, M -= 2 * A), M += 2 * x, a[b + C * r[0]] = n;
+          b += w, M >= 0 && (y += D, M -= 2 * A), M += 2 * x, a[b + y * r[0]] = n;
       } else {
         let M = 2 * A - x;
-        for (; C !== F; )
-          C += D, M >= 0 && (b += w, M -= 2 * x), M += 2 * A, a[b + C * r[0]] = n;
+        for (; y !== F; )
+          y += D, M >= 0 && (b += w, M -= 2 * x), M += 2 * A, a[b + y * r[0]] = n;
       }
     }
     function l(p) {
@@ -26851,20 +26851,20 @@ var { version: Yr } = vl, ut = [
         const A = v + p * r[0];
         a[A] === 0 && (a[A] = 2);
       }
-    const g = Date.now();
-    this.floodFillSectionFIFO(a, r, h, u), R.debug(`FloodFill ${Date.now() - g}`), n = this.opts.penValue;
-    const m = this.drawPenFillPts[0][3 - (t + s)];
+    const m = Date.now();
+    this.floodFillSectionFIFO(a, r, h, u), R.debug(`FloodFill ${Date.now() - m}`), n = this.opts.penValue;
+    const g = this.drawPenFillPts[0][3 - (t + s)];
     if (!this.drawBitmap)
       throw new Error("drawBitmap undefined");
     if (e === 0) {
-      const p = m * r[0] * r[1];
+      const p = g * r[0] * r[1];
       for (let v = 0; v < r[0] * r[1]; v++)
         a[v] !== 2 && (this.drawBitmap[v + p] = n);
     } else {
       let p = 1;
       const v = this.back.dims[1] * this.back.dims[2];
-      let A = m * this.back.dims[1];
-      e === 2 && (p = this.back.dims[1], A = m);
+      let A = g * this.back.dims[1];
+      e === 2 && (p = this.back.dims[1], A = g);
       let x = 0;
       for (let w = 0; w < r[1]; w++)
         for (let D = 0; D < r[0]; D++)
@@ -27519,12 +27519,12 @@ var { version: Yr } = vl, ut = [
     isNaN(h) && (h = 1);
     let u = l.scl_inter;
     isNaN(u) && (u = 1);
-    const d = this.volumes[e].img, f = d.length, g = new Float32Array(f);
+    const d = this.volumes[e].img, f = d.length, m = new Float32Array(f);
     for (let T = 0; T < f; T++)
-      g[T] = d[T] * h + u;
-    const m = new Uint8Array(f);
+      m[T] = d[T] * h + u;
+    const g = new Uint8Array(f);
     for (let T = 0; T < f; T++)
-      m[T] = 1;
+      g[T] = 1;
     if (t.length > 0)
       for (let T = 0; T < t.length; T++) {
         const k = this.volumes[t[T]].img;
@@ -27533,13 +27533,13 @@ var { version: Yr } = vl, ut = [
           continue;
         }
         for (let B = 0; B < f; B++)
-          (k[B] === 0 || isNaN(k[B])) && (m[B] = 0);
+          (k[B] === 0 || isNaN(k[B])) && (g[B] = 0);
       }
     else if (t.length < 1 && s)
       for (let T = 0; T < f; T++)
-        (this.drawBitmap[T] === 0 || isNaN(this.drawBitmap[T])) && (m[T] = 0);
+        (this.drawBitmap[T] === 0 || isNaN(this.drawBitmap[T])) && (g[T] = 0);
     else if (t.length < 1 && r) {
-      m.fill(0);
+      g.fill(0);
       let T = -1;
       if (a[0] === n[0])
         T = 0;
@@ -27565,22 +27565,22 @@ var { version: Yr } = vl, ut = [
           const se = (ne[B[0]] - U[B[0]]) / V, ue = (ne[B[1]] - U[B[1]]) / N;
           if (se * se + ue * ue <= 1) {
             const Vt = ne[0], Ut = ne[1], Hi = ne[2] * P * L + Ut * P + Vt;
-            m[Hi] = 1;
+            g[Hi] = 1;
           }
         }
       const W = V * c[B[0] + 1], Q = N * c[B[1] + 1];
       o = Math.PI * W * Q;
     }
-    let p = 0, v = 0, A = 0, x = Number.NEGATIVE_INFINITY, w = Number.POSITIVE_INFINITY, D = 0, b = 0, C = 0;
+    let p = 0, v = 0, A = 0, x = Number.NEGATIVE_INFINITY, w = Number.POSITIVE_INFINITY, D = 0, b = 0, y = 0;
     for (let T = 0; T < f; T++) {
-      if (m[T] < 1)
+      if (g[T] < 1)
         continue;
-      const k = g[T];
+      const k = m[T];
       p++;
       let B = v + (k - v) / p;
-      A = A + (k - v) * (k - B), v = B, k !== 0 && (D++, B = b + (k - b) / D, C = C + (k - b) * (k - B), b = B, w = Math.min(k, w), x = Math.max(k, x));
+      A = A + (k - v) * (k - B), v = B, k !== 0 && (D++, B = b + (k - b) / D, y = y + (k - b) * (k - B), b = B, w = Math.min(k, w), x = Math.max(k, x));
     }
-    const E = Math.sqrt(A / (p - 1)), F = Math.sqrt(C / (D - 1)), M = w, S = x;
+    const E = Math.sqrt(A / (p - 1)), F = Math.sqrt(y / (D - 1)), M = w, S = x;
     return p !== D && (w = Math.min(0, w), x = Math.max(0, x)), {
       mean: v,
       stdev: E,
@@ -27626,8 +27626,8 @@ var { version: Yr } = vl, ut = [
     let n = xe(i.toRAS);
     if (e === 0) {
       this.volumeObject3D = Jc(i, this.VOLUME_ID, this.gl), Re(n, n), this.back.matRAS = i.matRAS, this.back.dims = i.dimsRAS, this.back.pixDims = i.pixDimsRAS;
-      const { volScale: b, vox: C } = this.sliceScale(!0);
-      this.volScale = b, this.vox = C, this.volumeObject3D.scale = b, (t.dims[1] > this.uiData.max2D || t.dims[2] > this.uiData.max2D) && R.error("Image dimensions exceed maximum texture size of hardware.");
+      const { volScale: b, vox: y } = this.sliceScale(!0);
+      this.volScale = b, this.vox = y, this.volumeObject3D.scale = b, (t.dims[1] > this.uiData.max2D || t.dims[2] > this.uiData.max2D) && R.error("Image dimensions exceed maximum texture size of hardware.");
       const F = t.dims[1] > this.uiData.max3D || t.dims[2] > this.uiData.max3D || t.dims[3] > this.uiData.max3D;
       if (F && t.datatypeCode === 2304 && t.dims[3] < 2) {
         R.info(`Large RGBA image (>${this.uiData.max3D}) requires Texture2D`), this.opts.is2DSliceShader = !0, a = this.rgbaTex2D(this.volumeTexture, dt, i.dimsRAS, s);
@@ -27654,23 +27654,23 @@ var { version: Yr } = vl, ut = [
       }
       if (F && R.warn(`dimensions exceed 3D limits ${t.dims}`), this.opts.is2DSliceShader = !1, a = this.rgbaTex(this.volumeTexture, dt, i.dimsRAS), !this.renderShader)
         throw new Error("renderShader undefined");
-      this.renderShader.use(this.gl), this.gl.uniform3fv(this.renderShader.uniforms.texVox, C), this.gl.uniform3fv(this.renderShader.uniforms.volScale, b);
+      this.renderShader.use(this.gl), this.gl.uniform3fv(this.renderShader.uniforms.texVox, y), this.gl.uniform3fv(this.renderShader.uniforms.volScale, b);
       const M = this.pickingImageShader;
       M.use(this.gl), this.gl.uniform1i(M.uniforms.volume, 0), this.gl.uniform1i(M.uniforms.colormap, 1), this.gl.uniform1i(M.uniforms.overlay, 2), this.gl.uniform3fv(M.uniforms.volScale, b), R.debug(this.volumeObject3D);
     } else {
       this.back?.dims === void 0 && R.error("Fatal error: Unable to render overlay: background dimensions not defined!");
       const b = this.mm2frac(i.mm000, 0, !0);
-      let C = this.mm2frac(i.mm100, 0, !0), E = this.mm2frac(i.mm010, 0, !0), F = this.mm2frac(i.mm001, 0, !0);
-      C = de(C, C, b), E = de(E, E, b), F = de(F, F, b), n = Le(
-        C[0],
+      let y = this.mm2frac(i.mm100, 0, !0), E = this.mm2frac(i.mm010, 0, !0), F = this.mm2frac(i.mm001, 0, !0);
+      y = de(y, y, b), E = de(E, E, b), F = de(F, F, b), n = Le(
+        y[0],
         E[0],
         F[0],
         b[0],
-        C[1],
+        y[1],
         E[1],
         F[1],
         b[1],
-        C[2],
+        y[2],
         E[2],
         F[2],
         b[2],
@@ -27778,8 +27778,8 @@ var { version: Yr } = vl, ut = [
       if (c = this.orientShaderRGBU, i.colormapLabel) {
         c = this.orientShaderPAQD;
         let b = !0;
-        for (let C = 0; C < e; C++) {
-          const E = this.volumes[C].hdr.datatypeCode === 2304, F = !!this.volumes[C].colormapLabel;
+        for (let y = 0; y < e; y++) {
+          const E = this.volumes[y].hdr.datatypeCode === 2304, F = !!this.volumes[y].colormapLabel;
           E && F && (b = !1);
         }
         b ? this.paqdTexture = this.rgbaTex(this.paqdTexture, Tt, this.back.dims) : R.warn("Current version only one probabilistic atlas (PAQD) at a time"), a = this.paqdTexture, this.gl.activeTexture(Hr);
@@ -27806,9 +27806,9 @@ var { version: Yr } = vl, ut = [
       h = this.rgbaTex(h, Wr, this.back.dims), this.gl.bindTexture(this.gl.TEXTURE_3D, h);
       const b = this.passThroughShader;
       b.use(this.gl), this.gl.uniform1i(b.uniforms.in3D, 2);
-      for (let C = 0; C < this.back.dims[3]; C++) {
-        const E = 1 / this.back.dims[3] * (C + 0.5);
-        this.gl.uniform1f(b.uniforms.coordZ, E), this.gl.framebufferTextureLayer(this.gl.FRAMEBUFFER, this.gl.COLOR_ATTACHMENT0, h, 0, C), this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
+      for (let y = 0; y < this.back.dims[3]; y++) {
+        const E = 1 / this.back.dims[3] * (y + 0.5);
+        this.gl.uniform1f(b.uniforms.coordZ, E), this.gl.framebufferTextureLayer(this.gl.FRAMEBUFFER, this.gl.COLOR_ATTACHMENT0, h, 0, y), this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
       }
     } else
       h = this.rgbaTex(h, Wr, [2, 2, 2, 2]);
@@ -27832,22 +27832,22 @@ var { version: Yr } = vl, ut = [
     "alphaThreshold" in i && (R.warn("alphaThreshold is deprecated: use colormapType"), i.alphaThreshold === !0 && (i.colormapType = 2), i.alphaThreshold === !1 && (i.colormapType = 1), delete i.alphaThreshold);
     const d = i.colormapType !== 0 ? 1 : 0, f = i.colormapType === 2 ? 1 : 0;
     this.gl.uniform1i(c.uniforms.isAlphaThreshold, f), this.gl.uniform1i(c.uniforms.isColorbarFromZero, d), this.gl.uniform1i(c.uniforms.isAdditiveBlend, this.opts.isAdditiveBlend ? 1 : 0);
-    let g = Number.POSITIVE_INFINITY, m = Number.NEGATIVE_INFINITY;
-    if (i.colormapNegative.length > 0 && (g = Math.min(-i.cal_min, -i.cal_max), m = Math.max(-i.cal_min, -i.cal_max), isFinite(i.cal_minNeg) && isFinite(i.cal_maxNeg) && (g = Math.min(i.cal_minNeg, i.cal_maxNeg), m = Math.max(i.cal_minNeg, i.cal_maxNeg))), e > 0 && this.overlayOutlineWidth > 0) {
-      const b = i.cal_min, C = i.cal_max;
-      let E = Math.min(b, C) <= 0 && Math.max(b, C) >= 0;
-      !E && g < m && (E = g <= 0 && m >= 0), E && R.error("issue1139: do not use overlayOutlineWidth when thresholds cross or touch zero");
+    let m = Number.POSITIVE_INFINITY, g = Number.NEGATIVE_INFINITY;
+    if (i.colormapNegative.length > 0 && (m = Math.min(-i.cal_min, -i.cal_max), g = Math.max(-i.cal_min, -i.cal_max), isFinite(i.cal_minNeg) && isFinite(i.cal_maxNeg) && (m = Math.min(i.cal_minNeg, i.cal_maxNeg), g = Math.max(i.cal_minNeg, i.cal_maxNeg))), e > 0 && this.overlayOutlineWidth > 0) {
+      const b = i.cal_min, y = i.cal_max;
+      let E = Math.min(b, y) <= 0 && Math.max(b, y) >= 0;
+      !E && m < g && (E = m <= 0 && g >= 0), E && R.error("issue1139: do not use overlayOutlineWidth when thresholds cross or touch zero");
     }
     if (!c)
       throw new Error("orientShader undefined");
-    this.gl.uniform1f(c.uniforms.layer ?? null, e), this.gl.uniform1f(c.uniforms.cal_minNeg ?? null, g), this.gl.uniform1f(c.uniforms.cal_maxNeg ?? null, m), this.gl.bindTexture(this.gl.TEXTURE_3D, l), this.gl.uniform1i(c.uniforms.intensityVol ?? null, 9), this.gl.uniform1i(c.uniforms.blend3D ?? null, 10), this.gl.uniform1i(c.uniforms.colormap ?? null, 1), this.gl.uniform1f(c.uniforms.scl_inter ?? null, t.scl_inter), this.gl.uniform1f(c.uniforms.scl_slope ?? null, t.scl_slope), this.gl.uniform1f(c.uniforms.opacity ?? null, r), this.gl.uniform1i(c.uniforms.modulationVol ?? null, 7);
+    this.gl.uniform1f(c.uniforms.layer ?? null, e), this.gl.uniform1f(c.uniforms.cal_minNeg ?? null, m), this.gl.uniform1f(c.uniforms.cal_maxNeg ?? null, g), this.gl.bindTexture(this.gl.TEXTURE_3D, l), this.gl.uniform1i(c.uniforms.intensityVol ?? null, 9), this.gl.uniform1i(c.uniforms.blend3D ?? null, 10), this.gl.uniform1i(c.uniforms.colormap ?? null, 1), this.gl.uniform1f(c.uniforms.scl_inter ?? null, t.scl_inter), this.gl.uniform1f(c.uniforms.scl_slope ?? null, t.scl_slope), this.gl.uniform1f(c.uniforms.opacity ?? null, r), this.gl.uniform1i(c.uniforms.modulationVol ?? null, 7);
     let p = null;
     if (i.modulationImage !== null && i.modulationImage >= 0 && i.modulationImage < this.volumes.length) {
       R.debug("modulating", this.volumes);
       const b = this.volumes[i.modulationImage].hdr;
       if (b.dims[1] === t.dims[1] && b.dims[2] === t.dims[2] && b.dims[3] === t.dims[3]) {
         i.modulateAlpha ? (this.gl.uniform1i(c.uniforms.modulation, 2), this.gl.uniform1f(c.uniforms.opacity, 1)) : this.gl.uniform1i(c.uniforms.modulation, 1), p = this.r8Tex(p, this.gl.TEXTURE7, t.dims, !0), this.gl.activeTexture(this.gl.TEXTURE7), this.gl.bindTexture(this.gl.TEXTURE_3D, p);
-        const C = t.dims[1] * t.dims[2] * t.dims[3], E = new Uint8Array(C), F = this.volumes[i.modulationImage].cal_min, M = 1 / (this.volumes[i.modulationImage].cal_max - F), S = this.volumes[i.modulationImage].img.buffer;
+        const y = t.dims[1] * t.dims[2] * t.dims[3], E = new Uint8Array(y), F = this.volumes[i.modulationImage].cal_min, M = 1 / (this.volumes[i.modulationImage].cal_max - F), S = this.volumes[i.modulationImage].img.buffer;
         let T = new Uint8Array(
           S
         );
@@ -27875,8 +27875,8 @@ var { version: Yr } = vl, ut = [
         const V = 1 / (U - B);
         let N = Math.abs(i.modulateAlpha);
         N = Math.max(N, 1);
-        const P = this.volumes[i.modulationImage].frame4D * C;
-        for (let L = 0; L < C; L++) {
+        const P = this.volumes[i.modulationImage].frame4D * y;
+        for (let L = 0; L < y; L++) {
           const q = T[L + P] * b.scl_slope + b.scl_inter;
           let X = (q - F) * M;
           k && q < 0 && (X = (Math.abs(q) - B) * V), X = Math.min(Math.max(X, 0), 1), X = Math.pow(X, N) * 255, E[L] = X;
@@ -27908,8 +27908,8 @@ var { version: Yr } = vl, ut = [
       v
     ]), R.debug("back dims: ", this.back.dims);
     for (let b = 0; b < this.back.dims[3]; b++) {
-      const C = 1 / this.back.dims[3] * (b + 0.5);
-      this.gl.uniform1f(c.uniforms.coordZ, C), this.gl.framebufferTextureLayer(this.gl.FRAMEBUFFER, this.gl.COLOR_ATTACHMENT0, a, 0, b), this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
+      const y = 1 / this.back.dims[3] * (b + 0.5);
+      this.gl.uniform1f(c.uniforms.coordZ, y), this.gl.framebufferTextureLayer(this.gl.FRAMEBUFFER, this.gl.COLOR_ATTACHMENT0, a, 0, b), this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
     }
     if (this.gl.bindVertexArray(this.unusedVAO), this.gl.deleteTexture(l), this.gl.deleteTexture(p), this.gl.deleteTexture(h), this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height), this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null), this.gl.deleteFramebuffer(o), e === 0 && (this.volumeTexture = a, this.gradientTextureAmount > 0 && !this.useCustomGradientTexture ? (this.gradientGL(t), this.gl.bindVertexArray(this.genericVAO)) : this.gradientTextureAmount <= 0 && (this.gradientTexture !== null && this.gl.deleteTexture(this.gradientTexture), this.gradientTexture = null)), !this.renderShader)
       throw new Error("renderShader undefined");
@@ -28034,22 +28034,22 @@ var { version: Yr } = vl, ut = [
           if (f !== 0) {
             if (l[0] = this.check_previous_slice(i, o, u, h, c, e, t, n), l[0] && (d += 1), t >= 6) {
               if (u) {
-                const g = this.idx(u - 1, h, c, e);
-                f === i[g] && (l[d++] = o[g]);
+                const m = this.idx(u - 1, h, c, e);
+                f === i[m] && (l[d++] = o[m]);
               }
               if (h) {
-                const g = this.idx(u, h - 1, c, e);
-                f === i[g] && (l[d++] = o[g]);
+                const m = this.idx(u, h - 1, c, e);
+                f === i[m] && (l[d++] = o[m]);
               }
             }
             if (t >= 18) {
               if (h && u) {
-                const g = this.idx(u - 1, h - 1, c, e);
-                f === i[g] && (l[d++] = o[g]);
+                const m = this.idx(u - 1, h - 1, c, e);
+                f === i[m] && (l[d++] = o[m]);
               }
               if (h && u < e[0] - 1) {
-                const g = this.idx(u + 1, h - 1, c, e);
-                f === i[g] && (l[d++] = o[g]);
+                const m = this.idx(u + 1, h - 1, c, e);
+                f === i[m] && (l[d++] = o[m]);
               }
             }
             if (d)
@@ -28057,8 +28057,8 @@ var { version: Yr } = vl, ut = [
             else {
               if (o[this.idx(u, h, c, e)] = s, s >= a) {
                 a += r;
-                const g = new Uint32Array(a);
-                g.set(n), n = g;
+                const m = new Uint32Array(a);
+                m.set(n), n = m;
               }
               n[s - 1] = s, s++;
             }
@@ -28153,8 +28153,8 @@ Ooh no!!`);
     c === void 0 && (c = new Uint32Array());
     const [u, d] = this.translate_labels(h, e, c, l);
     if (R.info(t + " neighbor clustering into " + u + " regions in " + (Date.now() - a) + "ms"), r) {
-      const [f, g] = this.largest_original_cluster_labels(o, u, d);
-      return [f, g];
+      const [f, m] = this.largest_original_cluster_labels(o, u, d);
+      return [f, m];
     }
     return [u, d];
   }
@@ -28239,13 +28239,13 @@ Ooh no!!`);
     f[0] = d[0];
     for (let A = 1; A < h; A++)
       f[A] = f[A - 1] + d[A];
-    let g = Math.floor(s * l), m = 0;
-    for (; m < h && !(f[m] >= g); )
-      m++;
+    let m = Math.floor(s * l), g = 0;
+    for (; g < h && !(f[g] >= m); )
+      g++;
     const p = a;
-    for (a = m * u + p, g = l - Math.floor((1 - r) * c), m = 0; m < h - 1 && !(f[m + 1] >= g); )
-      m++;
-    n = m * u + p;
+    for (a = g * u + p, m = l - Math.floor((1 - r) * c), g = 0; g < h - 1 && !(f[g + 1] >= m); )
+      g++;
+    n = g * u + p;
     let v = 1;
     return a !== n && (v = (t - e) / (n - a)), R.info(" Rescale:  min: " + a + "  max: " + n + " scale: " + v), [a, v];
   }
@@ -28278,14 +28278,14 @@ Ooh no!!`);
     const h = G(l[0], l[1], l[2]), u = G(s, s, s);
     let d = Le(-1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1);
     r && (d = Le(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)), Ne(d, d);
-    const f = pe(t, t, t, 1), g = ie();
-    rr(g, d, u);
-    const m = pe(f[0], f[1], f[2], 1);
-    Me(m, m, g), za(m, m, 0.5);
+    const f = pe(t, t, t, 1), m = ie();
+    rr(m, d, u);
+    const g = pe(f[0], f[1], f[2], 1);
+    Me(g, g, m), za(g, g, 0.5);
     const p = le();
-    de(p, h, G(m[0], m[1], m[2]));
+    de(p, h, G(g[0], g[1], g[2]));
     const v = ie();
-    Ne(v, g), v[3] = p[0], v[7] = p[1], v[11] = p[2];
+    Ne(v, m), v[3] = p[0], v[7] = p[1], v[11] = p[2];
     const A = ie();
     Re(A, v);
     const x = ie();
@@ -28343,10 +28343,10 @@ Ooh no!!`);
     if (i.hdr.scl_slope !== 1 || i.hdr.scl_inter !== 0)
       for (let M = 0; M < f; M++)
         d[M] = d[M] * i.hdr.scl_slope + i.hdr.scl_inter;
-    const g = i.hdr.dims[1], m = i.hdr.dims[2], p = i.hdr.dims[3], v = g * m;
+    const m = i.hdr.dims[1], g = i.hdr.dims[2], p = i.hdr.dims[3], v = m * g;
     let A = -1;
     function x(M, S, T) {
-      return M + S * g + T * v;
+      return M + S * m + T * v;
     }
     const w = c[0], D = c[4], b = c[8];
     if (t)
@@ -28358,11 +28358,11 @@ Ooh no!!`);
             if (A++, L < 0 || q < 0 || X < 0)
               continue;
             const O = Math.ceil(V), Y = Math.ceil(N), _ = Math.ceil(P);
-            if (O >= g || Y >= m || _ >= p)
+            if (O >= m || Y >= g || _ >= p)
               continue;
             const W = V - L, Q = N - q, J = P - X, ee = 1 - W, re = 1 - Q, ne = 1 - J, se = x(L, q, X);
             let ue = 0;
-            ue += d[se] * ee * re * ne, ue += d[se + v] * ee * re * J, ue += d[se + g] * ee * Q * ne, ue += d[se + g + v] * ee * Q * J, ue += d[se + 1] * W * re * ne, ue += d[se + 1 + v] * W * re * J, ue += d[se + 1 + g] * W * Q * ne, ue += d[se + 1 + g + v] * W * Q * J, u[A] = ue;
+            ue += d[se] * ee * re * ne, ue += d[se + v] * ee * re * J, ue += d[se + m] * ee * Q * ne, ue += d[se + m + v] * ee * Q * J, ue += d[se + 1] * W * re * ne, ue += d[se + 1 + v] * W * re * J, ue += d[se + 1 + m] * W * Q * ne, ue += d[se + 1 + m + v] * W * Q * J, u[A] = ue;
           }
         }
     else
@@ -28371,14 +28371,14 @@ Ooh no!!`);
           const T = S * c[1] + M * c[2] + c[3], k = S * c[5] + M * c[6] + c[7], B = S * c[9] + M * c[10] + c[11];
           for (let U = 0; U < 256; U++) {
             const V = Math.round(U * w + T), N = Math.round(U * D + k), P = Math.round(U * b + B);
-            A++, !(V < 0 || N < 0 || P < 0) && (V >= g || N >= m || P >= p || (u[A] = d[x(V, N, P)]));
+            A++, !(V < 0 || N < 0 || P < 0) && (V >= m || N >= g || P >= p || (u[A] = d[x(V, N, P)]));
           }
         }
-    let C = 0;
-    r && (C = NaN);
+    let y = 0;
+    r && (y = NaN);
     let E = new Uint8Array();
     if (s) {
-      const M = await this.getScale(i, 0, 1, C), S = await this.scalecropFloat32(u, 0, 1, M[0], M[1]);
+      const M = await this.getScale(i, 0, 1, y), S = await this.scalecropFloat32(u, 0, 1, M[0], M[1]);
       E = await this.createNiftiArray(
         [256, 256, 256],
         [1, 1, 1],
@@ -28387,7 +28387,7 @@ Ooh no!!`);
         new Uint8Array(S.buffer)
       );
     } else {
-      const M = await this.getScale(i, 0, 255, C), S = await this.scalecropUint8(u, 0, 255, M[0], M[1]);
+      const M = await this.getScale(i, 0, 255, y), S = await this.scalecropUint8(u, 0, 255, M[0], M[1]);
       E = await this.createNiftiArray(
         [256, 256, 256],
         [1, 1, 1],
@@ -28870,12 +28870,12 @@ Ooh no!!`);
       }
     if (e.length < 4)
       return;
-    const [t, s, r, a] = this.getBoundsRegion(), o = 100 / i[0] * e[2], l = Math.max(Math.round(o * 0.1), 2), c = Number(this.opts.rulerWidth), h = Math.floor(e[0] + 0.5 * e[2] - 0.5 * o), u = Math.floor(e[1] + e[3] - l) + 0.5 * c, d = Math.max(t, h), f = Math.min(t + r, h + o), g = Math.min(s + a, u);
+    const [t, s, r, a] = this.getBoundsRegion(), o = 100 / i[0] * e[2], l = Math.max(Math.round(o * 0.1), 2), c = Number(this.opts.rulerWidth), h = Math.floor(e[0] + 0.5 * e[2] - 0.5 * o), u = Math.floor(e[1] + e[3] - l) + 0.5 * c, d = Math.max(t, h), f = Math.min(t + r, h + o), m = Math.min(s + a, u);
     if (f <= d)
       return;
-    const m = [d, g, f, g];
+    const g = [d, m, f, m];
     let p = [0, 0, 0, 1];
-    this.opts.rulerColor[0] + this.opts.rulerColor[1] + this.opts.rulerColor[2] < 0.8 && (p = [1, 1, 1, 1]), this.drawRuler10cm(m, p, c + 1), this.drawRuler10cm(m, this.opts.rulerColor, c);
+    this.opts.rulerColor[0] + this.opts.rulerColor[1] + this.opts.rulerColor[2] < 0.8 && (p = [1, 1, 1, 1]), this.drawRuler10cm(g, p, c + 1), this.drawRuler10cm(g, this.opts.rulerColor, c);
   }
   /**
    * Draws a 10cm ruler at specified coordinates with given color and width.
@@ -28952,13 +28952,13 @@ Ooh no!!`);
    */
   drawMeasurementTool(i, e = !0) {
     function t(c, h, u, d, f) {
-      const g = c - u, m = h - d;
-      if (g === 0 && m === 0)
+      const m = c - u, g = h - d;
+      if (m === 0 && g === 0)
         return {
           origin: [u + f, d],
           terminus: [u + f, d]
         };
-      const p = Math.sqrt(g * g + m * m), v = f * g / p, A = f * m / p;
+      const p = Math.sqrt(m * m + g * g), v = f * m / p, A = f * g / p;
       return {
         origin: [c + v, h + A],
         // next to start point
@@ -28986,24 +28986,24 @@ Ooh no!!`);
       const d = ei(u);
       let f = 2;
       d > 9 && (f = 1), d > 99 && (f = 0);
-      let g = d.toFixed(f);
-      this.opts.showMeasureUnits && (g = `${g} mm`);
-      let m = i;
+      let m = d.toFixed(f);
+      this.opts.showMeasureUnits && (m = `${m} mm`);
+      let g = i;
       const [p, v, A, x] = i, { origin: w, terminus: D } = t(p, v, A, x, 30);
       switch (this.opts.measureTextJustify) {
         case "start":
-          m = [...w, ...w.map((b) => b + 1)];
+          g = [...w, ...w.map((b) => b + 1)];
           break;
         case "end":
-          m = m = [...D, ...D.map((b) => b + 1)];
+          g = g = [...D, ...D.map((b) => b + 1)];
           break;
         default:
-          m = i;
+          g = i;
           break;
       }
       e && this.drawTextBetween(
-        m,
         g,
+        m,
         this.opts.measureTextHeight / 0.06,
         // <- TODO measureFontPx
         this.opts.measureTextColor
@@ -29456,22 +29456,22 @@ Ooh no!!`);
     let f = 0;
     if (a && r < 0 && t ? (f = r, r = 0) : a && s > 0 && (f = s, s = 0), s === r || n < 1)
       return;
-    const g = Math.abs(r - s);
-    let [m, p] = Gr(s, r);
-    p < s && (p += m);
+    const m = Math.abs(r - s);
+    let [g, p] = Gr(s, r);
+    p < s && (p += g);
     function v(b) {
       return b.toFixed(6).replace(/\.?0*$/, "");
     }
     let A = p;
     const x = [0, h[1] + h[3] - n * 0.5, 2, n * 0.75], w = x[1] + x[3], D = 1;
     for (; A <= r; ) {
-      x[0] = h[0] + (A - s) / g * h[2], this.drawRect(x);
+      x[0] = h[0] + (A - s) / m * h[2], this.drawRect(x);
       const b = v(D * A);
-      this.drawTextBelow([x[0], w], b), A += m;
+      this.drawTextBelow([x[0], w], b), A += g;
     }
     if (f !== 0) {
       const b = [
-        h[0] + (f - s) / g * h[2],
+        h[0] + (f - s) / m * h[2],
         h[1] - h[3] * 0.25,
         2,
         h[3] * 1.5
@@ -29682,15 +29682,15 @@ Ooh no!!`);
     );
     let c = e[0], h = t[0], u = [c, e[1]], d = [h - c, t[1] - e[1]];
     o && (u = [t[0], e[1]], d = [e[0] - t[0], t[1] - e[1]], c = -t[0], h = -e[0]);
-    const f = 2 * Math.max(Math.abs(e[2]), Math.abs(t[2])), g = ie();
-    let m = 0.01, p = f * 8;
+    const f = 2 * Math.max(Math.abs(e[2]), Math.abs(t[2])), m = ie();
+    let g = 0.01, p = f * 8;
     if (s !== 1 / 0) {
       let b = o;
       n === 0 && (a === 0 || a === 180) && (b = !b);
-      let C = f * 1.8 - r;
-      b || (C = f * 1.8 + r), p = C - s, m = C + s;
+      let y = f * 1.8 - r;
+      b || (y = f * 1.8 + r), p = y - s, g = y + s;
     }
-    hi(g, c, h, e[1], t[1], p, m);
+    hi(m, c, h, e[1], t[1], p, g);
     const v = ie();
     v[0] = -1;
     const A = G(0, 0, -f * 1.8);
@@ -29700,7 +29700,7 @@ Ooh no!!`);
     const w = ie();
     Ne(w, x);
     const D = ie();
-    return mt(D, g, v), {
+    return mt(D, m, v), {
       modelViewProjectionMatrix: D,
       modelMatrix: v,
       normalMatrix: w,
@@ -29850,8 +29850,8 @@ Ooh no!!`);
       h = !0;
       const A = c.canvas.width / r.fovMM[0], x = c.canvas.height / r.fovMM[1], w = Math.min(A, x), D = A / w, b = x / w;
       r.fovMM[0] *= D, r.fovMM[1] *= b;
-      let C = (r.mnMM[0] + r.mxMM[0]) * 0.5;
-      r.mnMM[0] = C - r.fovMM[0] * 0.5, r.mxMM[0] = C + r.fovMM[0] * 0.5, C = (r.mnMM[1] + r.mxMM[1]) * 0.5, r.mnMM[1] = C - r.fovMM[1] * 0.5, r.mxMM[1] = C + r.fovMM[1] * 0.5, i = [0, 0, c.canvas.width, c.canvas.height];
+      let y = (r.mnMM[0] + r.mxMM[0]) * 0.5;
+      r.mnMM[0] = y - r.fovMM[0] * 0.5, r.mxMM[0] = y + r.fovMM[0] * 0.5, y = (r.mnMM[1] + r.mxMM[1]) * 0.5, r.mnMM[1] = y - r.fovMM[1] * 0.5, r.mxMM[1] = y + r.fovMM[1] * 0.5, i = [0, 0, c.canvas.width, c.canvas.height];
     }
     if (isNaN(t)) {
       const A = this.scene.pan2Dxyzmm, x = this.swizzleVec3MM(G(A[0], A[1], A[2]), e), w = this.scene.pan2Dxyzmm[3];
@@ -29861,9 +29861,9 @@ Ooh no!!`);
     e === 1 && (u = 1), e === 2 && (u = 0);
     let d = this.scene.crosshairPos[u], f = this.frac2mm(this.scene.crosshairPos);
     !isNaN(t) && t !== 1 / 0 && t !== -1 / 0 && (f = this.frac2mm([0.5, 0.5, 0.5]), f[u] = t, d = this.mm2frac(f)[u]);
-    const g = f[u], m = c.canvas.height - i[1] - i[3], p = [
+    const m = f[u], g = c.canvas.height - i[1] - i[3], p = [
       i[0],
-      m,
+      g,
       i[2],
       i[3]
     ];
@@ -29917,7 +29917,7 @@ Ooh no!!`);
         r.mnMM,
         r.mxMM,
         this.opts.meshThicknessOn2D,
-        g,
+        m,
         l,
         o,
         n
@@ -30164,20 +30164,20 @@ Ooh no!!`);
       h = 0, u = 1;
     }
     h >= u && (u = h + 1), this.drawRect(i.LTWH, i.backColor);
-    const [g, m, p] = Gr(h, u), v = Math.max(0, -1 * Math.floor(Math.log(g) / Math.log(10)));
-    h = Math.min(m, h), u = Math.max(p, u);
+    const [m, g, p] = Gr(h, u), v = Math.max(0, -1 * Math.floor(Math.log(m) / Math.log(10)));
+    h = Math.min(g, h), u = Math.max(p, u);
     function A(O) {
       return O.toFixed(6).replace(/\.?0*$/, "");
     }
     let x = this.fontPx * 0.7;
-    const w = s / this.uiData.dpr, D = r / this.uiData.dpr, b = w * D, C = 800 * 600;
-    b < C ? x = 0 : x = Math.max(x, this.opts.fontMinPx);
+    const w = s / this.uiData.dpr, D = r / this.uiData.dpr, b = w * D, y = 800 * 600;
+    b < y ? x = 0 : x = Math.max(x, this.opts.fontMinPx);
     const E = x / this.fontPx;
-    let F = 0, M = m;
+    let F = 0, M = g;
     if (x > 0)
       for (; M <= u; ) {
         const O = M.toFixed(v), Y = this.textWidth(x, O);
-        F = Math.max(Y, F), M += g;
+        F = Math.max(Y, F), M += m;
       }
     const S = 0.05, T = Math.abs(i.LTWH[2]), k = Math.abs(i.LTWH[3]), B = [
       i.LTWH[0] + S * T + F,
@@ -30187,13 +30187,13 @@ Ooh no!!`);
     ];
     this.graph.LTWH = i.LTWH, this.graph.plotLTWH = B, this.drawRect(B, this.opts.backColor);
     const U = u - h, V = B[3] / U, N = B[2] / (i.lines[0].length - 1), P = B[1] + B[3];
-    M = m + 0.5 * g;
+    M = g + 0.5 * m;
     const L = i.lineColor.slice();
     for (L[3] = 0.5 * i.lineColor[3]; M <= u; ) {
       const O = P - (M - h) * V;
-      this.drawLine([B[0], O, B[0] + B[2], O], i.gridLineThickness, L), M += g;
+      this.drawLine([B[0], O, B[0] + B[2], O], i.gridLineThickness, L), M += m;
     }
-    M = m;
+    M = g;
     const q = 0.5 * i.gridLineThickness;
     for (; M <= u; ) {
       const O = P - (M - h) * V;
@@ -30203,7 +30203,7 @@ Ooh no!!`);
         i.lineColor
       );
       const Y = M.toFixed(v);
-      x > 0 && this.drawTextLeft([B[0] - 6, O], Y, E, i.textColor), M += g;
+      x > 0 && this.drawTextLeft([B[0] - 6, O], Y, E, i.textColor), M += m;
     }
     let X = 1;
     for (; i.lines[0].length / X > 20; )
@@ -30364,30 +30364,30 @@ Ooh no!!`);
     let c = l(o[0], n) + "×" + l(o[1], n) + "×" + l(o[2], n);
     if (this.volumes.length > 0 && this.volumes[0].nFrame4D > 0 && (c += "×" + l(this.volumes[0].frame4D)), this.volumes.length > 0) {
       let u = " = ";
-      for (let g = 0; g < this.volumes.length; g++) {
-        const m = this.volumes[g].mm2vox(o);
-        let p = this.volumes[g].getValue(m[0], m[1], m[2], this.volumes[g].frame4D);
-        if (n = 3, this.volumes[g].colormapLabel !== null) {
+      for (let m = 0; m < this.volumes.length; m++) {
+        const g = this.volumes[m].mm2vox(o);
+        let p = this.volumes[m].getValue(g[0], g[1], g[2], this.volumes[m].frame4D);
+        if (n = 3, this.volumes[m].colormapLabel !== null) {
           const v = Math.round(p);
-          if (this.volumes[g].hdr.intent_code === 1002 && this.volumes[g].hdr.datatypeCode === 2304) {
-            const A = this.volumes[g].getValues(m[0], m[1], m[2], this.volumes[g].frame4D);
+          if (this.volumes[m].hdr.intent_code === 1002 && this.volumes[m].hdr.datatypeCode === 2304) {
+            const A = this.volumes[m].getValues(g[0], g[1], g[2], this.volumes[m].frame4D);
             if (A[2] > 2) {
               const x = Math.round(100 * A[2] / 255);
-              if (u += this.volumes[g].colormapLabel.labels[A[0]] + ` (${x}%)`, A[3] > 2) {
+              if (u += this.volumes[m].colormapLabel.labels[A[0]] + ` (${x}%)`, A[3] > 2) {
                 const w = Math.round(100 * A[3] / 255);
-                u += " " + this.volumes[g].colormapLabel.labels[A[1]] + ` (${w}%)`;
+                u += " " + this.volumes[m].colormapLabel.labels[A[1]] + ` (${w}%)`;
               }
             }
-          } else v >= 0 && this.volumes[g].colormapLabel.labels && v < this.volumes[g].colormapLabel.labels.length ? u += this.volumes[g].colormapLabel.labels[v] : u += "undefined(" + l(p, n) + ")";
+          } else v >= 0 && this.volumes[m].colormapLabel.labels && v < this.volumes[m].colormapLabel.labels.length ? u += this.volumes[m].colormapLabel.labels[v] : u += "undefined(" + l(p, n) + ")";
         } else
           u += l(p, n);
-        this.volumes[g].imaginary && (p = this.volumes[g].getValue(m[0], m[1], m[2], this.volumes[g].frame4D, !0), p >= 0 && (u += "+"), u += l(p, n)), u += "   ";
+        this.volumes[m].imaginary && (p = this.volumes[m].getValue(g[0], g[1], g[2], this.volumes[m].frame4D, !0), p >= 0 && (u += "+"), u += l(p, n)), u += "   ";
       }
       c += u;
       const d = this.back.dimsRAS, f = d[1] * d[2] * d[3];
       if (this.drawBitmap && this.drawBitmap.length === f) {
-        const g = this.frac2vox(this.scene.crosshairPos), m = g[0] + g[1] * d[1] + g[2] * d[1] * d[2];
-        c += " " + this.drawLut.labels[this.drawBitmap[m]];
+        const m = this.frac2vox(this.scene.crosshairPos), g = m[0] + m[1] * d[1] + m[2] * d[1] * d[2];
+        c += " " + this.drawLut.labels[this.drawBitmap[g]];
       }
     }
     const h = {
@@ -30397,10 +30397,10 @@ Ooh no!!`);
       frac: this.scene.crosshairPos,
       xy: [this.mousePos[0], this.mousePos[1]],
       values: this.volumes.map((u) => {
-        const d = this.frac2mm(this.scene.crosshairPos, 0, !0), f = u.mm2vox(d), g = u.getValue(f[0], f[1], f[2], u.frame4D);
+        const d = this.frac2mm(this.scene.crosshairPos, 0, !0), f = u.mm2vox(d), m = u.getValue(f[0], f[1], f[2], u.frame4D);
         return {
           name: u.name,
-          value: g,
+          value: m,
           id: u.id,
           mm: d,
           vox: f
@@ -30491,23 +30491,23 @@ Ooh no!!`);
   draw3DLabel(i, e, t, s, r, a, n, o = 1) {
     const l = i.text, c = e[0], h = e[1], u = this.fontPx * o, d = this.textHeight(i.style.textScale, l) * u;
     if (i.style.lineWidth > 0 && Array.isArray(i.points) && this.drawLabelLine(i, [c, h + d], t, s, n), i.style.bulletScale) {
-      const m = i.style.bulletScale * d, p = d - m, v = h + p / 2 + m / 2, A = c + (r - m) / 2;
-      this.drawCircle([A, v, m, m], i.style.bulletColor);
+      const g = i.style.bulletScale * d, p = d - g, v = h + p / 2 + g / 2, A = c + (r - g) / 2;
+      this.drawCircle([A, v, g, g], i.style.bulletColor);
     }
     let f = c;
     if (a)
       if (i.style.textAlignment !== "left") {
-        const m = this.textWidth(i.style.textScale, i.text) * u;
+        const g = this.textWidth(i.style.textScale, i.text) * u;
         if (i.style.textAlignment === "right")
-          f = c + a - u * 1.5 - m;
+          f = c + a - u * 1.5 - g;
         else {
           const p = a - (r || u);
-          f += (p - m) / 2;
+          f += (p - g) / 2;
         }
       } else
         f += r;
-    const g = i.style.textScale;
-    this.drawText([f, h], l, g, i.style.textColor);
+    const m = i.style.textScale;
+    this.drawText([f, h], l, m, i.style.textColor);
   }
   /**
    * Render all visible 3D labels in the legend panel, handling font scaling and layering.
@@ -30541,8 +30541,8 @@ Ooh no!!`);
         t,
         this.legendFontScaling
       );
-      const g = this.fontPx * f.style.textScale, m = this.textHeight(g, f.text) * this.legendFontScaling;
-      h += m, h += n / 2;
+      const m = this.fontPx * f.style.textScale, g = this.textHeight(m, f.text) * this.legendFontScaling;
+      h += g, h += n / 2;
     }
     t || (a.depthFunc(d), u && a.enable(a.BLEND));
   }
@@ -30586,14 +30586,14 @@ Ooh no!!`);
       leftTopMM: [],
       fovMM: [c0(t), 0]
     });
-    const g = [u[0], n.canvas.height - u[3] - u[1], u[2], u[3]];
-    if (u[1] = n.canvas.height - u[3] - u[1], n.clear(n.DEPTH_BUFFER_BIT), n.enable(n.DEPTH_TEST), n.depthFunc(n.ALWAYS), n.depthMask(!0), this.draw3DLabels(e, f, !1), this.gl.viewport(g[0], g[1], g[2], g[3]), this.volumes.length > 0 && (this.updateInterpolation(0, !0), this.updateInterpolation(1, !0), this.drawImage3D(e, r, a)), this.updateInterpolation(0), this.updateInterpolation(1), d || this.drawCrosshairs3D(!0, 1, e), this.drawMesh3D(!0, 1, e, t, s), this.uiData.mouseDepthPicker) {
+    const m = [u[0], n.canvas.height - u[3] - u[1], u[2], u[3]];
+    if (u[1] = n.canvas.height - u[3] - u[1], n.clear(n.DEPTH_BUFFER_BIT), n.enable(n.DEPTH_TEST), n.depthFunc(n.ALWAYS), n.depthMask(!0), this.draw3DLabels(e, f, !1), this.gl.viewport(m[0], m[1], m[2], m[3]), this.volumes.length > 0 && (this.updateInterpolation(0, !0), this.updateInterpolation(1, !0), this.drawImage3D(e, r, a)), this.updateInterpolation(0), this.updateInterpolation(1), d || this.drawCrosshairs3D(!0, 1, e), this.drawMesh3D(!0, 1, e, t, s), this.uiData.mouseDepthPicker) {
       this.depthPicker(u, e), this.createOnLocationChange(), this.draw3D(f, e, t, s, r, a);
       return;
     }
     this.opts.meshXRay > 0 && this.drawMesh3D(!1, this.opts.meshXRay, e, t, s), this.gl.disable(this.gl.CULL_FACE), this.draw3DLabels(e, f, !1), n.viewport(u[0], u[1], u[2], u[3]), d || this.drawCrosshairs3D(!1, 0.15, e), n.viewport(o, l, c, h), this.drawOrientationCube(u, r, a);
-    const m = "azimuth: " + this.scene.renderAzimuth.toFixed(0) + " elevation: " + this.scene.renderElevation.toFixed(0);
-    return this.readyForSync = !0, this.sync(), this.draw3DLabels(e, f, !0), m;
+    const g = "azimuth: " + this.scene.renderAzimuth.toFixed(0) + " elevation: " + this.scene.renderElevation.toFixed(0);
+    return this.readyForSync = !0, this.sync(), this.draw3DLabels(e, f, !0), g;
   }
   /**
    * Render all visible 3D meshes with proper blending, depth, and shader settings.
@@ -30790,11 +30790,11 @@ Ooh no!!`);
         const u = (n[0] - this.screenSlices[r].leftTopMM[0]) / this.screenSlices[r].fovMM[0], d = (n[1] - this.screenSlices[r].leftTopMM[1]) / this.screenSlices[r].fovMM[1];
         if (u >= 0 && u <= 1 && d >= 0 && d <= 1) {
           const f = this.screenSlices[r].leftTopWidthHeight.slice();
-          let g = !1;
-          f[2] < 0 && (g = !0, f[0] += f[2], f[2] = -f[2]);
-          let m = u;
-          g && (m = 1 - u);
-          const p = 1 - d, v = f[0] + m * f[2], A = f[1] + p * f[3];
+          let m = !1;
+          f[2] < 0 && (m = !0, f[0] += f[2], f[2] = -f[2]);
+          let g = u;
+          m && (g = 1 - u);
+          const p = 1 - d, v = f[0] + g * f[2], A = f[1] + p * f[3];
           return { pos: [v, A], tileIndex: r };
         }
       }
@@ -30817,9 +30817,9 @@ Ooh no!!`);
           const d = this.screenSlices[s].leftTopWidthHeight.slice();
           let f = !1;
           d[2] < 0 && (f = !0, d[0] += d[2], d[2] = -d[2]);
-          let g = h;
-          f && (g = 1 - h);
-          const m = 1 - u, p = d[0] + g * d[2], v = d[1] + m * d[3];
+          let m = h;
+          f && (m = 1 - h);
+          const g = 1 - u, p = d[0] + m * d[2], v = d[1] + g * d[3];
           return [p, v];
         }
       }
@@ -30837,8 +30837,8 @@ Ooh no!!`);
         u[2] < 0 && (d = !0, u[0] += u[2], u[2] = -u[2]);
         let f = c;
         d && (f = 1 - c);
-        const g = 1 - h, m = u[0] + f * u[2], p = u[1] + g * u[3];
-        return [m, p];
+        const m = 1 - h, g = u[0] + f * u[2], p = u[1] + m * u[3];
+        return [g, p];
       }
     }
     return null;
@@ -30951,10 +30951,10 @@ Ooh no!!`);
     }
     if (l.length > 0 && e === 0) {
       const d = n, f = 1;
-      for (let g = 0; g < l.length; g++) {
-        const m = this.frac2mm([0.5, 0.5, 0.5]);
-        m[f] = l[g];
-        let p = this.mm2frac(m);
+      for (let m = 0; m < l.length; m++) {
+        const g = this.frac2mm([0.5, 0.5, 0.5]);
+        g[f] = l[m];
+        let p = this.mm2frac(g);
         p = p[f];
         let v = this.frac2mm([0, p, d]);
         v = Ae(v, [0, 1, 2]);
@@ -30964,10 +30964,10 @@ Ooh no!!`);
     }
     if (l.length > 0 && e === 1) {
       const d = n, f = 2;
-      for (let g = 0; g < l.length; g++) {
-        const m = this.frac2mm([0.5, 0.5, 0.5]);
-        m[f] = l[g];
-        let p = this.mm2frac(m);
+      for (let m = 0; m < l.length; m++) {
+        const g = this.frac2mm([0.5, 0.5, 0.5]);
+        g[f] = l[m];
+        let p = this.mm2frac(g);
         p = p[f];
         let v = this.frac2mm([0, d, p]);
         v = Ae(v, [0, 2, 1]);
@@ -30977,10 +30977,10 @@ Ooh no!!`);
     }
     if (l.length > 0 && e === 2) {
       const d = n, f = 2;
-      for (let g = 0; g < l.length; g++) {
-        const m = this.frac2mm([0.5, 0.5, 0.5]);
-        m[f] = l[g];
-        let p = this.mm2frac(m);
+      for (let m = 0; m < l.length; m++) {
+        const g = this.frac2mm([0.5, 0.5, 0.5]);
+        g[f] = l[m];
+        let p = this.mm2frac(g);
         p = p[f];
         let v = this.frac2mm([d, 0, p]);
         v = Ae(v, [1, 2, 0]);
@@ -30990,10 +30990,10 @@ Ooh no!!`);
     }
     if (c.length > 0 && e === 0) {
       const d = n, f = 0;
-      for (let g = 0; g < c.length; g++) {
-        const m = this.frac2mm([0.5, 0.5, 0.5]);
-        m[f] = c[g];
-        let p = this.mm2frac(m);
+      for (let m = 0; m < c.length; m++) {
+        const g = this.frac2mm([0.5, 0.5, 0.5]);
+        g[f] = c[m];
+        let p = this.mm2frac(g);
         p = p[f];
         let v = this.frac2mm([p, 0, d]);
         v = Ae(v, [0, 1, 2]);
@@ -31003,10 +31003,10 @@ Ooh no!!`);
     }
     if (c.length > 0 && e === 1) {
       const d = n, f = 0;
-      for (let g = 0; g < c.length; g++) {
-        const m = this.frac2mm([0.5, 0.5, 0.5]);
-        m[f] = c[g];
-        let p = this.mm2frac(m);
+      for (let m = 0; m < c.length; m++) {
+        const g = this.frac2mm([0.5, 0.5, 0.5]);
+        g[f] = c[m];
+        let p = this.mm2frac(g);
         p = p[f];
         let v = this.frac2mm([p, d, 0]);
         v = Ae(v, [0, 2, 1]);
@@ -31016,10 +31016,10 @@ Ooh no!!`);
     }
     if (c.length > 0 && e === 2) {
       const d = n, f = 1;
-      for (let g = 0; g < c.length; g++) {
-        const m = this.frac2mm([0.5, 0.5, 0.5]);
-        m[f] = c[g];
-        let p = this.mm2frac(m);
+      for (let m = 0; m < c.length; m++) {
+        const g = this.frac2mm([0.5, 0.5, 0.5]);
+        g[f] = c[m];
+        let p = this.mm2frac(g);
         p = p[f];
         let v = this.frac2mm([d, p, 0]);
         v = Ae(v, [1, 2, 0]);
@@ -31080,10 +31080,10 @@ Ooh no!!`);
     const o = [], l = [], c = [], h = i.split(/\s+/);
     let u = 1;
     const d = this.fontPx;
-    let f = 0, g = 0, m = 0;
-    this.volumes[0]?.dims || (m = Math.ceil(this.opts.tileMargin * 0.3));
+    let f = 0, m = 0, g = 0;
+    this.volumes[0]?.dims || (g = Math.ceil(this.opts.tileMargin * 0.3));
     for (let p = 0; p < 2; p++) {
-      let v = !1, A = !1, x = 0, w = 0, D = 0, b = 0, C = !1, E = 0, F = 0, M = 0, S = 0;
+      let v = !1, A = !1, x = 0, w = 0, D = 0, b = 0, y = !1, E = 0, F = 0, M = 0, S = 0;
       for (let B = 0; B < h.length; B++) {
         const U = h[B];
         if (U.includes("X")) {
@@ -31091,7 +31091,7 @@ Ooh no!!`);
           continue;
         }
         if (U.includes("L")) {
-          C = !U.includes("-");
+          y = !U.includes("-");
           continue;
         }
         if (U.includes("H")) {
@@ -31132,23 +31132,23 @@ Ooh no!!`);
         else {
           const L = [
             e + f + u * w,
-            t + g + u * D,
+            t + m + u * D,
             u * S,
             u * N
           ];
-          if (this.fontPx = C ? d : 0, v) {
+          if (this.fontPx = y ? d : 0, v) {
             let q = V < 0 ? -1 / 0 : 1 / 0;
             Object.is(V, -0) && (q = -1 / 0), this.draw2D(L, E, q);
           } else
             this.draw2D(L, E, V);
           A && this.drawCrossLines(this.screenSlices.length - 1, E, o, l, c), v = !1, A = !1;
         }
-        M = S, w += m, x = Math.max(x, N);
+        M = S, w += g, x = Math.max(x, N);
       }
       if (D += x, b = Math.max(b, w + M), b <= 0 || D <= 0)
         break;
-      const T = (s - 2 * this.opts.tileMargin - m) / b, k = (r - 2 * this.opts.tileMargin) / D;
-      u = Math.min(T, k), this.opts.centerMosaic ? (f = Math.floor(0.5 * (s - b * u)), g = Math.floor(0.5 * (r - D * u))) : (f = this.opts.tileMargin, g = this.opts.tileMargin);
+      const T = (s - 2 * this.opts.tileMargin - g) / b, k = (r - 2 * this.opts.tileMargin) / D;
+      u = Math.min(T, k), this.opts.centerMosaic ? (f = Math.floor(0.5 * (s - b * u)), m = Math.floor(0.5 * (r - D * u))) : (f = this.opts.tileMargin, m = this.opts.tileMargin);
     }
     this.fontPx = d;
   }
@@ -31309,22 +31309,22 @@ Ooh no!!`);
         this.screenSlices = [];
         const { volScale: h } = this.sliceScale();
         for (const u of this.customLayout) {
-          const { sliceType: d, position: f, sliceMM: g } = u, m = [
+          const { sliceType: d, position: f, sliceMM: m } = u, g = [
             i + f[0] * t,
             e + f[1] * s,
             f[2] * t,
             f[3] * s
           ];
-          if (m[0] + m[2] > i + t && (R.warn("adjusting slice width because it would have been clipped"), m[2] = i + t - m[0]), m[1] + m[3] > e + s && (R.warn("adjusting slice height because it would have been clipped"), m[3] = e + s - m[1]), d === 4)
-            this.draw3D(m);
+          if (g[0] + g[2] > i + t && (R.warn("adjusting slice width because it would have been clipped"), g[2] = i + t - g[0]), g[1] + g[3] > e + s && (R.warn("adjusting slice height because it would have been clipped"), g[3] = e + s - g[1]), d === 4)
+            this.draw3D(g);
           else {
             const p = this.calculateWidthHeight(
               d,
               h,
-              m[2],
-              m[3]
+              g[2],
+              g[3]
             );
-            this.draw2D(m, d, g ?? NaN, p);
+            this.draw2D(g, d, m ?? NaN, p);
           }
         }
       } else if (this.opts.sliceType === 0 || this.opts.sliceType === 1 || this.opts.sliceType === 2) {
@@ -31337,12 +31337,12 @@ Ooh no!!`);
         this.draw2D([0, 0, 0, 0], this.opts.sliceType, NaN, d);
       } else {
         let h = function(Y, _) {
-          return [(Y - 1) * m + Y * p, (_ - 1) * m + _ * p];
+          return [(Y - 1) * g + Y * p, (_ - 1) * g + _ * p];
         }, u = !1;
         this.opts.multiplanarForceRender ? (u = !0, this.opts.multiplanarForceRender ? this.opts.multiplanarShowRender = 1 : this.opts.multiplanarShowRender = 2, delete this.opts.multiplanarForceRender) : this.opts.multiplanarShowRender === 1 && (u = !0);
-        const d = isFinite(this.drawPenLocation[0]) && this.opts.drawingEnabled, { volScale: f } = this.sliceScale(), g = f.slice();
+        const d = isFinite(this.drawPenLocation[0]) && this.opts.drawingEnabled, { volScale: f } = this.sliceScale(), m = f.slice();
         this.opts.multiplanarEqualSize && (f[0] = 1, f[1] = 1, f[2] = 1), typeof this.opts.multiplanarPadPixels != "number" && R.debug("multiplanarPadPixels must be numeric");
-        const m = parseFloat(`${this.opts.multiplanarPadPixels}`) * this.uiData.dpr;
+        const g = parseFloat(`${this.opts.multiplanarPadPixels}`) * this.uiData.dpr;
         let p = this.opts.tileMargin * this.uiData.dpr;
         p < 0 && (p = 2 * (2 + Math.ceil(this.fontPx)));
         const [v, A, x, w] = this.getBoundsRegion();
@@ -31353,17 +31353,17 @@ Ooh no!!`);
           f[1] + f[2],
           h(2, 2),
           D
-        ), C = Math.max(Math.max(f[1], f[2]), f[0]), E = this.scaleSlice(
+        ), y = Math.max(Math.max(f[1], f[2]), f[0]), E = this.scaleSlice(
           f[0] + f[0] + f[1],
           Math.max(f[1], f[2]),
           h(3, 1),
           D
         ), F = this.scaleSlice(
-          f[0] + f[0] + f[1] + C,
+          f[0] + f[0] + f[1] + y,
           Math.max(f[1], f[2]),
           h(4, 1),
           D
-        ), M = this.scaleSlice(C, f[1] + f[2] + f[2], h(1, 3), D), S = this.scaleSlice(C, f[1] + f[2] + f[2] + C, h(1, 4), D);
+        ), M = this.scaleSlice(y, f[1] + f[2] + f[2], h(1, 3), D), S = this.scaleSlice(y, f[1] + f[2] + f[2] + y, h(1, 4), D);
         let T = !d && (a < 2 || !n), k = !1, B = !1, U = !1;
         this.opts.multiplanarLayout === 1 ? k = !0 : this.opts.multiplanarLayout === 2 ? B = !0 : this.opts.multiplanarLayout === 3 ? U = !0 : M[4] > E[4] && M[4] > b[4] ? k = !0 : E[4] > b[4] ? U = !0 : B = !0;
         let V = b;
@@ -31377,36 +31377,36 @@ Ooh no!!`);
           }
           V[0] += l[0], V[1] += l[1], T = !1;
         }
-        const N = f[0] * V[4] + p, P = f[1] * V[4] + p, L = f[2] * V[4] + p, q = g[0] * V[4], X = g[1] * V[4], O = g[2] * V[4];
+        const N = f[0] * V[4] + p, P = f[1] * V[4] + p, L = f[2] * V[4] + p, q = m[0] * V[4], X = m[1] * V[4], O = m[2] * V[4];
         if (k) {
-          if (this.draw2D([v + V[0], A + V[1], N, P], 0, NaN, [q, X]), this.draw2D([v + V[0], A + V[1] + P + m, N, L], 1, NaN, [
+          if (this.draw2D([v + V[0], A + V[1], N, P], 0, NaN, [q, X]), this.draw2D([v + V[0], A + V[1] + P + g, N, L], 1, NaN, [
             q,
             O
-          ]), this.draw2D([v + V[0], A + V[1] + P + m + L + m, P, L], 2, NaN, [
+          ]), this.draw2D([v + V[0], A + V[1] + P + g + L + g, P, L], 2, NaN, [
             X,
             O
           ]), T) {
-            const Y = C * V[4];
-            this.draw3D([v + V[0], A + V[1] + P + L + L + m * 3, Y, Y]);
+            const Y = y * V[4];
+            this.draw3D([v + V[0], A + V[1] + P + L + L + g * 3, Y, Y]);
           }
         } else if (U) {
-          if (this.draw2D([v + V[0], A + V[1], N, P], 0, NaN, [q, X]), this.draw2D([v + V[0] + N + m, A + V[1], N, L], 1, NaN, [
+          if (this.draw2D([v + V[0], A + V[1], N, P], 0, NaN, [q, X]), this.draw2D([v + V[0] + N + g, A + V[1], N, L], 1, NaN, [
             q,
             O
-          ]), this.draw2D([v + V[0] + N + N + m * 2, A + V[1], P, L], 2, NaN, [
+          ]), this.draw2D([v + V[0] + N + N + g * 2, A + V[1], P, L], 2, NaN, [
             X,
             O
           ]), T) {
-            const Y = C * V[4];
-            this.draw3D([v + V[0] + N + N + P + m * 3, A + V[1], Y, Y]);
+            const Y = y * V[4];
+            this.draw3D([v + V[0] + N + N + P + g * 3, A + V[1], Y, Y]);
           }
-        } else B && (u || (T = !1), this.opts.multiplanarShowRender === 2 && (T = !0), c && (T = !1), this.draw2D([v + V[0], A + V[1] + L + m, N, P], 0, NaN, [
+        } else B && (u || (T = !1), this.opts.multiplanarShowRender === 2 && (T = !0), c && (T = !1), this.draw2D([v + V[0], A + V[1] + L + g, N, P], 0, NaN, [
           q,
           X
-        ]), this.draw2D([v + V[0], A + V[1], N, L], 1, NaN, [q, O]), this.draw2D([v + V[0] + N + m, A + V[1], P, L], 2, NaN, [
+        ]), this.draw2D([v + V[0], A + V[1], N, L], 1, NaN, [q, O]), this.draw2D([v + V[0] + N + g, A + V[1], P, L], 2, NaN, [
           X,
           O
-        ]), T && this.draw3D([v + V[0] + N + m, A + V[1] + L + m, P, P]));
+        ]), T && this.draw3D([v + V[0] + N + g, A + V[1] + L + g, P, P]));
       }
     }
     if (this.opts.isRuler && this.drawRuler(), this.opts.isColorbar && this.drawColorbar(), n && this.drawGraph(), this.uiData.isDragging) {
@@ -31469,12 +31469,12 @@ Ooh no!!`);
     for (let l = 0; l < this.document.completedAngles.length; l++) {
       const c = this.document.completedAngles[l];
       if (this.shouldDrawOnCurrentSlice(c.sliceIndex, c.sliceType, c.slicePosition)) {
-        const u = this.mm2frac(c.firstLineMM.start), d = this.mm2frac(c.firstLineMM.end), f = this.mm2frac(c.secondLineMM.start), g = this.mm2frac(c.secondLineMM.end), m = this.frac2canvasPosWithTile(u, c.sliceType), p = this.frac2canvasPosWithTile(d, c.sliceType), v = this.frac2canvasPosWithTile(f, c.sliceType), A = this.frac2canvasPosWithTile(g, c.sliceType);
-        if (m && p && v && A && m.tileIndex === p.tileIndex && m.tileIndex === v.tileIndex && m.tileIndex === A.tileIndex) {
+        const u = this.mm2frac(c.firstLineMM.start), d = this.mm2frac(c.firstLineMM.end), f = this.mm2frac(c.secondLineMM.start), m = this.mm2frac(c.secondLineMM.end), g = this.frac2canvasPosWithTile(u, c.sliceType), p = this.frac2canvasPosWithTile(d, c.sliceType), v = this.frac2canvasPosWithTile(f, c.sliceType), A = this.frac2canvasPosWithTile(m, c.sliceType);
+        if (g && p && v && A && g.tileIndex === p.tileIndex && g.tileIndex === v.tileIndex && g.tileIndex === A.tileIndex) {
           this.drawMeasurementTool(
             [
-              m.pos[0],
-              m.pos[1],
+              g.pos[0],
+              g.pos[1],
               p.pos[0],
               p.pos[1]
             ],
@@ -31490,8 +31490,8 @@ Ooh no!!`);
           );
           const x = {
             firstLine: [
-              m.pos[0],
-              m.pos[1],
+              g.pos[0],
+              g.pos[1],
               p.pos[0],
               p.pos[1]
             ],
@@ -31575,12 +31575,12 @@ Ooh no!!`);
   }
 };
 ft = /* @__PURE__ */ new WeakMap();
-var v0 = y.from_svg('<svg class="resize-handle svelte-1stq1b1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><line x1="1" y1="9" x2="9" y2="1" stroke="gray" stroke-width="0.5" class="svelte-1stq1b1"></line><line x1="5" y1="9" x2="9" y2="5" stroke="gray" stroke-width="0.5" class="svelte-1stq1b1"></line></svg>'), x0 = y.from_html("<!> <!>", 1), w0 = y.from_html('<div class="placeholder svelte-1stq1b1"></div>'), b0 = y.from_html("<!> <!>", 1);
+var v0 = C.from_svg('<svg class="resize-handle svelte-1stq1b1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><line x1="1" y1="9" x2="9" y2="1" stroke="gray" stroke-width="0.5" class="svelte-1stq1b1"></line><line x1="5" y1="9" x2="9" y2="5" stroke="gray" stroke-width="0.5" class="svelte-1stq1b1"></line></svg>'), x0 = C.from_html("<!> <!>", 1), w0 = C.from_html('<div class="placeholder svelte-1stq1b1"></div>'), b0 = C.from_html("<!> <!>", 1);
 function y0(i, e) {
-  y.push(e, !1);
-  let t = y.prop(e, "height", 8, void 0), s = y.prop(e, "min_height", 8, void 0), r = y.prop(e, "max_height", 8, void 0), a = y.prop(e, "width", 8, void 0), n = y.prop(e, "elem_id", 8, ""), o = y.prop(e, "elem_classes", 24, () => []), l = y.prop(e, "variant", 8, "solid"), c = y.prop(e, "border_mode", 8, "base"), h = y.prop(e, "padding", 8, !0), u = y.prop(e, "type", 8, "normal"), d = y.prop(e, "test_id", 8, void 0), f = y.prop(e, "explicit_call", 8, !1), g = y.prop(e, "container", 8, !0), m = y.prop(e, "visible", 8, !0), p = y.prop(e, "allow_overflow", 8, !0), v = y.prop(e, "overflow_behavior", 8, "auto"), A = y.prop(e, "scale", 8, null), x = y.prop(e, "min_width", 8, 0), w = y.prop(e, "flex", 12, !1), D = y.prop(e, "resizable", 8, !1), b = y.prop(e, "rtl", 8, !1), C = y.prop(e, "fullscreen", 12, !1), E = y.mutable_source(C()), F = y.mutable_source(), M = u() === "fieldset" ? "fieldset" : "div", S = y.mutable_source(0), T = y.mutable_source(0), k = y.mutable_source(null);
+  C.push(e, !1);
+  let t = C.prop(e, "height", 8, void 0), s = C.prop(e, "min_height", 8, void 0), r = C.prop(e, "max_height", 8, void 0), a = C.prop(e, "width", 8, void 0), n = C.prop(e, "elem_id", 8, ""), o = C.prop(e, "elem_classes", 24, () => []), l = C.prop(e, "variant", 8, "solid"), c = C.prop(e, "border_mode", 8, "base"), h = C.prop(e, "padding", 8, !0), u = C.prop(e, "type", 8, "normal"), d = C.prop(e, "test_id", 8, void 0), f = C.prop(e, "explicit_call", 8, !1), m = C.prop(e, "container", 8, !0), g = C.prop(e, "visible", 8, !0), p = C.prop(e, "allow_overflow", 8, !0), v = C.prop(e, "overflow_behavior", 8, "auto"), A = C.prop(e, "scale", 8, null), x = C.prop(e, "min_width", 8, 0), w = C.prop(e, "flex", 12, !1), D = C.prop(e, "resizable", 8, !1), b = C.prop(e, "rtl", 8, !1), y = C.prop(e, "fullscreen", 12, !1), E = C.mutable_source(y()), F = C.mutable_source(), M = u() === "fieldset" ? "fieldset" : "div", S = C.mutable_source(0), T = C.mutable_source(0), k = C.mutable_source(null);
   function B(q) {
-    C() && q.key === "Escape" && C(!1);
+    y() && q.key === "Escape" && y(!1);
   }
   const U = (q) => {
     if (q !== void 0) {
@@ -31593,26 +31593,26 @@ function y0(i, e) {
     let X = q.clientY;
     const O = (_) => {
       const W = _.clientY - X;
-      X = _.clientY, y.mutate(F, y.get(F).style.height = `${y.get(F).offsetHeight + W}px`);
+      X = _.clientY, C.mutate(F, C.get(F).style.height = `${C.get(F).offsetHeight + W}px`);
     }, Y = () => {
       window.removeEventListener("mousemove", O), window.removeEventListener("mouseup", Y);
     };
     window.addEventListener("mousemove", O), window.addEventListener("mouseup", Y);
   };
-  y.legacy_pre_effect(
-    () => (y.deep_read_state(C()), y.get(E), y.get(F)),
+  C.legacy_pre_effect(
+    () => (C.deep_read_state(y()), C.get(E), C.get(F)),
     () => {
-      C() !== y.get(E) && (y.set(E, C()), C() ? (y.set(k, y.get(F).getBoundingClientRect()), y.set(S, y.get(F).offsetHeight), y.set(T, y.get(F).offsetWidth), window.addEventListener("keydown", B)) : (y.set(k, null), window.removeEventListener("keydown", B)));
+      y() !== C.get(E) && (C.set(E, y()), y() ? (C.set(k, C.get(F).getBoundingClientRect()), C.set(S, C.get(F).offsetHeight), C.set(T, C.get(F).offsetWidth), window.addEventListener("keydown", B)) : (C.set(k, null), window.removeEventListener("keydown", B)));
     }
-  ), y.legacy_pre_effect(() => y.deep_read_state(m()), () => {
-    m() || w(!1);
-  }), y.legacy_pre_effect_reset(), y.init();
-  var N = y.comment(), P = y.first_child(N);
+  ), C.legacy_pre_effect(() => C.deep_read_state(g()), () => {
+    g() || w(!1);
+  }), C.legacy_pre_effect_reset(), C.init();
+  var N = C.comment(), P = C.first_child(N);
   {
     var L = (q) => {
-      var X = b0(), O = y.first_child(X);
-      y.element(O, () => M, !1, (W, Q) => {
-        y.bind_this(W, (se) => y.set(F, se), () => y.get(F)), y.attribute_effect(
+      var X = b0(), O = C.first_child(X);
+      C.element(O, () => M, !1, (W, Q) => {
+        C.bind_this(W, (se) => C.set(F, se), () => C.get(F)), C.attribute_effect(
           W,
           (se, ue) => ({
             "data-testid": d(),
@@ -31620,30 +31620,30 @@ function y0(i, e) {
             class: `block ${se ?? ""}`,
             dir: b() ? "rtl" : "ltr",
             style: "",
-            [y.CLASS]: {
-              hidden: m() === "hidden",
+            [C.CLASS]: {
+              hidden: g() === "hidden",
               padded: h(),
               flex: w(),
               border_focus: c() === "focus",
               border_contrast: c() === "contrast",
-              "hide-container": !f() && !g(),
-              fullscreen: C(),
-              animating: C() && y.get(k) !== null,
+              "hide-container": !f() && !m(),
+              fullscreen: y(),
+              animating: y() && C.get(k) !== null,
               "auto-margin": A() === null
             },
-            [y.STYLE]: ue
+            [C.STYLE]: ue
           }),
           [
-            () => (y.deep_read_state(o()), y.untrack(() => o()?.join(" ") || "")),
+            () => (C.deep_read_state(o()), C.untrack(() => o()?.join(" ") || "")),
             () => ({
-              height: (y.deep_read_state(C()), y.deep_read_state(t()), y.untrack(() => C() ? void 0 : U(t()))),
-              "min-height": (y.deep_read_state(C()), y.deep_read_state(s()), y.untrack(() => C() ? void 0 : U(s()))),
-              "max-height": (y.deep_read_state(C()), y.deep_read_state(r()), y.untrack(() => C() ? void 0 : U(r()))),
-              "--start-top": (y.get(k), y.untrack(() => y.get(k) ? `${y.get(k).top}px` : "0px")),
-              "--start-left": (y.get(k), y.untrack(() => y.get(k) ? `${y.get(k).left}px` : "0px")),
-              "--start-width": (y.get(k), y.untrack(() => y.get(k) ? `${y.get(k).width}px` : "0px")),
-              "--start-height": (y.get(k), y.untrack(() => y.get(k) ? `${y.get(k).height}px` : "0px")),
-              width: (y.deep_read_state(C()), y.deep_read_state(a()), y.untrack(() => C() ? void 0 : typeof a() == "number" ? `calc(min(${a()}px, 100%))` : U(a()))),
+              height: (C.deep_read_state(y()), C.deep_read_state(t()), C.untrack(() => y() ? void 0 : U(t()))),
+              "min-height": (C.deep_read_state(y()), C.deep_read_state(s()), C.untrack(() => y() ? void 0 : U(s()))),
+              "max-height": (C.deep_read_state(y()), C.deep_read_state(r()), C.untrack(() => y() ? void 0 : U(r()))),
+              "--start-top": (C.get(k), C.untrack(() => C.get(k) ? `${C.get(k).top}px` : "0px")),
+              "--start-left": (C.get(k), C.untrack(() => C.get(k) ? `${C.get(k).left}px` : "0px")),
+              "--start-width": (C.get(k), C.untrack(() => C.get(k) ? `${C.get(k).width}px` : "0px")),
+              "--start-height": (C.get(k), C.untrack(() => C.get(k) ? `${C.get(k).height}px` : "0px")),
+              width: (C.deep_read_state(y()), C.deep_read_state(a()), C.untrack(() => y() ? void 0 : typeof a() == "number" ? `calc(min(${a()}px, 100%))` : U(a()))),
               "border-style": l(),
               overflow: p() ? v() : "hidden",
               "flex-grow": A(),
@@ -31655,41 +31655,41 @@ function y0(i, e) {
           void 0,
           "svelte-1stq1b1"
         );
-        var J = x0(), ee = y.first_child(J);
-        y.slot(ee, e, "default", {}, null);
-        var re = y.sibling(ee, 2);
+        var J = x0(), ee = C.first_child(J);
+        C.slot(ee, e, "default", {}, null);
+        var re = C.sibling(ee, 2);
         {
           var ne = (se) => {
             var ue = v0();
-            y.event("mousedown", ue, V), y.append(se, ue);
+            C.event("mousedown", ue, V), C.append(se, ue);
           };
-          y.if(re, (se) => {
+          C.if(re, (se) => {
             D() && se(ne);
           });
         }
-        y.append(Q, J);
+        C.append(Q, J);
       });
-      var Y = y.sibling(O, 2);
+      var Y = C.sibling(O, 2);
       {
         var _ = (W) => {
           var Q = w0();
           let J;
-          y.template_effect(() => J = y.set_style(Q, "", J, {
-            height: y.get(S) + "px",
-            width: y.get(T) + "px"
-          })), y.append(W, Q);
+          C.template_effect(() => J = C.set_style(Q, "", J, {
+            height: C.get(S) + "px",
+            width: C.get(T) + "px"
+          })), C.append(W, Q);
         };
-        y.if(Y, (W) => {
-          C() && W(_);
+        C.if(Y, (W) => {
+          y() && W(_);
         });
       }
-      y.append(q, X);
+      C.append(q, X);
     };
-    y.if(P, (q) => {
-      (m() === !0 || m() === "hidden") && q(L);
+    C.if(P, (q) => {
+      (g() === !0 || g() === "hidden") && q(L);
     });
   }
-  y.append(i, N), y.pop();
+  C.append(i, N), C.pop();
 }
 function Hs() {
   return {
@@ -31936,7 +31936,7 @@ class Ui {
 `, 1)[0].replace(/^\t+/, (v) => " ".repeat(3 * v.length)), d = e.split(`
 `, 1)[0], f = 0;
         this.options.pedantic ? (f = 2, l = u.trimStart()) : (f = t[2].search(/[^ ]/), f = f > 4 ? 1 : f, l = u.slice(f), f += t[1].length);
-        let g = !1;
+        let m = !1;
         if (!u && /^ *$/.test(d) && (o += d + `
 `, e = e.substring(d.length + 1), h = !0), !h) {
           const v = new RegExp(`^ {0,${Math.min(3, f - 1)}}(?:[*+-]|\\d{1,9}[.)])((?:[ 	][^\\n]*)?(?:\\n|$))`), A = new RegExp(`^ {0,${Math.min(3, f - 1)}}((?:- *){3,}|(?:_ *){3,}|(?:\\* *){3,})(?:\\n+|$)`), x = new RegExp(`^ {0,${Math.min(3, f - 1)}}(?:\`\`\`|~~~)`), w = new RegExp(`^ {0,${Math.min(3, f - 1)}}#`);
@@ -31949,21 +31949,21 @@ class Ui {
               l += `
 ` + d.slice(f);
             else {
-              if (g || u.search(/[^ ]/) >= 4 || x.test(u) || w.test(u) || A.test(u))
+              if (m || u.search(/[^ ]/) >= 4 || x.test(u) || w.test(u) || A.test(u))
                 break;
               l += `
 ` + d;
             }
-            !g && !d.trim() && (g = !0), o += D + `
+            !m && !d.trim() && (m = !0), o += D + `
 `, e = e.substring(D.length + 1), u = d.slice(f);
           }
         }
         a.loose || (c ? a.loose = !0 : /\n *\n *$/.test(o) && (c = !0));
-        let m = null, p;
-        this.options.gfm && (m = /^\[[ xX]\] /.exec(l), m && (p = m[0] !== "[ ] ", l = l.replace(/^\[[ xX]\] +/, ""))), a.items.push({
+        let g = null, p;
+        this.options.gfm && (g = /^\[[ xX]\] /.exec(l), g && (p = g[0] !== "[ ] ", l = l.replace(/^\[[ xX]\] +/, ""))), a.items.push({
           type: "list_item",
           raw: o,
-          task: !!m,
+          task: !!g,
           checked: p,
           loose: !1,
           text: l,
@@ -32156,20 +32156,20 @@ class Ui {
         l = Math.min(l, l + c + h);
         const d = [...r[0]][0].length, f = e.slice(0, n + r.index + d + l);
         if (Math.min(n, l) % 2) {
-          const m = f.slice(1, -1);
+          const g = f.slice(1, -1);
           return {
             type: "em",
             raw: f,
-            text: m,
-            tokens: this.lexer.inlineTokens(m)
+            text: g,
+            tokens: this.lexer.inlineTokens(g)
           };
         }
-        const g = f.slice(2, -2);
+        const m = f.slice(2, -2);
         return {
           type: "strong",
           raw: f,
-          text: g,
-          tokens: this.lexer.inlineTokens(g)
+          text: m,
+          tokens: this.lexer.inlineTokens(m)
         };
       }
     }
@@ -32766,16 +32766,16 @@ class He {
           const n = a, o = n.ordered, l = n.start, c = n.loose;
           let h = "";
           for (let u = 0; u < n.items.length; u++) {
-            const d = n.items[u], f = d.checked, g = d.task;
-            let m = "";
+            const d = n.items[u], f = d.checked, m = d.task;
+            let g = "";
             if (d.task) {
               const p = this.renderer.checkbox(!!f);
               c ? d.tokens.length > 0 && d.tokens[0].type === "paragraph" ? (d.tokens[0].text = p + " " + d.tokens[0].text, d.tokens[0].tokens && d.tokens[0].tokens.length > 0 && d.tokens[0].tokens[0].type === "text" && (d.tokens[0].tokens[0].text = p + " " + d.tokens[0].tokens[0].text)) : d.tokens.unshift({
                 type: "text",
                 text: p + " "
-              }) : m += p + " ";
+              }) : g += p + " ";
             }
-            m += this.parse(d.tokens, c), h += this.renderer.listitem(m, g, !!f);
+            g += this.parse(d.tokens, c), h += this.renderer.listitem(g, m, !!f);
           }
           s += this.renderer.list(h, o, l);
           continue;
@@ -33268,8 +33268,8 @@ function o1() {
                   return w[b];
                 D = /** @type {Record<string, any>} */
                 {}, w[b] = D;
-                for (var C in x)
-                  x.hasOwnProperty(C) && (D[C] = A(x[C], w));
+                for (var y in x)
+                  x.hasOwnProperty(y) && (D[y] = A(x[y], w));
                 return (
                   /** @type {any} */
                   D
@@ -33498,28 +33498,28 @@ function o1() {
           insertBefore: function(A, x, w, D) {
             D = D || /** @type {any} */
             o.languages;
-            var b = D[A], C = {};
+            var b = D[A], y = {};
             for (var E in b)
               if (b.hasOwnProperty(E)) {
                 if (E == x)
                   for (var F in w)
-                    w.hasOwnProperty(F) && (C[F] = w[F]);
-                w.hasOwnProperty(E) || (C[E] = b[E]);
+                    w.hasOwnProperty(F) && (y[F] = w[F]);
+                w.hasOwnProperty(E) || (y[E] = b[E]);
               }
             var M = D[A];
-            return D[A] = C, o.languages.DFS(o.languages, function(S, T) {
-              T === M && S != A && (this[S] = C);
-            }), C;
+            return D[A] = y, o.languages.DFS(o.languages, function(S, T) {
+              T === M && S != A && (this[S] = y);
+            }), y;
           },
           // Traverse a language definition with Depth First Search
           DFS: function A(x, w, D, b) {
             b = b || {};
-            var C = o.util.objId;
+            var y = o.util.objId;
             for (var E in x)
               if (x.hasOwnProperty(E)) {
                 w.call(x, E, x[E], D || E);
                 var F = x[E], M = o.util.type(F);
-                M === "Object" && !b[C(F)] ? (b[C(F)] = !0, A(F, w, null, b)) : M === "Array" && !b[C(F)] && (b[C(F)] = !0, A(F, w, E, b));
+                M === "Object" && !b[y(F)] ? (b[y(F)] = !0, A(F, w, null, b)) : M === "Array" && !b[y(F)] && (b[y(F)] = !0, A(F, w, E, b));
               }
           }
         },
@@ -33561,8 +33561,8 @@ function o1() {
             selector: 'code[class*="language-"], [class*="language-"] code, code[class*="lang-"], [class*="lang-"] code'
           };
           o.hooks.run("before-highlightall", D), D.elements = Array.prototype.slice.apply(D.container.querySelectorAll(D.selector)), o.hooks.run("before-all-elements-highlight", D);
-          for (var b = 0, C; C = D.elements[b++]; )
-            o.highlightElement(C, x === !0, D.callback);
+          for (var b = 0, y; y = D.elements[b++]; )
+            o.highlightElement(y, x === !0, D.callback);
         },
         /**
          * Highlights the code inside a single element.
@@ -33595,8 +33595,8 @@ function o1() {
         highlightElement: function(A, x, w) {
           var D = o.util.getLanguage(A), b = o.languages[D];
           o.util.setLanguage(A, D);
-          var C = A.parentElement;
-          C && C.nodeName.toLowerCase() === "pre" && o.util.setLanguage(C, D);
+          var y = A.parentElement;
+          y && y.nodeName.toLowerCase() === "pre" && o.util.setLanguage(y, D);
           var E = A.textContent, F = {
             element: A,
             language: D,
@@ -33606,7 +33606,7 @@ function o1() {
           function M(T) {
             F.highlightedCode = T, o.hooks.run("before-insert", F), F.element.innerHTML = F.highlightedCode, o.hooks.run("after-highlight", F), o.hooks.run("complete", F), w && w.call(F.element);
           }
-          if (o.hooks.run("before-sanity-check", F), C = F.element.parentElement, C && C.nodeName.toLowerCase() === "pre" && !C.hasAttribute("tabindex") && C.setAttribute("tabindex", "0"), !F.code) {
+          if (o.hooks.run("before-sanity-check", F), y = F.element.parentElement, y && y.nodeName.toLowerCase() === "pre" && !y.hasAttribute("tabindex") && y.setAttribute("tabindex", "0"), !F.code) {
             o.hooks.run("complete", F), w && w.call(F.element);
             return;
           }
@@ -33688,7 +33688,7 @@ function o1() {
             delete x.rest;
           }
           var b = new u();
-          return d(b, b.head, A), h(A, b, x, b.head, 0), g(b);
+          return d(b, b.head, A), h(A, b, x, b.head, 0), m(b);
         },
         /**
          * @namespace
@@ -33751,8 +33751,8 @@ function o1() {
           classes: ["token", x.type],
           attributes: {},
           language: w
-        }, C = x.alias;
-        C && (Array.isArray(C) ? Array.prototype.push.apply(b.classes, C) : b.classes.push(C)), o.hooks.run("wrap", b);
+        }, y = x.alias;
+        y && (Array.isArray(y) ? Array.prototype.push.apply(b.classes, y) : b.classes.push(y)), o.hooks.run("wrap", b);
         var E = "";
         for (var F in b.attributes)
           E += " " + F + '="' + (b.attributes[F] || "").replace(/"/g, "&quot;") + '"';
@@ -33762,25 +33762,25 @@ function o1() {
         A.lastIndex = x;
         var b = A.exec(w);
         if (b && D && b[1]) {
-          var C = b[1].length;
-          b.index += C, b[0] = b[0].slice(C);
+          var y = b[1].length;
+          b.index += y, b[0] = b[0].slice(y);
         }
         return b;
       }
-      function h(A, x, w, D, b, C) {
+      function h(A, x, w, D, b, y) {
         for (var E in w)
           if (!(!w.hasOwnProperty(E) || !w[E])) {
             var F = w[E];
             F = Array.isArray(F) ? F : [F];
             for (var M = 0; M < F.length; ++M) {
-              if (C && C.cause == E + "," + M)
+              if (y && y.cause == E + "," + M)
                 return;
               var S = F[M], T = S.inside, k = !!S.lookbehind, B = !!S.greedy, U = S.alias;
               if (B && !S.pattern.global) {
                 var V = S.pattern.toString().match(/[imsuy]*$/)[0];
                 S.pattern = RegExp(S.pattern.source, V + "g");
               }
-              for (var N = S.pattern || S, P = D.next, L = b; P !== x.tail && !(C && L >= C.reach); L += P.value.length, P = P.next) {
+              for (var N = S.pattern || S, P = D.next, L = b; P !== x.tail && !(y && L >= y.reach); L += P.value.length, P = P.next) {
                 var q = P.value;
                 if (x.length > A.length)
                   return;
@@ -33800,7 +33800,7 @@ function o1() {
                   } else if (O = c(N, 0, q, k), !O)
                     continue;
                   var Q = O.index, J = O[0], ee = q.slice(0, Q), re = q.slice(Q + J.length), ne = L + q.length;
-                  C && ne > C.reach && (C.reach = ne);
+                  y && ne > y.reach && (y.reach = ne);
                   var se = P.prev;
                   ee && (se = d(x, se, ee), L += ee.length), f(x, se, X);
                   var ue = new l(E, T ? o.tokenize(J, T) : J, U, J);
@@ -33809,7 +33809,7 @@ function o1() {
                       cause: E + "," + M,
                       reach: ne
                     };
-                    h(A, x, w, P.prev, L, Ve), C && Ve.reach > C.reach && (C.reach = Ve.reach);
+                    h(A, x, w, P.prev, L, Ve), y && Ve.reach > y.reach && (y.reach = Ve.reach);
                   }
                 }
               }
@@ -33829,7 +33829,7 @@ function o1() {
           D = D.next;
         x.next = D, D.prev = x, A.length -= b;
       }
-      function g(A) {
+      function m(A) {
         for (var x = [], w = A.head.next; w !== A.tail; )
           x.push(w.value), w = w.next;
         return x;
@@ -33839,14 +33839,14 @@ function o1() {
           var x = JSON.parse(A.data), w = x.language, D = x.code, b = x.immediateClose;
           s.postMessage(o.highlight(D, o.languages[w], w)), b && s.close();
         }, !1)), o;
-      var m = o.util.currentScript();
-      m && (o.filename = m.src, m.hasAttribute("data-manual") && (o.manual = !0));
+      var g = o.util.currentScript();
+      g && (o.filename = g.src, g.hasAttribute("data-manual") && (o.manual = !0));
       function p() {
         o.manual || o.highlightAll();
       }
       if (!o.manual) {
         var v = document.readyState;
-        v === "loading" || v === "interactive" && m && m.defer ? document.addEventListener("DOMContentLoaded", p) : window.requestAnimationFrame ? window.requestAnimationFrame(p) : window.setTimeout(p, 16);
+        v === "loading" || v === "interactive" && g && g.defer ? document.addEventListener("DOMContentLoaded", p) : window.requestAnimationFrame ? window.requestAnimationFrame(p) : window.setTimeout(p, 16);
       }
       return o;
     })(e);
@@ -34228,8 +34228,8 @@ function o1() {
       if (typeof t > "u" || typeof document > "u")
         return;
       Element.prototype.matches || (Element.prototype.matches = Element.prototype.msMatchesSelector || Element.prototype.webkitMatchesSelector);
-      var s = "Loading…", r = function(m, p) {
-        return "✖ Error " + m + " while fetching file: " + p;
+      var s = "Loading…", r = function(g, p) {
+        return "✖ Error " + g + " while fetching file: " + p;
       }, a = "✖ Error: File does not exist or is empty", n = {
         js: "javascript",
         py: "python",
@@ -34241,31 +34241,31 @@ function o1() {
         h: "c",
         tex: "latex"
       }, o = "data-src-status", l = "loading", c = "loaded", h = "failed", u = "pre[data-src]:not([" + o + '="' + c + '"]):not([' + o + '="' + l + '"])';
-      function d(m, p, v) {
+      function d(g, p, v) {
         var A = new XMLHttpRequest();
-        A.open("GET", m, !0), A.onreadystatechange = function() {
+        A.open("GET", g, !0), A.onreadystatechange = function() {
           A.readyState == 4 && (A.status < 400 && A.responseText ? p(A.responseText) : A.status >= 400 ? v(r(A.status, A.statusText)) : v(a));
         }, A.send(null);
       }
-      function f(m) {
-        var p = /^\s*(\d+)\s*(?:(,)\s*(?:(\d+)\s*)?)?$/.exec(m || "");
+      function f(g) {
+        var p = /^\s*(\d+)\s*(?:(,)\s*(?:(\d+)\s*)?)?$/.exec(g || "");
         if (p) {
           var v = Number(p[1]), A = p[2], x = p[3];
           return A ? x ? [v, Number(x)] : [v, void 0] : [v, v];
         }
       }
-      t.hooks.add("before-highlightall", function(m) {
-        m.selector += ", " + u;
-      }), t.hooks.add("before-sanity-check", function(m) {
+      t.hooks.add("before-highlightall", function(g) {
+        g.selector += ", " + u;
+      }), t.hooks.add("before-sanity-check", function(g) {
         var p = (
           /** @type {HTMLPreElement} */
-          m.element
+          g.element
         );
         if (p.matches(u)) {
-          m.code = "", p.setAttribute(o, l);
+          g.code = "", p.setAttribute(o, l);
           var v = p.appendChild(document.createElement("CODE"));
           v.textContent = s;
-          var A = p.getAttribute("data-src"), x = m.language;
+          var A = p.getAttribute("data-src"), x = g.language;
           if (x === "none") {
             var w = (/\.(\w+)$/.exec(A) || [, "none"])[1];
             x = n[w] || w;
@@ -34276,9 +34276,9 @@ function o1() {
             A,
             function(b) {
               p.setAttribute(o, c);
-              var C = f(p.getAttribute("data-range"));
-              if (C) {
-                var E = b.split(/\r\n?|\n/g), F = C[0], M = C[1] == null ? E.length : C[1];
+              var y = f(p.getAttribute("data-range"));
+              if (y) {
+                var E = b.split(/\r\n?|\n/g), F = y[0], M = y[1] == null ? E.length : y[1];
                 F < 0 && (F += E.length), F = Math.max(0, Math.min(F - 1, E.length)), M < 0 && (M += E.length), M = Math.max(0, Math.min(M, E.length)), b = E.slice(F, M).join(`
 `), p.hasAttribute("data-start") || p.setAttribute("data-start", String(F + 1));
               }
@@ -34302,9 +34302,9 @@ function o1() {
             t.highlightElement(x);
         }
       };
-      var g = !1;
+      var m = !1;
       t.fileHighlight = function() {
-        g || (console.warn("Prism.fileHighlight is deprecated. Use `Prism.plugins.fileHighlight.highlight` instead."), g = !0), t.plugins.fileHighlight.highlight.apply(this, arguments);
+        m || (console.warn("Prism.fileHighlight is deprecated. Use `Prism.plugins.fileHighlight.highlight` instead."), m = !0), t.plugins.fileHighlight.highlight.apply(this, arguments);
       };
     })();
   })(us)), us.exports;
@@ -35575,11 +35575,11 @@ d1();
           for (var l = 0; l < o.length && !(r >= a.length); l++) {
             var c = o[l];
             if (typeof c == "string" || c.content && typeof c.content == "string") {
-              var h = a[r], u = t.tokenStack[h], d = typeof c == "string" ? c : c.content, f = e(s, h), g = d.indexOf(f);
-              if (g > -1) {
+              var h = a[r], u = t.tokenStack[h], d = typeof c == "string" ? c : c.content, f = e(s, h), m = d.indexOf(f);
+              if (m > -1) {
                 ++r;
-                var m = d.substring(0, g), p = new i.Token(s, i.tokenize(u, t.grammar), "language-" + s, u), v = d.substring(g + f.length), A = [];
-                m && A.push.apply(A, n([m])), A.push(p), v && A.push.apply(A, n([v])), typeof c == "string" ? o.splice.apply(o, [l, 1].concat(A)) : c.content = A;
+                var g = d.substring(0, m), p = new i.Token(s, i.tokenize(u, t.grammar), "language-" + s, u), v = d.substring(m + f.length), A = [];
+                g && A.push.apply(A, n([g])), A.push(p), v && A.push.apply(A, n([v])), typeof c == "string" ? o.splice.apply(o, [l, 1].concat(A)) : c.content = A;
               }
             } else c.content && n(c.content);
           }
@@ -36052,144 +36052,144 @@ f1([
   Object.fromEntries(g1.map((i) => [i, ["svg:*"]])),
   Object.fromEntries(p1.map((i) => [i, ["math:*"]]))
 ]);
-y.from_html("<span><!></span>");
-y.from_html('<div class="svelte-1i9kj8o"><!></div>');
-y.from_html('<span data-testid="block-info"><!></span> <!>', 1);
-y.from_html('<label for="" data-testid="block-label"><span class="svelte-1fzogyz"><!></span> </label>');
-y.from_html("<a><!></a>");
-var A1 = y.from_html('<span class="svelte-vvirtv"> </span>'), v1 = y.from_html("<button><!> <div><!> <!></div></button>");
+C.from_html("<span><!></span>");
+C.from_html('<div class="svelte-1i9kj8o"><!></div>');
+C.from_html('<span data-testid="block-info"><!></span> <!>', 1);
+C.from_html('<label for="" data-testid="block-label"><span class="svelte-1fzogyz"><!></span> </label>');
+C.from_html("<a><!></a>");
+var A1 = C.from_html('<span class="svelte-vvirtv"> </span>'), v1 = C.from_html("<button><!> <div><!> <!></div></button>");
 function un(i, e) {
-  y.push(e, !1);
-  const t = y.mutable_source();
-  let s = y.prop(e, "Icon", 8), r = y.prop(e, "label", 8, ""), a = y.prop(e, "show_label", 8, !1), n = y.prop(e, "pending", 8, !1), o = y.prop(e, "size", 8, "small"), l = y.prop(e, "padded", 8, !0), c = y.prop(e, "highlight", 8, !1), h = y.prop(e, "disabled", 8, !1), u = y.prop(e, "hasPopup", 8, !1), d = y.prop(e, "color", 8, "var(--block-label-text-color)"), f = y.prop(e, "transparent", 8, !1), g = y.prop(e, "background", 8, "var(--block-background-fill)"), m = y.prop(e, "border", 8, "transparent");
-  y.legacy_pre_effect(() => (y.deep_read_state(c()), y.deep_read_state(d())), () => {
-    y.set(t, c() ? "var(--color-accent)" : d());
-  }), y.legacy_pre_effect_reset();
+  C.push(e, !1);
+  const t = C.mutable_source();
+  let s = C.prop(e, "Icon", 8), r = C.prop(e, "label", 8, ""), a = C.prop(e, "show_label", 8, !1), n = C.prop(e, "pending", 8, !1), o = C.prop(e, "size", 8, "small"), l = C.prop(e, "padded", 8, !0), c = C.prop(e, "highlight", 8, !1), h = C.prop(e, "disabled", 8, !1), u = C.prop(e, "hasPopup", 8, !1), d = C.prop(e, "color", 8, "var(--block-label-text-color)"), f = C.prop(e, "transparent", 8, !1), m = C.prop(e, "background", 8, "var(--block-background-fill)"), g = C.prop(e, "border", 8, "transparent");
+  C.legacy_pre_effect(() => (C.deep_read_state(c()), C.deep_read_state(d())), () => {
+    C.set(t, c() ? "var(--color-accent)" : d());
+  }), C.legacy_pre_effect_reset();
   var p = v1();
   let v, A;
-  var x = y.child(p);
+  var x = C.child(p);
   {
     var w = (F) => {
-      var M = A1(), S = y.child(M, !0);
-      y.reset(M), y.template_effect(() => y.set_text(S, r())), y.append(F, M);
+      var M = A1(), S = C.child(M, !0);
+      C.reset(M), C.template_effect(() => C.set_text(S, r())), C.append(F, M);
     };
-    y.if(x, (F) => {
+    C.if(x, (F) => {
       a() && F(w);
     });
   }
-  var D = y.sibling(x, 2);
+  var D = C.sibling(x, 2);
   let b;
-  var C = y.child(D);
-  y.component(C, s, (F, M) => {
+  var y = C.child(D);
+  C.component(y, s, (F, M) => {
     M(F, {});
   });
-  var E = y.sibling(C, 2);
-  y.slot(E, e, "default", {}, null), y.reset(D), y.reset(p), y.template_effect(() => {
-    v = y.set_class(p, 1, "icon-button svelte-vvirtv", null, v, {
+  var E = C.sibling(y, 2);
+  C.slot(E, e, "default", {}, null), C.reset(D), C.reset(p), C.template_effect(() => {
+    v = C.set_class(p, 1, "icon-button svelte-vvirtv", null, v, {
       pending: n(),
       padded: l(),
       highlight: c(),
       transparent: f()
-    }), p.disabled = h(), y.set_attribute(p, "aria-label", r()), y.set_attribute(p, "aria-haspopup", u()), y.set_attribute(p, "title", r()), A = y.set_style(p, "", A, {
-      "--border-color": m(),
-      color: !h() && y.get(t) ? y.get(t) : "var(--block-label-text-color)",
-      "--bg-color": h() ? "auto" : g()
-    }), b = y.set_class(D, 1, "svelte-vvirtv", null, b, {
+    }), p.disabled = h(), C.set_attribute(p, "aria-label", r()), C.set_attribute(p, "aria-haspopup", u()), C.set_attribute(p, "title", r()), A = C.set_style(p, "", A, {
+      "--border-color": g(),
+      color: !h() && C.get(t) ? C.get(t) : "var(--block-label-text-color)",
+      "--bg-color": h() ? "auto" : m()
+    }), b = C.set_class(D, 1, "svelte-vvirtv", null, b, {
       "x-small": o() === "x-small",
       small: o() === "small",
       large: o() === "large",
       medium: o() === "medium"
     });
-  }), y.event("click", p, function(F) {
-    y.bubble_event.call(this, e, F);
-  }), y.append(i, p), y.pop();
+  }), C.event("click", p, function(F) {
+    C.bubble_event.call(this, e, F);
+  }), C.append(i, p), C.pop();
 }
-y.from_html('<div aria-label="Empty value"><div class="icon svelte-1xcwp1t"><!></div></div>');
-y.from_svg('<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>');
-y.from_svg('<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="12px" height="24px" fill="currentColor" stroke-width="1.5" viewBox="0 0 12 24"><path d="M9 6L3 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"></path></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" stroke-width="1.5" viewBox="0 0 24 24" color="currentColor"><path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M21.044 5.704a.6.6 0 0 1 .956.483v11.626a.6.6 0 0 1-.956.483l-7.889-5.813a.6.6 0 0 1 0-.966l7.89-5.813ZM10.044 5.704a.6.6 0 0 1 .956.483v11.626a.6.6 0 0 1-.956.483l-7.888-5.813a.6.6 0 0 1 0-.966l7.888-5.813Z"></path></svg>');
-y.from_svg('<svg width="100%" height="100%" viewBox="0 0 32 32"><path d="M28.828 3.172a4.094 4.094 0 0 0-5.656 0L4.05 22.292A6.954 6.954 0 0 0 2 27.242V30h2.756a6.952 6.952 0 0 0 4.95-2.05L28.828 8.829a3.999 3.999 0 0 0 0-5.657zM10.91 18.26l2.829 2.829l-2.122 2.121l-2.828-2.828zm-2.619 8.276A4.966 4.966 0 0 1 4.756 28H4v-.759a4.967 4.967 0 0 1 1.464-3.535l1.91-1.91l2.829 2.828zM27.415 7.414l-12.261 12.26l-2.829-2.828l12.262-12.26a2.047 2.047 0 0 1 2.828 0a2 2 0 0 1 0 2.828z" fill="currentColor"></path><path d="M6.5 15a3.5 3.5 0 0 1-2.475-5.974l3.5-3.5a1.502 1.502 0 0 0 0-2.121a1.537 1.537 0 0 0-2.121 0L3.415 5.394L2 3.98l1.99-1.988a3.585 3.585 0 0 1 4.95 0a3.504 3.504 0 0 1 0 4.949L5.439 10.44a1.502 1.502 0 0 0 0 2.121a1.537 1.537 0 0 0 2.122 0l4.024-4.024L13 9.95l-4.025 4.024A3.475 3.475 0 0 1 6.5 15z" fill="currentColor"></path></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24"><path fill="currentColor" d="M2.753 2.933a.75.75 0 0 1 .814-.68l3.043.272c2.157.205 4.224.452 5.922.732c1.66.273 3.073.594 3.844.983c.197.1.412.233.578.415c.176.192.352.506.28.9c-.067.356-.304.59-.487.729a3.001 3.001 0 0 1-.695.369c-1.02.404-2.952.79-5.984 1.169c-1.442.18-2.489.357-3.214.522c.205.045.43.089.674.132c.992.174 2.241.323 3.568.437a31.21 31.21 0 0 1 3.016.398c.46.087.893.186 1.261.296c.352.105.707.236.971.412c.13.086.304.225.42.437a.988.988 0 0 1 .063.141A1.75 1.75 0 0 0 14.5 12.25v.158c-.758.154-1.743.302-2.986.444c-2.124.243-3.409.55-4.117.859c-.296.128-.442.236-.508.3c.026.037.073.094.156.17c.15.138.369.29.65.45c.56.316 1.282.61 1.979.838l2.637.814a.75.75 0 1 1-.443 1.433l-2.655-.819c-.754-.247-1.58-.578-2.257-.96a5.082 5.082 0 0 1-.924-.65c-.255-.233-.513-.544-.62-.935c-.12-.441-.016-.88.274-1.244c.261-.328.656-.574 1.113-.773c.92-.4 2.387-.727 4.545-.974c1.366-.156 2.354-.313 3.041-.462a16.007 16.007 0 0 0-.552-.114a29.716 29.716 0 0 0-2.865-.378c-1.352-.116-2.649-.27-3.7-.454c-.524-.092-1-.194-1.395-.307c-.376-.106-.75-.241-1.021-.426a1.186 1.186 0 0 1-.43-.49a.934.934 0 0 1 .059-.873c.13-.213.32-.352.472-.442a3.23 3.23 0 0 1 .559-.251c.807-.287 2.222-.562 4.37-.83c2.695-.338 4.377-.666 5.295-.962c-.638-.21-1.623-.427-2.89-.635c-1.65-.273-3.679-.515-5.816-.718l-3.038-.272a.75.75 0 0 1-.68-.814M17 12.25a.75.75 0 0 0-1.5 0v4.19l-.72-.72a.75.75 0 1 0-1.06 1.06l2 2a.75.75 0 0 0 1.06 0l2-2a.75.75 0 1 0-1.06-1.06l-.72.72z"></path></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"></rect><line x1="2" y1="9" x2="22" y2="9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"></line><line x1="7" y1="2" x2="7" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"></line><line x1="17" y1="2" x2="17" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"></line></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-camera"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>');
-y.from_svg('<svg viewBox="0 0 32 32"><path d="M28.828 3.172a4.094 4.094 0 0 0-5.656 0L4.05 22.292A6.954 6.954 0 0 0 2 27.242V30h2.756a6.952 6.952 0 0 0 4.95-2.05L28.828 8.829a3.999 3.999 0 0 0 0-5.657zM10.91 18.26l2.829 2.829l-2.122 2.121l-2.828-2.828zm-2.619 8.276A4.966 4.966 0 0 1 4.756 28H4v-.759a4.967 4.967 0 0 1 1.464-3.535l1.91-1.91l2.829 2.828zM27.415 7.414l-12.261 12.26l-2.829-2.828l12.262-12.26a2.047 2.047 0 0 1 2.828 0a2 2 0 0 1 0 2.828z" fill="currentColor"></path><path d="M6.5 15a3.5 3.5 0 0 1-2.475-5.974l3.5-3.5a1.502 1.502 0 0 0 0-2.121a1.537 1.537 0 0 0-2.121 0L3.415 5.394L2 3.98l1.99-1.988a3.585 3.585 0 0 1 4.95 0a3.504 3.504 0 0 1 0 4.949L5.439 10.44a1.502 1.502 0 0 0 0 2.121a1.537 1.537 0 0 0 2.122 0l4.024-4.024L13 9.95l-4.025 4.024A3.475 3.475 0 0 1 6.5 15z" fill="currentColor"></path></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--carbon" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path fill="currentColor" d="M17.74 30L16 29l4-7h6a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h9v2H6a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4h20a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4h-4.84Z"></path><path fill="currentColor" d="M8 10h16v2H8zm0 6h10v2H8z"></path></svg>');
-y.from_svg('<svg width="100%" height="100%" stroke-width="1.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" color="currentColor"><path d="M5 13L9 17L19 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6L8 10L12 6"></path></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-circle"><circle cx="12" cy="12" r="10"></circle></svg>');
-var x1 = y.from_svg('<svg width="100%" height="100%" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" stroke="currentColor" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;"><g transform="matrix(1.14096,-0.140958,-0.140958,1.14096,-0.0559523,0.0559523)"><path d="M18,6L6.087,17.913" style="fill:none;fill-rule:nonzero;stroke-width:2px;"></path></g><path d="M4.364,4.364L19.636,19.636" style="fill:none;fill-rule:nonzero;stroke-width:2px;"></path></svg>');
+C.from_html('<div aria-label="Empty value"><div class="icon svelte-1xcwp1t"><!></div></div>');
+C.from_svg('<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>');
+C.from_svg('<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="12px" height="24px" fill="currentColor" stroke-width="1.5" viewBox="0 0 12 24"><path d="M9 6L3 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"></path></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" stroke-width="1.5" viewBox="0 0 24 24" color="currentColor"><path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M21.044 5.704a.6.6 0 0 1 .956.483v11.626a.6.6 0 0 1-.956.483l-7.889-5.813a.6.6 0 0 1 0-.966l7.89-5.813ZM10.044 5.704a.6.6 0 0 1 .956.483v11.626a.6.6 0 0 1-.956.483l-7.888-5.813a.6.6 0 0 1 0-.966l7.888-5.813Z"></path></svg>');
+C.from_svg('<svg width="100%" height="100%" viewBox="0 0 32 32"><path d="M28.828 3.172a4.094 4.094 0 0 0-5.656 0L4.05 22.292A6.954 6.954 0 0 0 2 27.242V30h2.756a6.952 6.952 0 0 0 4.95-2.05L28.828 8.829a3.999 3.999 0 0 0 0-5.657zM10.91 18.26l2.829 2.829l-2.122 2.121l-2.828-2.828zm-2.619 8.276A4.966 4.966 0 0 1 4.756 28H4v-.759a4.967 4.967 0 0 1 1.464-3.535l1.91-1.91l2.829 2.828zM27.415 7.414l-12.261 12.26l-2.829-2.828l12.262-12.26a2.047 2.047 0 0 1 2.828 0a2 2 0 0 1 0 2.828z" fill="currentColor"></path><path d="M6.5 15a3.5 3.5 0 0 1-2.475-5.974l3.5-3.5a1.502 1.502 0 0 0 0-2.121a1.537 1.537 0 0 0-2.121 0L3.415 5.394L2 3.98l1.99-1.988a3.585 3.585 0 0 1 4.95 0a3.504 3.504 0 0 1 0 4.949L5.439 10.44a1.502 1.502 0 0 0 0 2.121a1.537 1.537 0 0 0 2.122 0l4.024-4.024L13 9.95l-4.025 4.024A3.475 3.475 0 0 1 6.5 15z" fill="currentColor"></path></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24"><path fill="currentColor" d="M2.753 2.933a.75.75 0 0 1 .814-.68l3.043.272c2.157.205 4.224.452 5.922.732c1.66.273 3.073.594 3.844.983c.197.1.412.233.578.415c.176.192.352.506.28.9c-.067.356-.304.59-.487.729a3.001 3.001 0 0 1-.695.369c-1.02.404-2.952.79-5.984 1.169c-1.442.18-2.489.357-3.214.522c.205.045.43.089.674.132c.992.174 2.241.323 3.568.437a31.21 31.21 0 0 1 3.016.398c.46.087.893.186 1.261.296c.352.105.707.236.971.412c.13.086.304.225.42.437a.988.988 0 0 1 .063.141A1.75 1.75 0 0 0 14.5 12.25v.158c-.758.154-1.743.302-2.986.444c-2.124.243-3.409.55-4.117.859c-.296.128-.442.236-.508.3c.026.037.073.094.156.17c.15.138.369.29.65.45c.56.316 1.282.61 1.979.838l2.637.814a.75.75 0 1 1-.443 1.433l-2.655-.819c-.754-.247-1.58-.578-2.257-.96a5.082 5.082 0 0 1-.924-.65c-.255-.233-.513-.544-.62-.935c-.12-.441-.016-.88.274-1.244c.261-.328.656-.574 1.113-.773c.92-.4 2.387-.727 4.545-.974c1.366-.156 2.354-.313 3.041-.462a16.007 16.007 0 0 0-.552-.114a29.716 29.716 0 0 0-2.865-.378c-1.352-.116-2.649-.27-3.7-.454c-.524-.092-1-.194-1.395-.307c-.376-.106-.75-.241-1.021-.426a1.186 1.186 0 0 1-.43-.49a.934.934 0 0 1 .059-.873c.13-.213.32-.352.472-.442a3.23 3.23 0 0 1 .559-.251c.807-.287 2.222-.562 4.37-.83c2.695-.338 4.377-.666 5.295-.962c-.638-.21-1.623-.427-2.89-.635c-1.65-.273-3.679-.515-5.816-.718l-3.038-.272a.75.75 0 0 1-.68-.814M17 12.25a.75.75 0 0 0-1.5 0v4.19l-.72-.72a.75.75 0 1 0-1.06 1.06l2 2a.75.75 0 0 0 1.06 0l2-2a.75.75 0 1 0-1.06-1.06l-.72.72z"></path></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"></rect><line x1="2" y1="9" x2="22" y2="9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"></line><line x1="7" y1="2" x2="7" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"></line><line x1="17" y1="2" x2="17" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"></line></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-camera"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>');
+C.from_svg('<svg viewBox="0 0 32 32"><path d="M28.828 3.172a4.094 4.094 0 0 0-5.656 0L4.05 22.292A6.954 6.954 0 0 0 2 27.242V30h2.756a6.952 6.952 0 0 0 4.95-2.05L28.828 8.829a3.999 3.999 0 0 0 0-5.657zM10.91 18.26l2.829 2.829l-2.122 2.121l-2.828-2.828zm-2.619 8.276A4.966 4.966 0 0 1 4.756 28H4v-.759a4.967 4.967 0 0 1 1.464-3.535l1.91-1.91l2.829 2.828zM27.415 7.414l-12.261 12.26l-2.829-2.828l12.262-12.26a2.047 2.047 0 0 1 2.828 0a2 2 0 0 1 0 2.828z" fill="currentColor"></path><path d="M6.5 15a3.5 3.5 0 0 1-2.475-5.974l3.5-3.5a1.502 1.502 0 0 0 0-2.121a1.537 1.537 0 0 0-2.121 0L3.415 5.394L2 3.98l1.99-1.988a3.585 3.585 0 0 1 4.95 0a3.504 3.504 0 0 1 0 4.949L5.439 10.44a1.502 1.502 0 0 0 0 2.121a1.537 1.537 0 0 0 2.122 0l4.024-4.024L13 9.95l-4.025 4.024A3.475 3.475 0 0 1 6.5 15z" fill="currentColor"></path></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--carbon" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path fill="currentColor" d="M17.74 30L16 29l4-7h6a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h9v2H6a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4h20a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4h-4.84Z"></path><path fill="currentColor" d="M8 10h16v2H8zm0 6h10v2H8z"></path></svg>');
+C.from_svg('<svg width="100%" height="100%" stroke-width="1.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" color="currentColor"><path d="M5 13L9 17L19 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6L8 10L12 6"></path></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-circle"><circle cx="12" cy="12" r="10"></circle></svg>');
+var x1 = C.from_svg('<svg width="100%" height="100%" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" stroke="currentColor" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;"><g transform="matrix(1.14096,-0.140958,-0.140958,1.14096,-0.0559523,0.0559523)"><path d="M18,6L6.087,17.913" style="fill:none;fill-rule:nonzero;stroke-width:2px;"></path></g><path d="M4.364,4.364L19.636,19.636" style="fill:none;fill-rule:nonzero;stroke-width:2px;"></path></svg>');
 function dn(i) {
   var e = x1();
-  y.append(i, e);
+  C.append(i, e);
 }
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather feather-closed-caption"><rect x="2" y="6" width="20" height="12" rx="2" ry="2"></rect><text x="12" y="15" font-family="sans-serif" font-size="8" font-weight="bold" fill="currentColor" stroke="none" text-anchor="middle">CC</text></svg>');
-y.from_svg('<svg width="100%" height="100%" viewBox="0 0 32 32"><path fill="currentColor" d="m31 16l-7 7l-1.41-1.41L28.17 16l-5.58-5.59L24 9l7 7zM1 16l7-7l1.41 1.41L3.83 16l5.58 5.59L8 23l-7-7zm11.42 9.484L17.64 6l1.932.517L14.352 26z"></path></svg>');
-y.from_svg('<svg width="100%" height="100%" viewBox="0 0 32 32"><circle cx="10" cy="12" r="2" fill="currentColor"></circle><circle cx="16" cy="9" r="2" fill="currentColor"></circle><circle cx="22" cy="12" r="2" fill="currentColor"></circle><circle cx="23" cy="18" r="2" fill="currentColor"></circle><circle cx="19" cy="23" r="2" fill="currentColor"></circle><path fill="currentColor" d="M16.54 2A14 14 0 0 0 2 16a4.82 4.82 0 0 0 6.09 4.65l1.12-.31a3 3 0 0 1 3.79 2.9V27a3 3 0 0 0 3 3a14 14 0 0 0 14-14.54A14.05 14.05 0 0 0 16.54 2Zm8.11 22.31A11.93 11.93 0 0 1 16 28a1 1 0 0 1-1-1v-3.76a5 5 0 0 0-5-5a5.07 5.07 0 0 0-1.33.18l-1.12.31A2.82 2.82 0 0 1 4 16A12 12 0 0 1 16.47 4A12.18 12.18 0 0 1 28 15.53a11.89 11.89 0 0 1-3.35 8.79Z"></path></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24"><path fill="currentColor" d="M12 22q-2.05 0-3.875-.788t-3.187-2.15t-2.15-3.187T2 12q0-2.075.813-3.9t2.2-3.175T8.25 2.788T12.2 2q2 0 3.775.688t3.113 1.9t2.125 2.875T22 11.05q0 2.875-1.75 4.413T16 17h-1.85q-.225 0-.312.125t-.088.275q0 .3.375.863t.375 1.287q0 1.25-.687 1.85T12 22m-5.5-9q.65 0 1.075-.425T8 11.5t-.425-1.075T6.5 10t-1.075.425T5 11.5t.425 1.075T6.5 13m3-4q.65 0 1.075-.425T11 7.5t-.425-1.075T9.5 6t-1.075.425T8 7.5t.425 1.075T9.5 9m5 0q.65 0 1.075-.425T16 7.5t-.425-1.075T14.5 6t-1.075.425T13 7.5t.425 1.075T14.5 9m3 4q.65 0 1.075-.425T19 11.5t-.425-1.075T17.5 10t-1.075.425T16 11.5t.425 1.075T17.5 13"></path></svg>');
-y.from_svg('<svg id="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="100%" height="100%"><path d="M23,20a5,5,0,0,0-3.89,1.89L11.8,17.32a4.46,4.46,0,0,0,0-2.64l7.31-4.57A5,5,0,1,0,18,7a4.79,4.79,0,0,0,.2,1.32l-7.31,4.57a5,5,0,1,0,0,6.22l7.31,4.57A4.79,4.79,0,0,0,18,25a5,5,0,1,0,5-5ZM23,4a3,3,0,1,1-3,3A3,3,0,0,1,23,4ZM7,19a3,3,0,1,1,3-3A3,3,0,0,1,7,19Zm16,9a3,3,0,1,1,3-3A3,3,0,0,1,23,28Z" fill="currentColor"></path></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 33 33" color="currentColor" aria-hidden="true" width="100%" height="100%"><path fill="currentColor" d="M28 10v18H10V10h18m0-2H10a2 2 0 0 0-2 2v18a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2Z"></path><path fill="currentColor" d="M4 18H2V4a2 2 0 0 1 2-2h14v2H4Z"></path></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 256 256"><path fill="currentColor" d="M240 192a8 8 0 0 1-8 8h-32v32a8 8 0 0 1-16 0v-32H64a8 8 0 0 1-8-8V72H24a8 8 0 0 1 0-16h32V24a8 8 0 0 1 16 0v160h160a8 8 0 0 1 8 8M96 72h88v88a8 8 0 0 0 16 0V64a8 8 0 0 0-8-8H96a8 8 0 0 0 0 16"></path></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 32 32"><path fill="currentColor" d="M26 24v4H6v-4H4v4a2 2 0 0 0 2 2h20a2 2 0 0 0 2-2v-4zm0-10l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10l10-10z"></path></svg>');
-y.from_svg('<svg class="dropdown-arrow svelte-gtiaeq" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 18 18"><path d="M5 8l4 4 4-4z"></path></svg>');
-y.from_svg('<svg class="dropdown-arrow svelte-wyly4p" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 18 18"><circle cx="9" cy="9" r="8" class="circle svelte-wyly4p"></circle><path d="M5 8l4 4 4-4z"></path></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24"><g fill="none"><path fill="currentColor" d="m5.505 11.41l.53.53l-.53-.53ZM3 14.952h-.75H3ZM9.048 21v.75V21ZM11.41 5.505l-.53-.53l.53.53Zm1.831 12.34a.75.75 0 0 0 1.06-1.061l-1.06 1.06ZM7.216 9.697a.75.75 0 1 0-1.06 1.061l1.06-1.06Zm10.749 2.362l-5.905 5.905l1.06 1.06l5.905-5.904l-1.06-1.06Zm-11.93-.12l5.905-5.905l-1.06-1.06l-5.905 5.904l1.06 1.06Zm0 6.025c-.85-.85-1.433-1.436-1.812-1.933c-.367-.481-.473-.79-.473-1.08h-1.5c0 .749.312 1.375.78 1.99c.455.596 1.125 1.263 1.945 2.083l1.06-1.06Zm-1.06-7.086c-.82.82-1.49 1.488-1.945 2.084c-.468.614-.78 1.24-.78 1.99h1.5c0-.29.106-.6.473-1.08c.38-.498.962-1.083 1.812-1.933l-1.06-1.06Zm7.085 7.086c-.85.85-1.435 1.433-1.933 1.813c-.48.366-.79.472-1.08.472v1.5c.75 0 1.376-.312 1.99-.78c.596-.455 1.264-1.125 2.084-1.945l-1.06-1.06Zm-7.085 1.06c.82.82 1.487 1.49 2.084 1.945c.614.468 1.24.78 1.989.78v-1.5c-.29 0-.599-.106-1.08-.473c-.497-.38-1.083-.962-1.933-1.812l-1.06 1.06Zm12.99-12.99c.85.85 1.433 1.436 1.813 1.933c.366.481.472.79.472 1.08h1.5c0-.749-.312-1.375-.78-1.99c-.455-.596-1.125-1.263-1.945-2.083l-1.06 1.06Zm1.06 7.086c.82-.82 1.49-1.488 1.945-2.084c.468-.614.78-1.24.78-1.99h-1.5c0 .29-.106.6-.473 1.08c-.38.498-.962 1.083-1.812 1.933l1.06 1.06Zm0-8.146c-.82-.82-1.487-1.49-2.084-1.945c-.614-.468-1.24-.78-1.989-.78v1.5c.29 0 .599.106 1.08.473c.497.38 1.083.962 1.933 1.812l1.06-1.06Zm-7.085 1.06c.85-.85 1.435-1.433 1.933-1.812c.48-.367.79-.473 1.08-.473v-1.5c-.75 0-1.376.312-1.99.78c-.596.455-1.264 1.125-2.084 1.945l1.06 1.06Zm2.362 10.749L7.216 9.698l-1.06 1.061l7.085 7.085l1.06-1.06Z"></path><path stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M9 21h12"></path></g></svg>');
-y.from_svg('<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"></path></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24"><path fill="currentColor" d="M21.03 2.97a3.578 3.578 0 0 0-5.06 0L14 4.94l-.013-.013a1.75 1.75 0 0 0-2.475 0l-.585.586a1.75 1.75 0 0 0 0 2.475l.012.012l-6.78 6.78a2.25 2.25 0 0 0-.659 1.592v.687l-1.28 2.347c-.836 1.533.841 3.21 2.374 2.375l2.347-1.28h.688a2.25 2.25 0 0 0 1.59-.66L16 13.061l.012.012a1.75 1.75 0 0 0 2.475 0l.586-.585a1.75 1.75 0 0 0 0-2.475L19.061 10l1.97-1.97a3.578 3.578 0 0 0 0-5.06ZM12 9.061l2.94 2.94l-6.78 6.78a.75.75 0 0 1-.531.22H6.75a.75.75 0 0 0-.359.09l-2.515 1.373a.234.234 0 0 1-.159.032a.264.264 0 0 1-.138-.075a.264.264 0 0 1-.075-.138a.234.234 0 0 1 .033-.158l1.372-2.515A.75.75 0 0 0 5 17.25v-.878a.75.75 0 0 1 .22-.53L12 9.06Z"></path></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" stroke-width="1.5" viewBox="0 0 24 24" color="currentColor"><path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M2.956 5.704A.6.6 0 0 0 2 6.187v11.626a.6.6 0 0 0 .956.483l7.889-5.813a.6.6 0 0 0 0-.966l-7.89-5.813ZM13.956 5.704a.6.6 0 0 0-.956.483v11.626a.6.6 0 0 0 .956.483l7.889-5.813a.6.6 0 0 0 0-.966l-7.89-5.813Z"></path></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>');
-y.from_svg('<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"></path></svg>');
-y.from_svg('<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-image"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 256 256"><path fill="currentColor" d="M200 32h-36.26a47.92 47.92 0 0 0-71.48 0H56a16 16 0 0 0-16 16v168a16 16 0 0 0 16 16h144a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16m-72 0a32 32 0 0 1 32 32H96a32 32 0 0 1 32-32m72 184H56V48h26.75A47.9 47.9 0 0 0 80 64v8a8 8 0 0 0 8 8h80a8 8 0 0 0 8-8v-8a47.9 47.9 0 0 0-2.75-16H200Z"></path></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--mdi" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="M5 3h2v2H5v5a2 2 0 0 1-2 2a2 2 0 0 1 2 2v5h2v2H5c-1.07-.27-2-.9-2-2v-4a2 2 0 0 0-2-2H0v-2h1a2 2 0 0 0 2-2V5a2 2 0 0 1 2-2m14 0a2 2 0 0 1 2 2v4a2 2 0 0 0 2 2h1v2h-1a2 2 0 0 0-2 2v4a2 2 0 0 1-2 2h-2v-2h2v-5a2 2 0 0 1 2-2a2 2 0 0 1-2-2V5h-2V3h2m-7 12a1 1 0 0 1 1 1a1 1 0 0 1-1 1a1 1 0 0 1-1-1a1 1 0 0 1 1-1m-4 0a1 1 0 0 1 1 1a1 1 0 0 1-1 1a1 1 0 0 1-1-1a1 1 0 0 1 1-1m8 0a1 1 0 0 1 1 1a1 1 0 0 1-1 1a1 1 0 0 1-1-1a1 1 0 0 1 1-1Z"></path></svg>');
-y.from_svg('<svg width="100%" height="100%" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.35327 10.9495L6.77663 15.158C7.12221 15.4229 7.50051 15.5553 7.91154 15.5553C8.32258 15.5553 8.70126 15.4229 9.0476 15.158L14.471 10.9495" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path><path d="M7.23461 11.4324C7.23406 11.432 7.2335 11.4316 7.23295 11.4312L1.81496 7.2268C1.81471 7.22661 1.81446 7.22641 1.8142 7.22621C1.52269 6.99826 1.39429 6.73321 1.39429 6.37014C1.39429 6.00782 1.52236 5.74301 1.81325 5.51507C1.8136 5.5148 1.81394 5.51453 1.81428 5.51426L7.2331 1.30812C7.45645 1.13785 7.67632 1.06653 7.91159 1.06653C8.14692 1.06653 8.36622 1.13787 8.58861 1.30787C8.58915 1.30828 8.58969 1.30869 8.59023 1.30911L14.0082 5.51462C14.0085 5.51485 14.0088 5.51507 14.0091 5.51529C14.3008 5.74345 14.4289 6.00823 14.4289 6.37014C14.4289 6.73356 14.3006 6.99862 14.01 7.22634C14.0096 7.22662 14.0093 7.22689 14.0089 7.22717L8.59007 11.4322C8.36672 11.6024 8.14686 11.6738 7.91159 11.6738C7.67628 11.6738 7.45699 11.6024 7.23461 11.4324Z" stroke="currentColor" stroke-width="1.5"></path></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--carbon" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path fill="currentColor" d="M4 2H2v26a2 2 0 0 0 2 2h26v-2H4v-3h22v-8H4v-4h14V5H4Zm20 17v4H4v-4ZM16 7v4H4V7Z"></path></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-maximize" width="100%" height="100%"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mic"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-minimize" width="100%" height="100%"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-music"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12.026c0 5.146 3.867 9.387 8.847 9.96c.735.085 1.447-.228 1.97-.753a1.68 1.68 0 0 0 0-2.372c-.523-.525-.95-1.307-.555-1.934c1.576-2.508 9.738 3.251 9.738-4.9C22 6.488 17.523 2 12 2S2 6.489 2 12.026Z"></path><circle cx="17.5" cy="11.5" r=".75"></circle><circle cx="6.5" cy="11.5" r=".75"></circle><path d="M10.335 7a.75.75 0 1 1-1.5 0a.75.75 0 0 1 1.5 0Zm4.915 0a.75.75 0 1 1-1.5 0a.75.75 0 0 1 1.5 0Z"></path></g></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24"><path fill="currentColor" d="M10.05 23q-.75 0-1.4-.337T7.575 21.7l-5.9-8.65q-.2-.3-.175-.65t.3-.6q.475-.475 1.125-.55t1.175.3L7 13.575V4q0-.425.288-.712T8 3t.713.288T9 4v11.5q0 .6-.537.888t-1.038-.063l-2.125-1.5l3.925 5.725q.125.2.35.325t.475.125H17q.825 0 1.413-.587T19 19V5q0-.425.288-.712T20 4t.713.288T21 5v14q0 1.65-1.175 2.825T17 23zM12 1q.425 0 .713.288T13 2v9q0 .425-.288.713T12 12t-.712-.288T11 11V2q0-.425.288-.712T12 1m4 1q.425 0 .713.288T17 3v8q0 .425-.288.713T16 12t-.712-.288T15 11V3q0-.425.288-.712T16 2m-3.85 14.5"></path></svg>');
-y.from_svg('<svg fill="currentColor" width="100%" height="100%" viewBox="0 0 1920 1920" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M1752.768 221.109C1532.646.986 1174.283.986 954.161 221.109l-838.588 838.588c-154.052 154.165-154.052 404.894 0 558.946 149.534 149.421 409.976 149.308 559.059 0l758.738-758.626c87.982-88.094 87.982-231.417 0-319.51-88.32-88.208-231.642-87.982-319.51 0l-638.796 638.908 79.85 79.849 638.795-638.908c43.934-43.821 115.539-43.934 159.812 0 43.934 44.047 43.934 115.877 0 159.812l-758.739 758.625c-110.23 110.118-289.355 110.005-399.36 0-110.118-110.117-110.005-289.242 0-399.247l838.588-838.588c175.963-175.962 462.382-176.188 638.909 0 176.075 176.188 176.075 462.833 0 638.908l-798.607 798.72 79.849 79.85 798.607-798.72c220.01-220.123 220.01-578.485 0-798.607" fill-rule="evenodd"></path></g></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--carbon" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><circle cx="20" cy="4" r="2" fill="currentColor"></circle><circle cx="8" cy="16" r="2" fill="currentColor"></circle><circle cx="28" cy="12" r="2" fill="currentColor"></circle><circle cx="11" cy="7" r="2" fill="currentColor"></circle><circle cx="16" cy="24" r="2" fill="currentColor"></circle><path fill="currentColor" d="M30 3.413L28.586 2L4 26.585V2H2v26a2 2 0 0 0 2 2h26v-2H5.413Z"></path></svg>');
-y.from_svg('<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 12H12M18 12H12M12 12V6M12 12V18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rotate-ccw" style="transform: rotateY(180deg);"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="100%" height="100%"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 1024 1024"><path fill="currentColor" d="M672 418H144c-17.7 0-32 14.3-32 32v414c0 17.7 14.3 32 32 32h528c17.7 0 32-14.3 32-32V450c0-17.7-14.3-32-32-32zm-44 402H188V494h440v326z"></path><path fill="currentColor" d="M819.3 328.5c-78.8-100.7-196-153.6-314.6-154.2l-.2-64c0-6.5-7.6-10.1-12.6-6.1l-128 101c-4 3.1-3.9 9.1 0 12.3L492 318.6c5.1 4 12.7.4 12.6-6.1v-63.9c12.9.1 25.9.9 38.8 2.5c42.1 5.2 82.1 18.2 119 38.7c38.1 21.2 71.2 49.7 98.4 84.3c27.1 34.7 46.7 73.7 58.1 115.8c11 40.7 14 82.7 8.9 124.8c-.7 5.4-1.4 10.8-2.4 16.1h74.9c14.8-103.6-11.3-213-81-302.3z"></path></svg>');
-y.from_svg('<svg viewBox="0 0 22 24" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M19.1168 12.1484C19.474 12.3581 19.9336 12.2384 20.1432 11.8811C20.3528 11.5238 20.2331 11.0643 19.8758 10.8547L19.1168 12.1484ZM6.94331 4.13656L6.55624 4.77902L6.56378 4.78344L6.94331 4.13656ZM5.92408 4.1598L5.50816 3.5357L5.50816 3.5357L5.92408 4.1598ZM5.51031 5.09156L4.76841 5.20151C4.77575 5.25101 4.78802 5.29965 4.80505 5.34671L5.51031 5.09156ZM7.12405 11.7567C7.26496 12.1462 7.69495 12.3477 8.08446 12.2068C8.47397 12.0659 8.67549 11.6359 8.53458 11.2464L7.12405 11.7567ZM19.8758 12.1484C20.2331 11.9388 20.3528 11.4793 20.1432 11.122C19.9336 10.7648 19.474 10.6451 19.1168 10.8547L19.8758 12.1484ZM6.94331 18.8666L6.56375 18.2196L6.55627 18.2241L6.94331 18.8666ZM5.92408 18.8433L5.50815 19.4674H5.50815L5.92408 18.8433ZM5.51031 17.9116L4.80505 17.6564C4.78802 17.7035 4.77575 17.7521 4.76841 17.8016L5.51031 17.9116ZM8.53458 11.7567C8.67549 11.3672 8.47397 10.9372 8.08446 10.7963C7.69495 10.6554 7.26496 10.8569 7.12405 11.2464L8.53458 11.7567ZM19.4963 12.2516C19.9105 12.2516 20.2463 11.9158 20.2463 11.5016C20.2463 11.0873 19.9105 10.7516 19.4963 10.7516V12.2516ZM7.82931 10.7516C7.4151 10.7516 7.07931 11.0873 7.07931 11.5016C7.07931 11.9158 7.4151 12.2516 7.82931 12.2516V10.7516ZM19.8758 10.8547L7.32284 3.48968L6.56378 4.78344L19.1168 12.1484L19.8758 10.8547ZM7.33035 3.49414C6.76609 3.15419 6.05633 3.17038 5.50816 3.5357L6.34 4.78391C6.40506 4.74055 6.4893 4.73863 6.55627 4.77898L7.33035 3.49414ZM5.50816 3.5357C4.95998 3.90102 4.67184 4.54987 4.76841 5.20151L6.25221 4.98161C6.24075 4.90427 6.27494 4.82727 6.34 4.78391L5.50816 3.5357ZM4.80505 5.34671L7.12405 11.7567L8.53458 11.2464L6.21558 4.83641L4.80505 5.34671ZM19.1168 10.8547L6.56378 18.2197L7.32284 19.5134L19.8758 12.1484L19.1168 10.8547ZM6.55627 18.2241C6.4893 18.2645 6.40506 18.2626 6.34 18.2192L5.50815 19.4674C6.05633 19.8327 6.76609 19.8489 7.33035 19.509L6.55627 18.2241ZM6.34 18.2192C6.27494 18.1759 6.24075 18.0988 6.25221 18.0215L4.76841 17.8016C4.67184 18.4532 4.95998 19.1021 5.50815 19.4674L6.34 18.2192ZM6.21558 18.1667L8.53458 11.7567L7.12405 11.2464L4.80505 17.6564L6.21558 18.1667ZM19.4963 10.7516H7.82931V12.2516H19.4963V10.7516Z" fill="currentColor"></path></g></svg>');
-y.from_svg('<svg enable-background="new 0 0 32 32" height="20" width="20" viewBox="0 0 32 32" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="m30 8h-4.1c-.5-2.3-2.5-4-4.9-4s-4.4 1.7-4.9 4h-14.1v2h14.1c.5 2.3 2.5 4 4.9 4s4.4-1.7 4.9-4h4.1zm-9 4c-1.7 0-3-1.3-3-3s1.3-3 3-3 3 1.3 3 3-1.3 3-3 3z"></path><path d="m2 24h4.1c.5 2.3 2.5 4 4.9 4s4.4-1.7 4.9-4h14.1v-2h-14.1c-.5-2.3-2.5-4-4.9-4s-4.4 1.7-4.9 4h-4.1zm9-4c1.7 0 3 1.3 3 3s-1.3 3-3 3-3-1.3-3-3 1.3-3 3-3z"></path><path d="m0 0h32v32h-32z" fill="none"></path></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" class="feather feather-square"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-table"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"></path></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--carbon" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path fill="currentColor" d="M12 15H5a3 3 0 0 1-3-3v-2a3 3 0 0 1 3-3h5V5a1 1 0 0 0-1-1H3V2h6a3 3 0 0 1 3 3zM5 9a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h5V9zm15 14v2a1 1 0 0 0 1 1h5v-4h-5a1 1 0 0 0-1 1z"></path><path fill="currentColor" d="M2 30h28V2Zm26-2h-7a3 3 0 0 1-3-3v-2a3 3 0 0 1 3-3h5v-2a1 1 0 0 0-1-1h-6v-2h6a3 3 0 0 1 3 3Z"></path></svg>');
-y.from_svg(`<svg id="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="currentColor" width="100%" height="100%"><defs><style>.cls-1 {
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather feather-closed-caption"><rect x="2" y="6" width="20" height="12" rx="2" ry="2"></rect><text x="12" y="15" font-family="sans-serif" font-size="8" font-weight="bold" fill="currentColor" stroke="none" text-anchor="middle">CC</text></svg>');
+C.from_svg('<svg width="100%" height="100%" viewBox="0 0 32 32"><path fill="currentColor" d="m31 16l-7 7l-1.41-1.41L28.17 16l-5.58-5.59L24 9l7 7zM1 16l7-7l1.41 1.41L3.83 16l5.58 5.59L8 23l-7-7zm11.42 9.484L17.64 6l1.932.517L14.352 26z"></path></svg>');
+C.from_svg('<svg width="100%" height="100%" viewBox="0 0 32 32"><circle cx="10" cy="12" r="2" fill="currentColor"></circle><circle cx="16" cy="9" r="2" fill="currentColor"></circle><circle cx="22" cy="12" r="2" fill="currentColor"></circle><circle cx="23" cy="18" r="2" fill="currentColor"></circle><circle cx="19" cy="23" r="2" fill="currentColor"></circle><path fill="currentColor" d="M16.54 2A14 14 0 0 0 2 16a4.82 4.82 0 0 0 6.09 4.65l1.12-.31a3 3 0 0 1 3.79 2.9V27a3 3 0 0 0 3 3a14 14 0 0 0 14-14.54A14.05 14.05 0 0 0 16.54 2Zm8.11 22.31A11.93 11.93 0 0 1 16 28a1 1 0 0 1-1-1v-3.76a5 5 0 0 0-5-5a5.07 5.07 0 0 0-1.33.18l-1.12.31A2.82 2.82 0 0 1 4 16A12 12 0 0 1 16.47 4A12.18 12.18 0 0 1 28 15.53a11.89 11.89 0 0 1-3.35 8.79Z"></path></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24"><path fill="currentColor" d="M12 22q-2.05 0-3.875-.788t-3.187-2.15t-2.15-3.187T2 12q0-2.075.813-3.9t2.2-3.175T8.25 2.788T12.2 2q2 0 3.775.688t3.113 1.9t2.125 2.875T22 11.05q0 2.875-1.75 4.413T16 17h-1.85q-.225 0-.312.125t-.088.275q0 .3.375.863t.375 1.287q0 1.25-.687 1.85T12 22m-5.5-9q.65 0 1.075-.425T8 11.5t-.425-1.075T6.5 10t-1.075.425T5 11.5t.425 1.075T6.5 13m3-4q.65 0 1.075-.425T11 7.5t-.425-1.075T9.5 6t-1.075.425T8 7.5t.425 1.075T9.5 9m5 0q.65 0 1.075-.425T16 7.5t-.425-1.075T14.5 6t-1.075.425T13 7.5t.425 1.075T14.5 9m3 4q.65 0 1.075-.425T19 11.5t-.425-1.075T17.5 10t-1.075.425T16 11.5t.425 1.075T17.5 13"></path></svg>');
+C.from_svg('<svg id="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="100%" height="100%"><path d="M23,20a5,5,0,0,0-3.89,1.89L11.8,17.32a4.46,4.46,0,0,0,0-2.64l7.31-4.57A5,5,0,1,0,18,7a4.79,4.79,0,0,0,.2,1.32l-7.31,4.57a5,5,0,1,0,0,6.22l7.31,4.57A4.79,4.79,0,0,0,18,25a5,5,0,1,0,5-5ZM23,4a3,3,0,1,1-3,3A3,3,0,0,1,23,4ZM7,19a3,3,0,1,1,3-3A3,3,0,0,1,7,19Zm16,9a3,3,0,1,1,3-3A3,3,0,0,1,23,28Z" fill="currentColor"></path></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 33 33" color="currentColor" aria-hidden="true" width="100%" height="100%"><path fill="currentColor" d="M28 10v18H10V10h18m0-2H10a2 2 0 0 0-2 2v18a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2Z"></path><path fill="currentColor" d="M4 18H2V4a2 2 0 0 1 2-2h14v2H4Z"></path></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 256 256"><path fill="currentColor" d="M240 192a8 8 0 0 1-8 8h-32v32a8 8 0 0 1-16 0v-32H64a8 8 0 0 1-8-8V72H24a8 8 0 0 1 0-16h32V24a8 8 0 0 1 16 0v160h160a8 8 0 0 1 8 8M96 72h88v88a8 8 0 0 0 16 0V64a8 8 0 0 0-8-8H96a8 8 0 0 0 0 16"></path></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 32 32"><path fill="currentColor" d="M26 24v4H6v-4H4v4a2 2 0 0 0 2 2h20a2 2 0 0 0 2-2v-4zm0-10l-1.41-1.41L17 20.17V2h-2v18.17l-7.59-7.58L6 14l10 10l10-10z"></path></svg>');
+C.from_svg('<svg class="dropdown-arrow svelte-gtiaeq" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 18 18"><path d="M5 8l4 4 4-4z"></path></svg>');
+C.from_svg('<svg class="dropdown-arrow svelte-wyly4p" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 18 18"><circle cx="9" cy="9" r="8" class="circle svelte-wyly4p"></circle><path d="M5 8l4 4 4-4z"></path></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24"><g fill="none"><path fill="currentColor" d="m5.505 11.41l.53.53l-.53-.53ZM3 14.952h-.75H3ZM9.048 21v.75V21ZM11.41 5.505l-.53-.53l.53.53Zm1.831 12.34a.75.75 0 0 0 1.06-1.061l-1.06 1.06ZM7.216 9.697a.75.75 0 1 0-1.06 1.061l1.06-1.06Zm10.749 2.362l-5.905 5.905l1.06 1.06l5.905-5.904l-1.06-1.06Zm-11.93-.12l5.905-5.905l-1.06-1.06l-5.905 5.904l1.06 1.06Zm0 6.025c-.85-.85-1.433-1.436-1.812-1.933c-.367-.481-.473-.79-.473-1.08h-1.5c0 .749.312 1.375.78 1.99c.455.596 1.125 1.263 1.945 2.083l1.06-1.06Zm-1.06-7.086c-.82.82-1.49 1.488-1.945 2.084c-.468.614-.78 1.24-.78 1.99h1.5c0-.29.106-.6.473-1.08c.38-.498.962-1.083 1.812-1.933l-1.06-1.06Zm7.085 7.086c-.85.85-1.435 1.433-1.933 1.813c-.48.366-.79.472-1.08.472v1.5c.75 0 1.376-.312 1.99-.78c.596-.455 1.264-1.125 2.084-1.945l-1.06-1.06Zm-7.085 1.06c.82.82 1.487 1.49 2.084 1.945c.614.468 1.24.78 1.989.78v-1.5c-.29 0-.599-.106-1.08-.473c-.497-.38-1.083-.962-1.933-1.812l-1.06 1.06Zm12.99-12.99c.85.85 1.433 1.436 1.813 1.933c.366.481.472.79.472 1.08h1.5c0-.749-.312-1.375-.78-1.99c-.455-.596-1.125-1.263-1.945-2.083l-1.06 1.06Zm1.06 7.086c.82-.82 1.49-1.488 1.945-2.084c.468-.614.78-1.24.78-1.99h-1.5c0 .29-.106.6-.473 1.08c-.38.498-.962 1.083-1.812 1.933l1.06 1.06Zm0-8.146c-.82-.82-1.487-1.49-2.084-1.945c-.614-.468-1.24-.78-1.989-.78v1.5c.29 0 .599.106 1.08.473c.497.38 1.083.962 1.933 1.812l1.06-1.06Zm-7.085 1.06c.85-.85 1.435-1.433 1.933-1.812c.48-.367.79-.473 1.08-.473v-1.5c-.75 0-1.376.312-1.99.78c-.596.455-1.264 1.125-2.084 1.945l1.06 1.06Zm2.362 10.749L7.216 9.698l-1.06 1.061l7.085 7.085l1.06-1.06Z"></path><path stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M9 21h12"></path></g></svg>');
+C.from_svg('<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"></path></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24"><path fill="currentColor" d="M21.03 2.97a3.578 3.578 0 0 0-5.06 0L14 4.94l-.013-.013a1.75 1.75 0 0 0-2.475 0l-.585.586a1.75 1.75 0 0 0 0 2.475l.012.012l-6.78 6.78a2.25 2.25 0 0 0-.659 1.592v.687l-1.28 2.347c-.836 1.533.841 3.21 2.374 2.375l2.347-1.28h.688a2.25 2.25 0 0 0 1.59-.66L16 13.061l.012.012a1.75 1.75 0 0 0 2.475 0l.586-.585a1.75 1.75 0 0 0 0-2.475L19.061 10l1.97-1.97a3.578 3.578 0 0 0 0-5.06ZM12 9.061l2.94 2.94l-6.78 6.78a.75.75 0 0 1-.531.22H6.75a.75.75 0 0 0-.359.09l-2.515 1.373a.234.234 0 0 1-.159.032a.264.264 0 0 1-.138-.075a.264.264 0 0 1-.075-.138a.234.234 0 0 1 .033-.158l1.372-2.515A.75.75 0 0 0 5 17.25v-.878a.75.75 0 0 1 .22-.53L12 9.06Z"></path></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" stroke-width="1.5" viewBox="0 0 24 24" color="currentColor"><path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" d="M2.956 5.704A.6.6 0 0 0 2 6.187v11.626a.6.6 0 0 0 .956.483l7.889-5.813a.6.6 0 0 0 0-.966l-7.89-5.813ZM13.956 5.704a.6.6 0 0 0-.956.483v11.626a.6.6 0 0 0 .956.483l7.889-5.813a.6.6 0 0 0 0-.966l-7.89-5.813Z"></path></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>');
+C.from_svg('<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"></path></svg>');
+C.from_svg('<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-image"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 256 256"><path fill="currentColor" d="M200 32h-36.26a47.92 47.92 0 0 0-71.48 0H56a16 16 0 0 0-16 16v168a16 16 0 0 0 16 16h144a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16m-72 0a32 32 0 0 1 32 32H96a32 32 0 0 1 32-32m72 184H56V48h26.75A47.9 47.9 0 0 0 80 64v8a8 8 0 0 0 8 8h80a8 8 0 0 0 8-8v-8a47.9 47.9 0 0 0-2.75-16H200Z"></path></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--mdi" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="M5 3h2v2H5v5a2 2 0 0 1-2 2a2 2 0 0 1 2 2v5h2v2H5c-1.07-.27-2-.9-2-2v-4a2 2 0 0 0-2-2H0v-2h1a2 2 0 0 0 2-2V5a2 2 0 0 1 2-2m14 0a2 2 0 0 1 2 2v4a2 2 0 0 0 2 2h1v2h-1a2 2 0 0 0-2 2v4a2 2 0 0 1-2 2h-2v-2h2v-5a2 2 0 0 1 2-2a2 2 0 0 1-2-2V5h-2V3h2m-7 12a1 1 0 0 1 1 1a1 1 0 0 1-1 1a1 1 0 0 1-1-1a1 1 0 0 1 1-1m-4 0a1 1 0 0 1 1 1a1 1 0 0 1-1 1a1 1 0 0 1-1-1a1 1 0 0 1 1-1m8 0a1 1 0 0 1 1 1a1 1 0 0 1-1 1a1 1 0 0 1-1-1a1 1 0 0 1 1-1Z"></path></svg>');
+C.from_svg('<svg width="100%" height="100%" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.35327 10.9495L6.77663 15.158C7.12221 15.4229 7.50051 15.5553 7.91154 15.5553C8.32258 15.5553 8.70126 15.4229 9.0476 15.158L14.471 10.9495" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path><path d="M7.23461 11.4324C7.23406 11.432 7.2335 11.4316 7.23295 11.4312L1.81496 7.2268C1.81471 7.22661 1.81446 7.22641 1.8142 7.22621C1.52269 6.99826 1.39429 6.73321 1.39429 6.37014C1.39429 6.00782 1.52236 5.74301 1.81325 5.51507C1.8136 5.5148 1.81394 5.51453 1.81428 5.51426L7.2331 1.30812C7.45645 1.13785 7.67632 1.06653 7.91159 1.06653C8.14692 1.06653 8.36622 1.13787 8.58861 1.30787C8.58915 1.30828 8.58969 1.30869 8.59023 1.30911L14.0082 5.51462C14.0085 5.51485 14.0088 5.51507 14.0091 5.51529C14.3008 5.74345 14.4289 6.00823 14.4289 6.37014C14.4289 6.73356 14.3006 6.99862 14.01 7.22634C14.0096 7.22662 14.0093 7.22689 14.0089 7.22717L8.59007 11.4322C8.36672 11.6024 8.14686 11.6738 7.91159 11.6738C7.67628 11.6738 7.45699 11.6024 7.23461 11.4324Z" stroke="currentColor" stroke-width="1.5"></path></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--carbon" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path fill="currentColor" d="M4 2H2v26a2 2 0 0 0 2 2h26v-2H4v-3h22v-8H4v-4h14V5H4Zm20 17v4H4v-4ZM16 7v4H4V7Z"></path></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-maximize" width="100%" height="100%"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mic"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-minimize" width="100%" height="100%"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-music"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12.026c0 5.146 3.867 9.387 8.847 9.96c.735.085 1.447-.228 1.97-.753a1.68 1.68 0 0 0 0-2.372c-.523-.525-.95-1.307-.555-1.934c1.576-2.508 9.738 3.251 9.738-4.9C22 6.488 17.523 2 12 2S2 6.489 2 12.026Z"></path><circle cx="17.5" cy="11.5" r=".75"></circle><circle cx="6.5" cy="11.5" r=".75"></circle><path d="M10.335 7a.75.75 0 1 1-1.5 0a.75.75 0 0 1 1.5 0Zm4.915 0a.75.75 0 1 1-1.5 0a.75.75 0 0 1 1.5 0Z"></path></g></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24"><path fill="currentColor" d="M10.05 23q-.75 0-1.4-.337T7.575 21.7l-5.9-8.65q-.2-.3-.175-.65t.3-.6q.475-.475 1.125-.55t1.175.3L7 13.575V4q0-.425.288-.712T8 3t.713.288T9 4v11.5q0 .6-.537.888t-1.038-.063l-2.125-1.5l3.925 5.725q.125.2.35.325t.475.125H17q.825 0 1.413-.587T19 19V5q0-.425.288-.712T20 4t.713.288T21 5v14q0 1.65-1.175 2.825T17 23zM12 1q.425 0 .713.288T13 2v9q0 .425-.288.713T12 12t-.712-.288T11 11V2q0-.425.288-.712T12 1m4 1q.425 0 .713.288T17 3v8q0 .425-.288.713T16 12t-.712-.288T15 11V3q0-.425.288-.712T16 2m-3.85 14.5"></path></svg>');
+C.from_svg('<svg fill="currentColor" width="100%" height="100%" viewBox="0 0 1920 1920" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M1752.768 221.109C1532.646.986 1174.283.986 954.161 221.109l-838.588 838.588c-154.052 154.165-154.052 404.894 0 558.946 149.534 149.421 409.976 149.308 559.059 0l758.738-758.626c87.982-88.094 87.982-231.417 0-319.51-88.32-88.208-231.642-87.982-319.51 0l-638.796 638.908 79.85 79.849 638.795-638.908c43.934-43.821 115.539-43.934 159.812 0 43.934 44.047 43.934 115.877 0 159.812l-758.739 758.625c-110.23 110.118-289.355 110.005-399.36 0-110.118-110.117-110.005-289.242 0-399.247l838.588-838.588c175.963-175.962 462.382-176.188 638.909 0 176.075 176.188 176.075 462.833 0 638.908l-798.607 798.72 79.849 79.85 798.607-798.72c220.01-220.123 220.01-578.485 0-798.607" fill-rule="evenodd"></path></g></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--carbon" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><circle cx="20" cy="4" r="2" fill="currentColor"></circle><circle cx="8" cy="16" r="2" fill="currentColor"></circle><circle cx="28" cy="12" r="2" fill="currentColor"></circle><circle cx="11" cy="7" r="2" fill="currentColor"></circle><circle cx="16" cy="24" r="2" fill="currentColor"></circle><path fill="currentColor" d="M30 3.413L28.586 2L4 26.585V2H2v26a2 2 0 0 0 2 2h26v-2H5.413Z"></path></svg>');
+C.from_svg('<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 12H12M18 12H12M12 12V6M12 12V18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rotate-ccw" style="transform: rotateY(180deg);"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="100%" height="100%"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 1024 1024"><path fill="currentColor" d="M672 418H144c-17.7 0-32 14.3-32 32v414c0 17.7 14.3 32 32 32h528c17.7 0 32-14.3 32-32V450c0-17.7-14.3-32-32-32zm-44 402H188V494h440v326z"></path><path fill="currentColor" d="M819.3 328.5c-78.8-100.7-196-153.6-314.6-154.2l-.2-64c0-6.5-7.6-10.1-12.6-6.1l-128 101c-4 3.1-3.9 9.1 0 12.3L492 318.6c5.1 4 12.7.4 12.6-6.1v-63.9c12.9.1 25.9.9 38.8 2.5c42.1 5.2 82.1 18.2 119 38.7c38.1 21.2 71.2 49.7 98.4 84.3c27.1 34.7 46.7 73.7 58.1 115.8c11 40.7 14 82.7 8.9 124.8c-.7 5.4-1.4 10.8-2.4 16.1h74.9c14.8-103.6-11.3-213-81-302.3z"></path></svg>');
+C.from_svg('<svg viewBox="0 0 22 24" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M19.1168 12.1484C19.474 12.3581 19.9336 12.2384 20.1432 11.8811C20.3528 11.5238 20.2331 11.0643 19.8758 10.8547L19.1168 12.1484ZM6.94331 4.13656L6.55624 4.77902L6.56378 4.78344L6.94331 4.13656ZM5.92408 4.1598L5.50816 3.5357L5.50816 3.5357L5.92408 4.1598ZM5.51031 5.09156L4.76841 5.20151C4.77575 5.25101 4.78802 5.29965 4.80505 5.34671L5.51031 5.09156ZM7.12405 11.7567C7.26496 12.1462 7.69495 12.3477 8.08446 12.2068C8.47397 12.0659 8.67549 11.6359 8.53458 11.2464L7.12405 11.7567ZM19.8758 12.1484C20.2331 11.9388 20.3528 11.4793 20.1432 11.122C19.9336 10.7648 19.474 10.6451 19.1168 10.8547L19.8758 12.1484ZM6.94331 18.8666L6.56375 18.2196L6.55627 18.2241L6.94331 18.8666ZM5.92408 18.8433L5.50815 19.4674H5.50815L5.92408 18.8433ZM5.51031 17.9116L4.80505 17.6564C4.78802 17.7035 4.77575 17.7521 4.76841 17.8016L5.51031 17.9116ZM8.53458 11.7567C8.67549 11.3672 8.47397 10.9372 8.08446 10.7963C7.69495 10.6554 7.26496 10.8569 7.12405 11.2464L8.53458 11.7567ZM19.4963 12.2516C19.9105 12.2516 20.2463 11.9158 20.2463 11.5016C20.2463 11.0873 19.9105 10.7516 19.4963 10.7516V12.2516ZM7.82931 10.7516C7.4151 10.7516 7.07931 11.0873 7.07931 11.5016C7.07931 11.9158 7.4151 12.2516 7.82931 12.2516V10.7516ZM19.8758 10.8547L7.32284 3.48968L6.56378 4.78344L19.1168 12.1484L19.8758 10.8547ZM7.33035 3.49414C6.76609 3.15419 6.05633 3.17038 5.50816 3.5357L6.34 4.78391C6.40506 4.74055 6.4893 4.73863 6.55627 4.77898L7.33035 3.49414ZM5.50816 3.5357C4.95998 3.90102 4.67184 4.54987 4.76841 5.20151L6.25221 4.98161C6.24075 4.90427 6.27494 4.82727 6.34 4.78391L5.50816 3.5357ZM4.80505 5.34671L7.12405 11.7567L8.53458 11.2464L6.21558 4.83641L4.80505 5.34671ZM19.1168 10.8547L6.56378 18.2197L7.32284 19.5134L19.8758 12.1484L19.1168 10.8547ZM6.55627 18.2241C6.4893 18.2645 6.40506 18.2626 6.34 18.2192L5.50815 19.4674C6.05633 19.8327 6.76609 19.8489 7.33035 19.509L6.55627 18.2241ZM6.34 18.2192C6.27494 18.1759 6.24075 18.0988 6.25221 18.0215L4.76841 17.8016C4.67184 18.4532 4.95998 19.1021 5.50815 19.4674L6.34 18.2192ZM6.21558 18.1667L8.53458 11.7567L7.12405 11.2464L4.80505 17.6564L6.21558 18.1667ZM19.4963 10.7516H7.82931V12.2516H19.4963V10.7516Z" fill="currentColor"></path></g></svg>');
+C.from_svg('<svg enable-background="new 0 0 32 32" height="20" width="20" viewBox="0 0 32 32" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="m30 8h-4.1c-.5-2.3-2.5-4-4.9-4s-4.4 1.7-4.9 4h-14.1v2h14.1c.5 2.3 2.5 4 4.9 4s4.4-1.7 4.9-4h4.1zm-9 4c-1.7 0-3-1.3-3-3s1.3-3 3-3 3 1.3 3 3-1.3 3-3 3z"></path><path d="m2 24h4.1c.5 2.3 2.5 4 4.9 4s4.4-1.7 4.9-4h14.1v-2h-14.1c-.5-2.3-2.5-4-4.9-4s-4.4 1.7-4.9 4h-4.1zm9-4c1.7 0 3 1.3 3 3s-1.3 3-3 3-3-1.3-3-3 1.3-3 3-3z"></path><path d="m0 0h32v32h-32z" fill="none"></path></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" class="feather feather-square"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-table"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"></path></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--carbon" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path fill="currentColor" d="M12 15H5a3 3 0 0 1-3-3v-2a3 3 0 0 1 3-3h5V5a1 1 0 0 0-1-1H3V2h6a3 3 0 0 1 3 3zM5 9a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h5V9zm15 14v2a1 1 0 0 0 1 1h5v-4h-5a1 1 0 0 0-1 1z"></path><path fill="currentColor" d="M2 30h28V2Zm26-2h-7a3 3 0 0 1-3-3v-2a3 3 0 0 1 3-3h5v-2a1 1 0 0 0-1-1h-6v-2h6a3 3 0 0 1 3 3Z"></path></svg>');
+C.from_svg(`<svg id="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="currentColor" width="100%" height="100%"><defs><style>.cls-1 {
 				fill: none;
 			}</style></defs><rect x="12" y="12" width="2" height="12"></rect><rect x="18" y="12" width="2" height="12"></rect><path d="M4,6V8H6V28a2,2,0,0,0,2,2H24a2,2,0,0,0,2-2V8h2V6ZM8,28V8H24V28Z"></path><rect x="12" y="2" width="8" height="2"></rect><rect id="_Transparent_Rectangle_" data-name="&lt;Transparent Rectangle>" class="cls-1" width="32" height="32"></rect></svg>`);
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--carbon" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path fill="currentColor" d="M23 9.005h6a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2h-6a2 2 0 0 0-2 2v1H11v-1a2 2 0 0 0-2-2H3a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h4v20a2.002 2.002 0 0 0 2 2h4v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2h-6a2 2 0 0 0-2 2v1h-4v-9h4v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2h-6a2 2 0 0 0-2 2v1h-4v-9h4v1a2 2 0 0 0 2 2Zm0-6h6v4h-6Zm-14 4H3v-4h6Zm14 18h6v4h-6Zm0-11h6v4h-6Z"></path></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-scissors"><circle cx="6" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><line x1="20" y1="4" x2="8.12" y2="15.88"></line><line x1="14.47" y1="14.48" x2="20" y2="20"></line><line x1="8.12" y1="8.12" x2="12" y2="12"></line></svg>');
-y.from_svg('<svg aria-label="undo" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rotate-ccw"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="90%" height="90%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-upload"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-video"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24"><path fill="currentColor" d="M12 16q1.875 0 3.188-1.312T16.5 11.5t-1.312-3.187T12 7T8.813 8.313T7.5 11.5t1.313 3.188T12 16m0-1.8q-1.125 0-1.912-.788T9.3 11.5t.788-1.912T12 8.8t1.913.788t.787 1.912t-.787 1.913T12 14.2m0 4.8q-3.65 0-6.65-2.037T1 11.5q1.35-3.425 4.35-5.462T12 4t6.65 2.038T23 11.5q-1.35 3.425-4.35 5.463T12 19"></path></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24"><path fill="currentColor" d="m19.8 22.6l-4.2-4.15q-.875.275-1.762.413T12 19q-3.775 0-6.725-2.087T1 11.5q.525-1.325 1.325-2.463T4.15 7L1.4 4.2l1.4-1.4l18.4 18.4zM12 16q.275 0 .513-.025t.512-.1l-5.4-5.4q-.075.275-.1.513T7.5 11.5q0 1.875 1.313 3.188T12 16m7.3.45l-3.175-3.15q.175-.425.275-.862t.1-.938q0-1.875-1.312-3.187T12 7q-.5 0-.937.1t-.863.3L7.65 4.85q1.025-.425 2.1-.637T12 4q3.775 0 6.725 2.088T23 11.5q-.575 1.475-1.513 2.738T19.3 16.45m-4.625-4.6l-3-3q.7-.125 1.288.113t1.012.687t.613 1.038t.087 1.162"></path></svg>');
-y.from_svg('<svg width="100%" height="100%" viewBox="0 0 24 24" stroke-width="1.5" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" color="currentColor"><title>Low volume</title><path d="M19.5 7.5C19.5 7.5 21 9 21 11.5C21 14 19.5 15.5 19.5 15.5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M2 13.8571V10.1429C2 9.03829 2.89543 8.14286 4 8.14286H6.9C7.09569 8.14286 7.28708 8.08544 7.45046 7.97772L13.4495 4.02228C14.1144 3.5839 15 4.06075 15 4.85714V19.1429C15 19.9392 14.1144 20.4161 13.4495 19.9777L7.45046 16.0223C7.28708 15.9146 7.09569 15.8571 6.9 15.8571H4C2.89543 15.8571 2 14.9617 2 13.8571Z" stroke-width="1.5"></path></svg>');
-y.from_svg('<svg width="100%" height="100%" viewBox="0 0 24 24" stroke-width="1.5" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg" color="currentColor"><title>High volume</title><path d="M1 13.8571V10.1429C1 9.03829 1.89543 8.14286 3 8.14286H5.9C6.09569 8.14286 6.28708 8.08544 6.45046 7.97772L12.4495 4.02228C13.1144 3.5839 14 4.06075 14 4.85714V19.1429C14 19.9392 13.1144 20.4161 12.4495 19.9777L6.45046 16.0223C6.28708 15.9146 6.09569 15.8571 5.9 15.8571H3C1.89543 15.8571 1 14.9617 1 13.8571Z" stroke-width="1.5"></path><path d="M17.5 7.5C17.5 7.5 19 9 19 11.5C19 14 17.5 15.5 17.5 15.5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M20.5 4.5C20.5 4.5 23 7 23 11.5C23 16 20.5 18.5 20.5 18.5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>');
-y.from_svg('<svg width="100%" height="100%" viewBox="0 0 24 24" stroke-width="1.5" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" color="currentColor"><title>Muted volume</title><g clip-path="url(#clip0_3173_16686)"><path d="M18 14L20.0005 12M22 10L20.0005 12M20.0005 12L18 10M20.0005 12L22 14" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M2 13.8571V10.1429C2 9.03829 2.89543 8.14286 4 8.14286H6.9C7.09569 8.14286 7.28708 8.08544 7.45046 7.97772L13.4495 4.02228C14.1144 3.5839 15 4.06075 15 4.85714V19.1429C15 19.9392 14.1144 20.4161 13.4495 19.9777L7.45046 16.0223C7.28708 15.9146 7.09569 15.8571 6.9 15.8571H4C2.89543 15.8571 2 14.9617 2 13.8571Z" stroke-width="1.5"></path></g><defs><clipPath id="clip0_3173_16686"><rect width="24" height="24" fill="white"></rect></clipPath></defs></svg>');
-y.from_svg('<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" stroke-linecap="round" stroke-linejoin="round"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"></path></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2c-4.963 0-9 4.038-9 9c0 3.328 1.82 6.232 4.513 7.79l-2.067 1.378A1 1 0 0 0 6 22h12a1 1 0 0 0 .555-1.832l-2.067-1.378C19.18 17.232 21 14.328 21 11c0-4.962-4.037-9-9-9zm0 16c-3.859 0-7-3.141-7-7c0-3.86 3.141-7 7-7s7 3.14 7 7c0 3.859-3.141 7-7 7z"></path><path fill="currentColor" d="M12 6c-2.757 0-5 2.243-5 5s2.243 5 5 5s5-2.243 5-5s-2.243-5-5-5zm0 8c-1.654 0-3-1.346-3-3s1.346-3 3-3s3 1.346 3 3s-1.346 3-3 3z"></path></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 50 50" class="svelte-3g80w1"><circle cx="25" cy="25" r="20" fill="none" stroke-width="3.0" stroke-linecap="round" stroke-dasharray="94.2477796076938 94.2477796076938" stroke-dashoffset="0" class="svelte-3g80w1"><animateTransform attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" repeatCount="indefinite" class="svelte-3g80w1"></animateTransform></circle></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 256 256"><path fill="currentColor" d="M144 120v88a8 8 0 0 1-8 8H48a8 8 0 0 1-8-8v-88a8 8 0 0 1 8-8h88a8 8 0 0 1 8 8m64 56a8 8 0 0 0-8 8v16h-24a8 8 0 0 0 0 16h24a16 16 0 0 0 16-16v-16a8 8 0 0 0-8-8m0-72a8 8 0 0 0-8 8v32a8 8 0 0 0 16 0v-32a8 8 0 0 0-8-8m-8-64h-16a8 8 0 0 0 0 16h16v16a8 8 0 0 0 16 0V56a16 16 0 0 0-16-16m-56 0h-32a8 8 0 0 0 0 16h32a8 8 0 0 0 0-16M48 88a8 8 0 0 0 8-8V56h16a8 8 0 0 0 0-16H56a16 16 0 0 0-16 16v24a8 8 0 0 0 8 8"></path></svg>');
-y.from_svg('<svg width="100%" height="100%" stroke-width="1.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" color="currentColor"><path d="M19.1679 9C18.0247 6.46819 15.3006 4.5 11.9999 4.5C8.31459 4.5 5.05104 7.44668 4.54932 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M16 9H19.4C19.7314 9 20 8.73137 20 8.4V5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M4.88146 15C5.92458 17.5318 8.64874 19.5 12.0494 19.5C15.7347 19.5 18.9983 16.5533 19.5 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M8.04932 15H4.64932C4.31795 15 4.04932 15.2686 4.04932 15.6V19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>');
-y.from_svg('<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 20L12 4M12 20L7 15M12 20L17 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21l-4.343-4.343m0 0A8 8 0 1 0 5.343 5.343a8 8 0 0 0 11.314 11.314M11 8v6m-3-3h6"></path></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21l-4.343-4.343m0 0A8 8 0 1 0 5.343 5.343a8 8 0 0 0 11.314 11.314M8 11h6"></path></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="currentColor" d="M12.1 2a9.8 9.8 0 0 0-5.4 1.6l6.4 6.4a2.1 2.1 0 0 1 .2 3a2.1 2.1 0 0 1-3-.2L3.7 6.4A9.84 9.84 0 0 0 2 12.1a10.14 10.14 0 0 0 10.1 10.1a11 11 0 0 0 2.6-.3l6.7 6.7a5 5 0 0 0 7.1-7.1l-6.7-6.7a11 11 0 0 0 .3-2.6A10 10 0 0 0 12.1 2m8 10.1a7.6 7.6 0 0 1-.3 2.1l-.3 1.1l.8.8l6.7 6.7a2.88 2.88 0 0 1 .9 2.1A2.72 2.72 0 0 1 27 27a2.9 2.9 0 0 1-4.2 0l-6.7-6.7l-.8-.8l-1.1.3a7.6 7.6 0 0 1-2.1.3a8.27 8.27 0 0 1-5.7-2.3A7.63 7.63 0 0 1 4 12.1a8.3 8.3 0 0 1 .3-2.2l4.4 4.4a4.14 4.14 0 0 0 5.9.2a4.14 4.14 0 0 0-.2-5.9L10 4.2a6.5 6.5 0 0 1 2-.3a8.27 8.27 0 0 1 5.7 2.3a8.5 8.5 0 0 1 2.4 5.9"></path></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="currentColor" d="M17.74 30L16 29l4-7h6a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h9v2H6a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4h20a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4h-4.84Z"></path><path fill="currentColor" d="M8 10h16v2H8zm0 6h10v2H8z"></path></svg>');
-y.from_svg('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="currentColor" d="M19 10h7v2h-7zm0 5h7v2h-7zm0 5h7v2h-7z"></path><path fill="currentColor" d="M28 5H4a2 2 0 0 0-2 2v18a2 2 0 0 0 2 2h24a2.003 2.003 0 0 0 2-2V7a2 2 0 0 0-2-2M4 7h11v18H4Zm13 18V7h11l.002 18Z"></path></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--carbon" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path fill="currentColor" d="M23 9.005h6a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2h-6a2 2 0 0 0-2 2v1H11v-1a2 2 0 0 0-2-2H3a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h4v20a2.002 2.002 0 0 0 2 2h4v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2h-6a2 2 0 0 0-2 2v1h-4v-9h4v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2h-6a2 2 0 0 0-2 2v1h-4v-9h4v1a2 2 0 0 0 2 2Zm0-6h6v4h-6Zm-14 4H3v-4h6Zm14 18h6v4h-6Zm0-11h6v4h-6Z"></path></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-scissors"><circle cx="6" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><line x1="20" y1="4" x2="8.12" y2="15.88"></line><line x1="14.47" y1="14.48" x2="20" y2="20"></line><line x1="8.12" y1="8.12" x2="12" y2="12"></line></svg>');
+C.from_svg('<svg aria-label="undo" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rotate-ccw"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="90%" height="90%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-upload"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-video"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24"><path fill="currentColor" d="M12 16q1.875 0 3.188-1.312T16.5 11.5t-1.312-3.187T12 7T8.813 8.313T7.5 11.5t1.313 3.188T12 16m0-1.8q-1.125 0-1.912-.788T9.3 11.5t.788-1.912T12 8.8t1.913.788t.787 1.912t-.787 1.913T12 14.2m0 4.8q-3.65 0-6.65-2.037T1 11.5q1.35-3.425 4.35-5.462T12 4t6.65 2.038T23 11.5q-1.35 3.425-4.35 5.463T12 19"></path></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24"><path fill="currentColor" d="m19.8 22.6l-4.2-4.15q-.875.275-1.762.413T12 19q-3.775 0-6.725-2.087T1 11.5q.525-1.325 1.325-2.463T4.15 7L1.4 4.2l1.4-1.4l18.4 18.4zM12 16q.275 0 .513-.025t.512-.1l-5.4-5.4q-.075.275-.1.513T7.5 11.5q0 1.875 1.313 3.188T12 16m7.3.45l-3.175-3.15q.175-.425.275-.862t.1-.938q0-1.875-1.312-3.187T12 7q-.5 0-.937.1t-.863.3L7.65 4.85q1.025-.425 2.1-.637T12 4q3.775 0 6.725 2.088T23 11.5q-.575 1.475-1.513 2.738T19.3 16.45m-4.625-4.6l-3-3q.7-.125 1.288.113t1.012.687t.613 1.038t.087 1.162"></path></svg>');
+C.from_svg('<svg width="100%" height="100%" viewBox="0 0 24 24" stroke-width="1.5" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" color="currentColor"><title>Low volume</title><path d="M19.5 7.5C19.5 7.5 21 9 21 11.5C21 14 19.5 15.5 19.5 15.5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M2 13.8571V10.1429C2 9.03829 2.89543 8.14286 4 8.14286H6.9C7.09569 8.14286 7.28708 8.08544 7.45046 7.97772L13.4495 4.02228C14.1144 3.5839 15 4.06075 15 4.85714V19.1429C15 19.9392 14.1144 20.4161 13.4495 19.9777L7.45046 16.0223C7.28708 15.9146 7.09569 15.8571 6.9 15.8571H4C2.89543 15.8571 2 14.9617 2 13.8571Z" stroke-width="1.5"></path></svg>');
+C.from_svg('<svg width="100%" height="100%" viewBox="0 0 24 24" stroke-width="1.5" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg" color="currentColor"><title>High volume</title><path d="M1 13.8571V10.1429C1 9.03829 1.89543 8.14286 3 8.14286H5.9C6.09569 8.14286 6.28708 8.08544 6.45046 7.97772L12.4495 4.02228C13.1144 3.5839 14 4.06075 14 4.85714V19.1429C14 19.9392 13.1144 20.4161 12.4495 19.9777L6.45046 16.0223C6.28708 15.9146 6.09569 15.8571 5.9 15.8571H3C1.89543 15.8571 1 14.9617 1 13.8571Z" stroke-width="1.5"></path><path d="M17.5 7.5C17.5 7.5 19 9 19 11.5C19 14 17.5 15.5 17.5 15.5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M20.5 4.5C20.5 4.5 23 7 23 11.5C23 16 20.5 18.5 20.5 18.5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>');
+C.from_svg('<svg width="100%" height="100%" viewBox="0 0 24 24" stroke-width="1.5" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" color="currentColor"><title>Muted volume</title><g clip-path="url(#clip0_3173_16686)"><path d="M18 14L20.0005 12M22 10L20.0005 12M20.0005 12L18 10M20.0005 12L22 14" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M2 13.8571V10.1429C2 9.03829 2.89543 8.14286 4 8.14286H6.9C7.09569 8.14286 7.28708 8.08544 7.45046 7.97772L13.4495 4.02228C14.1144 3.5839 15 4.06075 15 4.85714V19.1429C15 19.9392 14.1144 20.4161 13.4495 19.9777L7.45046 16.0223C7.28708 15.9146 7.09569 15.8571 6.9 15.8571H4C2.89543 15.8571 2 14.9617 2 13.8571Z" stroke-width="1.5"></path></g><defs><clipPath id="clip0_3173_16686"><rect width="24" height="24" fill="white"></rect></clipPath></defs></svg>');
+C.from_svg('<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" stroke-linecap="round" stroke-linejoin="round"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"></path></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2c-4.963 0-9 4.038-9 9c0 3.328 1.82 6.232 4.513 7.79l-2.067 1.378A1 1 0 0 0 6 22h12a1 1 0 0 0 .555-1.832l-2.067-1.378C19.18 17.232 21 14.328 21 11c0-4.962-4.037-9-9-9zm0 16c-3.859 0-7-3.141-7-7c0-3.86 3.141-7 7-7s7 3.14 7 7c0 3.859-3.141 7-7 7z"></path><path fill="currentColor" d="M12 6c-2.757 0-5 2.243-5 5s2.243 5 5 5s5-2.243 5-5s-2.243-5-5-5zm0 8c-1.654 0-3-1.346-3-3s1.346-3 3-3s3 1.346 3 3s-1.346 3-3 3z"></path></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 50 50" class="svelte-3g80w1"><circle cx="25" cy="25" r="20" fill="none" stroke-width="3.0" stroke-linecap="round" stroke-dasharray="94.2477796076938 94.2477796076938" stroke-dashoffset="0" class="svelte-3g80w1"><animateTransform attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" repeatCount="indefinite" class="svelte-3g80w1"></animateTransform></circle></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 256 256"><path fill="currentColor" d="M144 120v88a8 8 0 0 1-8 8H48a8 8 0 0 1-8-8v-88a8 8 0 0 1 8-8h88a8 8 0 0 1 8 8m64 56a8 8 0 0 0-8 8v16h-24a8 8 0 0 0 0 16h24a16 16 0 0 0 16-16v-16a8 8 0 0 0-8-8m0-72a8 8 0 0 0-8 8v32a8 8 0 0 0 16 0v-32a8 8 0 0 0-8-8m-8-64h-16a8 8 0 0 0 0 16h16v16a8 8 0 0 0 16 0V56a16 16 0 0 0-16-16m-56 0h-32a8 8 0 0 0 0 16h32a8 8 0 0 0 0-16M48 88a8 8 0 0 0 8-8V56h16a8 8 0 0 0 0-16H56a16 16 0 0 0-16 16v24a8 8 0 0 0 8 8"></path></svg>');
+C.from_svg('<svg width="100%" height="100%" stroke-width="1.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" color="currentColor"><path d="M19.1679 9C18.0247 6.46819 15.3006 4.5 11.9999 4.5C8.31459 4.5 5.05104 7.44668 4.54932 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M16 9H19.4C19.7314 9 20 8.73137 20 8.4V5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M4.88146 15C5.92458 17.5318 8.64874 19.5 12.0494 19.5C15.7347 19.5 18.9983 16.5533 19.5 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M8.04932 15H4.64932C4.31795 15 4.04932 15.2686 4.04932 15.6V19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>');
+C.from_svg('<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 20L12 4M12 20L7 15M12 20L17 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21l-4.343-4.343m0 0A8 8 0 1 0 5.343 5.343a8 8 0 0 0 11.314 11.314M11 8v6m-3-3h6"></path></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21l-4.343-4.343m0 0A8 8 0 1 0 5.343 5.343a8 8 0 0 0 11.314 11.314M8 11h6"></path></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="currentColor" d="M12.1 2a9.8 9.8 0 0 0-5.4 1.6l6.4 6.4a2.1 2.1 0 0 1 .2 3a2.1 2.1 0 0 1-3-.2L3.7 6.4A9.84 9.84 0 0 0 2 12.1a10.14 10.14 0 0 0 10.1 10.1a11 11 0 0 0 2.6-.3l6.7 6.7a5 5 0 0 0 7.1-7.1l-6.7-6.7a11 11 0 0 0 .3-2.6A10 10 0 0 0 12.1 2m8 10.1a7.6 7.6 0 0 1-.3 2.1l-.3 1.1l.8.8l6.7 6.7a2.88 2.88 0 0 1 .9 2.1A2.72 2.72 0 0 1 27 27a2.9 2.9 0 0 1-4.2 0l-6.7-6.7l-.8-.8l-1.1.3a7.6 7.6 0 0 1-2.1.3a8.27 8.27 0 0 1-5.7-2.3A7.63 7.63 0 0 1 4 12.1a8.3 8.3 0 0 1 .3-2.2l4.4 4.4a4.14 4.14 0 0 0 5.9.2a4.14 4.14 0 0 0-.2-5.9L10 4.2a6.5 6.5 0 0 1 2-.3a8.27 8.27 0 0 1 5.7 2.3a8.5 8.5 0 0 1 2.4 5.9"></path></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="currentColor" d="M17.74 30L16 29l4-7h6a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h9v2H6a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4h20a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4h-4.84Z"></path><path fill="currentColor" d="M8 10h16v2H8zm0 6h10v2H8z"></path></svg>');
+C.from_svg('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="currentColor" d="M19 10h7v2h-7zm0 5h7v2h-7zm0 5h7v2h-7z"></path><path fill="currentColor" d="M28 5H4a2 2 0 0 0-2 2v18a2 2 0 0 0 2 2h24a2.003 2.003 0 0 0 2-2V7a2 2 0 0 0-2-2M4 7h11v18H4Zm13 18V7h11l.002 18Z"></path></svg>');
 const w1 = [
   { color: "red", primary: 600, secondary: 100 },
   { color: "green", primary: 600, secondary: 100 },
@@ -36501,19 +36501,19 @@ w1.reduce((i, { color: e, primary: t, secondary: s }) => ({
     secondary: fn[e][s]
   }
 }), {});
-y.from_html('<h2 class="svelte-cmuu9m"> </h2>');
-y.from_html('<p class="svelte-cmuu9m"> </p>');
-y.from_html("<!> <!>", 1);
-y.from_html('<span class="or svelte-cmuu9m"> </span> ', 1);
-y.from_html(" <!>", 1);
-y.from_html('<div class="wrap svelte-cmuu9m"><span><!></span> <!></div>');
-y.from_html("<div><!></div>");
-y.from_html('<button aria-label="Upload file"><!></button>');
-y.from_html('<button aria-label="Record audio"><!></button>');
-y.from_html('<button aria-label="Capture from camera"><!></button>');
-y.from_html('<button aria-label="Paste from clipboard"><!></button>');
-y.from_html('<span class="source-selection svelte-5d261r" data-testid="source-select"><!> <!> <!> <!></span>');
-y.from_html("<div><!></div>");
+C.from_html('<h2 class="svelte-cmuu9m"> </h2>');
+C.from_html('<p class="svelte-cmuu9m"> </p>');
+C.from_html("<!> <!>", 1);
+C.from_html('<span class="or svelte-cmuu9m"> </span> ', 1);
+C.from_html(" <!>", 1);
+C.from_html('<div class="wrap svelte-cmuu9m"><span><!></span> <!></div>');
+C.from_html("<div><!></div>");
+C.from_html('<button aria-label="Upload file"><!></button>');
+C.from_html('<button aria-label="Record audio"><!></button>');
+C.from_html('<button aria-label="Capture from camera"><!></button>');
+C.from_html('<button aria-label="Paste from clipboard"><!></button>');
+C.from_html('<span class="source-selection svelte-5d261r" data-testid="source-select"><!> <!> <!> <!></span>');
+C.from_html("<div><!></div>");
 function ds(i) {
   let e = ["", "k", "M", "G", "T", "P", "E", "Z"], t = 0;
   for (; i > 1e3 && t < e.length - 1; )
@@ -36521,12 +36521,12 @@ function ds(i) {
   let s = e[t];
   return (Number.isInteger(i) ? i : i.toFixed(1)) + s;
 }
-var b1 = y.from_html('<div><svg viewBox="-1200 -1200 3000 3000" fill="none" xmlns="http://www.w3.org/2000/svg" class="svelte-m6d381"><g><path d="M255.926 0.754768L509.702 139.936V221.027L255.926 81.8465V0.754768Z" fill="#FF7C00" fill-opacity="0.4" class="svelte-m6d381"></path><path d="M509.69 139.936L254.981 279.641V361.255L509.69 221.55V139.936Z" fill="#FF7C00" class="svelte-m6d381"></path><path d="M0.250138 139.937L254.981 279.641V361.255L0.250138 221.55V139.937Z" fill="#FF7C00" fill-opacity="0.4" class="svelte-m6d381"></path><path d="M255.923 0.232622L0.236328 139.936V221.55L255.923 81.8469V0.232622Z" fill="#FF7C00" class="svelte-m6d381"></path></g><g><path d="M255.926 141.5L509.702 280.681V361.773L255.926 222.592V141.5Z" fill="#FF7C00" fill-opacity="0.4" class="svelte-m6d381"></path><path d="M509.69 280.679L254.981 420.384V501.998L509.69 362.293V280.679Z" fill="#FF7C00" class="svelte-m6d381"></path><path d="M0.250138 280.681L254.981 420.386V502L0.250138 362.295V280.681Z" fill="#FF7C00" fill-opacity="0.4" class="svelte-m6d381"></path><path d="M255.923 140.977L0.236328 280.68V362.294L255.923 222.591V140.977Z" fill="#FF7C00" class="svelte-m6d381"></path></g></svg></div>');
+var b1 = C.from_html('<div><svg viewBox="-1200 -1200 3000 3000" fill="none" xmlns="http://www.w3.org/2000/svg" class="svelte-m6d381"><g><path d="M255.926 0.754768L509.702 139.936V221.027L255.926 81.8465V0.754768Z" fill="#FF7C00" fill-opacity="0.4" class="svelte-m6d381"></path><path d="M509.69 139.936L254.981 279.641V361.255L509.69 221.55V139.936Z" fill="#FF7C00" class="svelte-m6d381"></path><path d="M0.250138 139.937L254.981 279.641V361.255L0.250138 221.55V139.937Z" fill="#FF7C00" fill-opacity="0.4" class="svelte-m6d381"></path><path d="M255.923 0.232622L0.236328 139.936V221.55L255.923 81.8469V0.232622Z" fill="#FF7C00" class="svelte-m6d381"></path></g><g><path d="M255.926 141.5L509.702 280.681V361.773L255.926 222.592V141.5Z" fill="#FF7C00" fill-opacity="0.4" class="svelte-m6d381"></path><path d="M509.69 280.679L254.981 420.384V501.998L509.69 362.293V280.679Z" fill="#FF7C00" class="svelte-m6d381"></path><path d="M0.250138 280.681L254.981 420.386V502L0.250138 362.295V280.681Z" fill="#FF7C00" fill-opacity="0.4" class="svelte-m6d381"></path><path d="M255.923 140.977L0.236328 280.68V362.294L255.923 222.591V140.977Z" fill="#FF7C00" class="svelte-m6d381"></path></g></svg></div>');
 function y1(i, e) {
-  y.push(e, !1);
-  const t = () => y.store_get(l, "$top", r), s = () => y.store_get(c, "$bottom", r), [r, a] = y.setup_stores();
+  C.push(e, !1);
+  const t = () => C.store_get(l, "$top", r), s = () => C.store_get(c, "$bottom", r), [r, a] = C.setup_stores();
   var n = this && this.__awaiter || function(x, w, D, b) {
-    function C(E) {
+    function y(E) {
       return E instanceof D ? E : new D(function(F) {
         F(E);
       });
@@ -36547,12 +36547,12 @@ function y1(i, e) {
         }
       }
       function T(k) {
-        k.done ? E(k.value) : C(k.value).then(M, S);
+        k.done ? E(k.value) : y(k.value).then(M, S);
       }
       T((b = b.apply(x, w || [])).next());
     });
   };
-  let o = y.prop(e, "margin", 8, !0);
+  let o = C.prop(e, "margin", 8, !0);
   const l = sr([0, 0]), c = sr([0, 0]);
   let h;
   function u() {
@@ -36570,13 +36570,13 @@ function y1(i, e) {
       yield Promise.all([l.set([125, 0]), c.set([-125, 0])]), d();
     });
   }
-  mn(() => (f(), () => h = !0)), y.init();
-  var g = b1();
-  let m;
-  var p = y.child(g), v = y.child(p), A = y.sibling(v);
-  y.reset(p), y.reset(g), y.template_effect(() => {
-    m = y.set_class(g, 1, "svelte-m6d381", null, m, { margin: o() }), y.set_style(v, `transform: translate(${t(), y.untrack(() => t()[0]) ?? ""}px, ${t(), y.untrack(() => t()[1]) ?? ""}px);`), y.set_style(A, `transform: translate(${s(), y.untrack(() => s()[0]) ?? ""}px, ${s(), y.untrack(() => s()[1]) ?? ""}px);`);
-  }), y.append(i, g), y.pop(), a();
+  mn(() => (f(), () => h = !0)), C.init();
+  var m = b1();
+  let g;
+  var p = C.child(m), v = C.child(p), A = C.sibling(v);
+  C.reset(p), C.reset(m), C.template_effect(() => {
+    g = C.set_class(m, 1, "svelte-m6d381", null, g, { margin: o() }), C.set_style(v, `transform: translate(${t(), C.untrack(() => t()[0]) ?? ""}px, ${t(), C.untrack(() => t()[1]) ?? ""}px);`), C.set_style(A, `transform: translate(${s(), C.untrack(() => s()[0]) ?? ""}px, ${s(), C.untrack(() => s()[1]) ?? ""}px);`);
+  }), C.append(i, m), C.pop(), a();
 }
 var C1 = function(i, e, t, s) {
   function r(a) {
@@ -36624,20 +36624,20 @@ function E1(i) {
     }
   });
 }
-var F1 = y.from_html('<div class="validation-error svelte-124hqw6"> <button class="svelte-124hqw6"><!></button></div>'), M1 = y.from_html('<div class="eta-bar svelte-124hqw6"></div>'), T1 = y.from_html("<!> ", 1), S1 = y.from_html("<!> <!> <!> <!>", 1), I1 = y.from_html('<div class="progress-level svelte-124hqw6"><div class="progress-level-inner svelte-124hqw6"><!></div> <div class="progress-bar-wrap svelte-124hqw6"><div class="progress-bar svelte-124hqw6"></div></div></div>'), B1 = y.from_html('<p class="loading svelte-124hqw6"> </p> <!>', 1), k1 = y.from_html("<!> <div><!> <!></div> <!> <!>", 1), R1 = y.from_html('<div class="clear-status svelte-124hqw6"><!></div> <span class="error svelte-124hqw6"> </span> <!>', 1), V1 = y.from_html('<div data-testid="status-tracker"><!> <!></div>');
+var F1 = C.from_html('<div class="validation-error svelte-124hqw6"> <button class="svelte-124hqw6"><!></button></div>'), M1 = C.from_html('<div class="eta-bar svelte-124hqw6"></div>'), T1 = C.from_html("<!> ", 1), S1 = C.from_html("<!> <!> <!> <!>", 1), I1 = C.from_html('<div class="progress-level svelte-124hqw6"><div class="progress-level-inner svelte-124hqw6"><!></div> <div class="progress-bar-wrap svelte-124hqw6"><div class="progress-bar svelte-124hqw6"></div></div></div>'), B1 = C.from_html('<p class="loading svelte-124hqw6"> </p> <!>', 1), k1 = C.from_html("<!> <div><!> <!></div> <!> <!>", 1), R1 = C.from_html('<div class="clear-status svelte-124hqw6"><!></div> <span class="error svelte-124hqw6"> </span> <!>', 1), V1 = C.from_html('<div data-testid="status-tracker"><!> <!></div>');
 function U1(i, e) {
-  y.push(e, !0);
-  let t = y.prop(e, "eta", 7, null), s = y.prop(e, "scroll_to_output", 3, !1), r = y.prop(e, "timer", 3, !0), a = y.prop(e, "show_progress", 3, "full"), n = y.prop(e, "message", 3, null), o = y.prop(e, "progress", 3, null), l = y.prop(e, "variant", 3, "default"), c = y.prop(e, "loading_text", 3, "Loading..."), h = y.prop(e, "absolute", 3, !0), u = y.prop(e, "translucent", 3, !1), d = y.prop(e, "border", 3, !1), f = y.prop(e, "validation_error", 7, null), g = y.prop(e, "show_validation_error", 3, !0), m = y.prop(e, "type", 3, null), p, v = !1, A = y.state(0), x = y.state(null), w = y.state(null), D = y.state(!1), b = y.state(null);
-  const C = y.derived(() => m() === "input" || !e.status || e.status === "complete" || a() === "hidden" || e.status == "streaming" || !!(g() && f()));
-  let E = y.state(0);
-  const F = y.derived(() => y.get(w) === null || y.get(w) <= 0 || !y.get(E) ? 0 : Math.min(y.get(E) / y.get(w), 1)), M = y.derived(() => y.get(E).toFixed(1));
-  let S = y.derived(() => o() == null);
+  C.push(e, !0);
+  let t = C.prop(e, "eta", 7, null), s = C.prop(e, "scroll_to_output", 3, !1), r = C.prop(e, "timer", 3, !0), a = C.prop(e, "show_progress", 3, "full"), n = C.prop(e, "message", 3, null), o = C.prop(e, "progress", 3, null), l = C.prop(e, "variant", 3, "default"), c = C.prop(e, "loading_text", 3, "Loading..."), h = C.prop(e, "absolute", 3, !0), u = C.prop(e, "translucent", 3, !1), d = C.prop(e, "border", 3, !1), f = C.prop(e, "validation_error", 7, null), m = C.prop(e, "show_validation_error", 3, !0), g = C.prop(e, "type", 3, null), p, v = !1, A = C.state(0), x = C.state(null), w = C.state(null), D = C.state(!1), b = C.state(null);
+  const y = C.derived(() => g() === "input" || !e.status || e.status === "complete" || a() === "hidden" || e.status == "streaming" || !!(m() && f()));
+  let E = C.state(0);
+  const F = C.derived(() => C.get(w) === null || C.get(w) <= 0 || !C.get(E) ? 0 : Math.min(C.get(E) / C.get(w), 1)), M = C.derived(() => C.get(E).toFixed(1));
+  let S = C.derived(() => o() == null);
   function T() {
     ga(() => {
-      y.set(E, (performance.now() - y.get(A)) / 1e3), v && T();
+      C.set(E, (performance.now() - C.get(A)) / 1e3), v && T();
     });
   }
-  let k = y.derived(() => {
+  let k = C.derived(() => {
     let W = null;
     o() != null ? W = o().map((ee) => {
       if (ee.index != null && ee.length != null)
@@ -36653,42 +36653,42 @@ function U1(i, e) {
     };
   });
   function B() {
-    v || (y.set(x, y.set(b, null), !0), y.set(A, performance.now(), !0), v = !0, T());
+    v || (C.set(x, C.set(b, null), !0), C.set(A, performance.now(), !0), v = !0, T());
   }
   function U() {
-    y.set(x, y.set(b, null), !0), v && (v = !1);
+    C.set(x, C.set(b, null), !0), v && (v = !1);
   }
-  y.user_effect(() => {
+  C.user_effect(() => {
     e.status === "pending" ? B() : ir(() => {
       U();
     });
-  }), y.user_effect(() => {
+  }), C.user_effect(() => {
     p && s() && (e.status === "pending" || e.status === "complete") && E1(p, e.autoscroll);
-  }), y.user_effect(() => {
-    t() === null && t(y.get(x)), t() != null && y.get(x) !== t() && (y.set(w, (performance.now() - y.get(A)) / 1e3 + t()), y.set(b, y.get(w).toFixed(1), !0), y.set(x, t(), !0));
+  }), C.user_effect(() => {
+    t() === null && t(C.get(x)), t() != null && C.get(x) !== t() && (C.set(w, (performance.now() - C.get(A)) / 1e3 + t()), C.set(b, C.get(w).toFixed(1), !0), C.set(x, t(), !0));
   });
   function V() {
-    y.set(D, !1);
+    C.set(D, !1);
   }
-  y.user_effect(() => {
+  C.user_effect(() => {
     ir(() => {
       V();
-    }), e.status === "error" && n() && y.set(D, !0);
+    }), e.status === "error" && n() && C.set(D, !0);
   });
   var N = V1();
   let P, L;
-  var q = y.child(N);
+  var q = C.child(N);
   {
     var X = (W) => {
-      var Q = F1(), J = y.child(Q), ee = y.sibling(J), re = y.child(ee);
+      var Q = F1(), J = C.child(Q), ee = C.sibling(J), re = C.child(ee);
       {
-        let ne = y.derived(() => e.i18n ? e.i18n("common.clear") : "Clear");
+        let ne = C.derived(() => e.i18n ? e.i18n("common.clear") : "Clear");
         un(re, {
           get Icon() {
             return dn;
           },
           get label() {
-            return y.get(ne);
+            return C.get(ne);
           },
           disabled: !1,
           size: "x-small",
@@ -36698,77 +36698,77 @@ function U1(i, e) {
           $$events: { click: () => f(null) }
         });
       }
-      y.reset(ee), y.reset(Q), y.template_effect(() => y.set_text(J, `${f() ?? ""} `)), y.append(W, Q);
+      C.reset(ee), C.reset(Q), C.template_effect(() => C.set_text(J, `${f() ?? ""} `)), C.append(W, Q);
     };
-    y.if(q, (W) => {
-      f() && g() && W(X);
+    C.if(q, (W) => {
+      f() && m() && W(X);
     });
   }
-  var O = y.sibling(q, 2);
+  var O = C.sibling(q, 2);
   {
     var Y = (W) => {
-      var Q = k1(), J = y.first_child(Q);
+      var Q = k1(), J = C.first_child(Q);
       {
         var ee = (fe) => {
           var ve = M1();
           let Ee;
-          y.template_effect(() => Ee = y.set_style(ve, "", Ee, {
-            transform: `translateX(${(y.get(F) || 0) * 100 - 100}%)`
-          })), y.append(fe, ve);
+          C.template_effect(() => Ee = C.set_style(ve, "", Ee, {
+            transform: `translateX(${(C.get(F) || 0) * 100 - 100}%)`
+          })), C.append(fe, ve);
         };
-        y.if(J, (fe) => {
-          l() === "default" && y.get(S) && a() === "full" && fe(ee);
+        C.if(J, (fe) => {
+          l() === "default" && C.get(S) && a() === "full" && fe(ee);
         });
       }
-      var re = y.sibling(J, 2);
+      var re = C.sibling(J, 2);
       let ne;
-      var se = y.child(re);
+      var se = C.child(re);
       {
         var ue = (fe) => {
-          var ve = y.comment(), Ee = y.first_child(ve);
-          y.each(Ee, 17, o, y.index, (We, Fe) => {
-            var Be = y.comment(), Ke = y.first_child(Be);
+          var ve = C.comment(), Ee = C.first_child(ve);
+          C.each(Ee, 17, o, C.index, (We, Fe) => {
+            var Be = C.comment(), Ke = C.first_child(Be);
             {
               var Ct = (Xe) => {
-                var je = T1(), Dt = y.first_child(je);
+                var je = T1(), Dt = C.first_child(je);
                 {
                   var Wi = (Ze) => {
-                    var ct = y.text();
-                    y.template_effect((Nt, Pt) => y.set_text(ct, `${Nt ?? ""}/${Pt ?? ""}`), [
-                      () => ds(y.get(Fe).index || 0),
-                      () => ds(y.get(Fe).length)
-                    ]), y.append(Ze, ct);
+                    var ct = C.text();
+                    C.template_effect((Nt, Pt) => C.set_text(ct, `${Nt ?? ""}/${Pt ?? ""}`), [
+                      () => ds(C.get(Fe).index || 0),
+                      () => ds(C.get(Fe).length)
+                    ]), C.append(Ze, ct);
                   }, Et = (Ze) => {
-                    var ct = y.text();
-                    y.template_effect((Nt) => y.set_text(ct, Nt), [() => ds(y.get(Fe).index || 0)]), y.append(Ze, ct);
+                    var ct = C.text();
+                    C.template_effect((Nt) => C.set_text(ct, Nt), [() => ds(C.get(Fe).index || 0)]), C.append(Ze, ct);
                   };
-                  y.if(Dt, (Ze) => {
-                    y.get(Fe).length != null ? Ze(Wi) : Ze(Et, !1);
+                  C.if(Dt, (Ze) => {
+                    C.get(Fe).length != null ? Ze(Wi) : Ze(Et, !1);
                   });
                 }
-                var Ft = y.sibling(Dt);
-                y.template_effect(() => y.set_text(Ft, ` ${y.get(Fe).unit ?? ""} |  `)), y.append(Xe, je);
+                var Ft = C.sibling(Dt);
+                C.template_effect(() => C.set_text(Ft, ` ${C.get(Fe).unit ?? ""} |  `)), C.append(Xe, je);
               };
-              y.if(Ke, (Xe) => {
-                y.get(Fe).index != null && Xe(Ct);
+              C.if(Ke, (Xe) => {
+                C.get(Fe).index != null && Xe(Ct);
               });
             }
-            y.append(We, Be);
-          }), y.append(fe, ve);
+            C.append(We, Be);
+          }), C.append(fe, ve);
         }, Ve = (fe) => {
-          var ve = y.comment(), Ee = y.first_child(ve);
+          var ve = C.comment(), Ee = C.first_child(ve);
           {
             var We = (Be) => {
-              var Ke = y.text();
-              y.template_effect(() => y.set_text(Ke, `queue: ${e.queue_position + 1}/${e.queue_size ?? ""} |`)), y.append(Be, Ke);
+              var Ke = C.text();
+              C.template_effect(() => C.set_text(Ke, `queue: ${e.queue_position + 1}/${e.queue_size ?? ""} |`)), C.append(Be, Ke);
             }, Fe = (Be) => {
-              var Ke = y.comment(), Ct = y.first_child(Ke);
+              var Ke = C.comment(), Ct = C.first_child(Ke);
               {
                 var Xe = (je) => {
-                  var Dt = y.text("processing |");
-                  y.append(je, Dt);
+                  var Dt = C.text("processing |");
+                  C.append(je, Dt);
                 };
-                y.if(
+                C.if(
                   Ct,
                   (je) => {
                     e.queue_position === 0 && je(Xe);
@@ -36776,9 +36776,9 @@ function U1(i, e) {
                   !0
                 );
               }
-              y.append(Be, Ke);
+              C.append(Be, Ke);
             };
-            y.if(
+            C.if(
               Ee,
               (Be) => {
                 e.queue_position !== null && e.queue_size !== void 0 && e.queue_position >= 0 ? Be(We) : Be(Fe, !1);
@@ -36786,110 +36786,110 @@ function U1(i, e) {
               !0
             );
           }
-          y.append(fe, ve);
+          C.append(fe, ve);
         };
-        y.if(se, (fe) => {
+        C.if(se, (fe) => {
           o() ? fe(ue) : fe(Ve, !1);
         });
       }
-      var Vt = y.sibling(se, 2);
+      var Vt = C.sibling(se, 2);
       {
         var Ut = (fe) => {
-          var ve = y.text();
-          y.template_effect(() => y.set_text(ve, `${y.get(M) ?? ""}${t() ? `/${y.get(b)}` : ""}s`)), y.append(fe, ve);
+          var ve = C.text();
+          C.template_effect(() => C.set_text(ve, `${C.get(M) ?? ""}${t() ? `/${C.get(b)}` : ""}s`)), C.append(fe, ve);
         };
-        y.if(Vt, (fe) => {
+        C.if(Vt, (fe) => {
           r() && fe(Ut);
         });
       }
-      y.reset(re);
-      var lt = y.sibling(re, 2);
+      C.reset(re);
+      var lt = C.sibling(re, 2);
       {
         var Hi = (fe) => {
-          var ve = I1(), Ee = y.child(ve), We = y.child(Ee);
+          var ve = I1(), Ee = C.child(ve), We = C.child(Ee);
           {
             var Fe = (Xe) => {
-              var je = y.comment(), Dt = y.first_child(je);
-              y.each(Dt, 17, o, y.index, (Wi, Et, Ft) => {
-                var Ze = y.comment(), ct = y.first_child(Ze);
+              var je = C.comment(), Dt = C.first_child(je);
+              C.each(Dt, 17, o, C.index, (Wi, Et, Ft) => {
+                var Ze = C.comment(), ct = C.first_child(Ze);
                 {
                   var Nt = (Pt) => {
-                    var Js = S1(), $s = y.first_child(Js);
+                    var Js = S1(), $s = C.first_child(Js);
                     {
                       var xa = (Te) => {
-                        var Qe = y.text(" /");
-                        y.append(Te, Qe);
+                        var Qe = C.text(" /");
+                        C.append(Te, Qe);
                       };
-                      y.if($s, (Te) => {
+                      C.if($s, (Te) => {
                         Ft !== 0 && Te(xa);
                       });
                     }
-                    var er = y.sibling($s, 2);
+                    var er = C.sibling($s, 2);
                     {
                       var wa = (Te) => {
-                        var Qe = y.text();
-                        y.template_effect(() => y.set_text(Qe, y.get(Et).desc)), y.append(Te, Qe);
+                        var Qe = C.text();
+                        C.template_effect(() => C.set_text(Qe, C.get(Et).desc)), C.append(Te, Qe);
                       };
-                      y.if(er, (Te) => {
-                        y.get(Et).desc != null && Te(wa);
+                      C.if(er, (Te) => {
+                        C.get(Et).desc != null && Te(wa);
                       });
                     }
-                    var tr = y.sibling(er, 2);
+                    var tr = C.sibling(er, 2);
                     {
                       var ba = (Te) => {
-                        var Qe = y.text("-");
-                        y.append(Te, Qe);
+                        var Qe = C.text("-");
+                        C.append(Te, Qe);
                       };
-                      y.if(tr, (Te) => {
-                        y.get(Et).desc != null && y.get(k).progress_level && y.get(k).progress_level[Ft] != null && Te(ba);
+                      C.if(tr, (Te) => {
+                        C.get(Et).desc != null && C.get(k).progress_level && C.get(k).progress_level[Ft] != null && Te(ba);
                       });
                     }
-                    var ya = y.sibling(tr, 2);
+                    var ya = C.sibling(tr, 2);
                     {
                       var Ca = (Te) => {
-                        var Qe = y.text();
-                        y.template_effect((Da) => y.set_text(Qe, `${Da ?? ""}%`), [
-                          () => (100 * (y.get(k).progress_level[Ft] || 0)).toFixed(1)
-                        ]), y.append(Te, Qe);
+                        var Qe = C.text();
+                        C.template_effect((Da) => C.set_text(Qe, `${Da ?? ""}%`), [
+                          () => (100 * (C.get(k).progress_level[Ft] || 0)).toFixed(1)
+                        ]), C.append(Te, Qe);
                       };
-                      y.if(ya, (Te) => {
-                        y.get(k).progress_level != null && Te(Ca);
+                      C.if(ya, (Te) => {
+                        C.get(k).progress_level != null && Te(Ca);
                       });
                     }
-                    y.append(Pt, Js);
+                    C.append(Pt, Js);
                   };
-                  y.if(ct, (Pt) => {
-                    (y.get(Et).desc != null || y.get(k).progress_level && y.get(k).progress_level[Ft] != null) && Pt(Nt);
+                  C.if(ct, (Pt) => {
+                    (C.get(Et).desc != null || C.get(k).progress_level && C.get(k).progress_level[Ft] != null) && Pt(Nt);
                   });
                 }
-                y.append(Wi, Ze);
-              }), y.append(Xe, je);
+                C.append(Wi, Ze);
+              }), C.append(Xe, je);
             };
-            y.if(We, (Xe) => {
+            C.if(We, (Xe) => {
               o() != null && Xe(Fe);
             });
           }
-          y.reset(Ee);
-          var Be = y.sibling(Ee, 2), Ke = y.child(Be);
+          C.reset(Ee);
+          var Be = C.sibling(Ee, 2), Ke = C.child(Be);
           let Ct;
-          y.reset(Be), y.reset(ve), y.template_effect(() => Ct = y.set_style(Ke, "", Ct, {
-            width: `${y.get(k).last_progress_level * 100}%`,
-            transition: y.get(k).progress_bar_transition
-          })), y.append(fe, ve);
+          C.reset(Be), C.reset(ve), C.template_effect(() => Ct = C.set_style(Ke, "", Ct, {
+            width: `${C.get(k).last_progress_level * 100}%`,
+            transition: C.get(k).progress_bar_transition
+          })), C.append(fe, ve);
         }, pa = (fe) => {
-          var ve = y.comment(), Ee = y.first_child(ve);
+          var ve = C.comment(), Ee = C.first_child(ve);
           {
             var We = (Fe) => {
               {
-                let Be = y.derived(() => l() === "default");
+                let Be = C.derived(() => l() === "default");
                 y1(Fe, {
                   get margin() {
-                    return y.get(Be);
+                    return C.get(Be);
                   }
                 });
               }
             };
-            y.if(
+            C.if(
               Ee,
               (Fe) => {
                 a() === "full" && Fe(We);
@@ -36897,41 +36897,41 @@ function U1(i, e) {
               !0
             );
           }
-          y.append(fe, ve);
+          C.append(fe, ve);
         };
-        y.if(lt, (fe) => {
-          y.get(k).last_progress_level != null ? fe(Hi) : fe(pa, !1);
+        C.if(lt, (fe) => {
+          C.get(k).last_progress_level != null ? fe(Hi) : fe(pa, !1);
         });
       }
-      var Aa = y.sibling(lt, 2);
+      var Aa = C.sibling(lt, 2);
       {
         var va = (fe) => {
-          var ve = B1(), Ee = y.first_child(ve), We = y.child(Ee, !0);
-          y.reset(Ee);
-          var Fe = y.sibling(Ee, 2);
-          y.slot(Fe, e, "additional-loading-text", {}, null), y.template_effect(() => y.set_text(We, c())), y.append(fe, ve);
+          var ve = B1(), Ee = C.first_child(ve), We = C.child(Ee, !0);
+          C.reset(Ee);
+          var Fe = C.sibling(Ee, 2);
+          C.slot(Fe, e, "additional-loading-text", {}, null), C.template_effect(() => C.set_text(We, c())), C.append(fe, ve);
         };
-        y.if(Aa, (fe) => {
+        C.if(Aa, (fe) => {
           r() || fe(va);
         });
       }
-      y.template_effect(() => ne = y.set_class(re, 1, "progress-text svelte-124hqw6", null, ne, {
+      C.template_effect(() => ne = C.set_class(re, 1, "progress-text svelte-124hqw6", null, ne, {
         "meta-text-center": l() === "center",
         "meta-text": l() === "default"
-      })), y.append(W, Q);
+      })), C.append(W, Q);
     }, _ = (W) => {
-      var Q = y.comment(), J = y.first_child(Q);
+      var Q = C.comment(), J = C.first_child(Q);
       {
         var ee = (re) => {
-          var ne = R1(), se = y.first_child(ne), ue = y.child(se);
+          var ne = R1(), se = C.first_child(ne), ue = C.child(se);
           {
-            let lt = y.derived(() => e.i18n("common.clear"));
+            let lt = C.derived(() => e.i18n("common.clear"));
             un(ue, {
               get Icon() {
                 return dn;
               },
               get label() {
-                return y.get(lt);
+                return C.get(lt);
               },
               disabled: !1,
               $$events: {
@@ -36941,13 +36941,13 @@ function U1(i, e) {
               }
             });
           }
-          y.reset(se);
-          var Ve = y.sibling(se, 2), Vt = y.child(Ve, !0);
-          y.reset(Ve);
-          var Ut = y.sibling(Ve, 2);
-          y.slot(Ut, e, "error", {}, null), y.template_effect((lt) => y.set_text(Vt, lt), [() => e.i18n("common.error")]), y.append(re, ne);
+          C.reset(se);
+          var Ve = C.sibling(se, 2), Vt = C.child(Ve, !0);
+          C.reset(Ve);
+          var Ut = C.sibling(Ve, 2);
+          C.slot(Ut, e, "error", {}, null), C.template_effect((lt) => C.set_text(Vt, lt), [() => e.i18n("common.error")]), C.append(re, ne);
         };
-        y.if(
+        C.if(
           J,
           (re) => {
             e.status === "error" && re(ee);
@@ -36955,74 +36955,77 @@ function U1(i, e) {
           !0
         );
       }
-      y.append(W, Q);
+      C.append(W, Q);
     };
-    y.if(O, (W) => {
+    C.if(O, (W) => {
       e.status === "pending" ? W(Y) : W(_, !1);
     });
   }
-  y.reset(N), y.bind_this(N, (W) => p = W, () => p), y.template_effect(() => {
-    P = y.set_class(N, 1, `wrap ${l() ?? ""} ${a() ?? ""}`, "svelte-124hqw6", P, {
-      "no-click": f() && g(),
-      hide: y.get(C),
+  C.reset(N), C.bind_this(N, (W) => p = W, () => p), C.template_effect(() => {
+    P = C.set_class(N, 1, `wrap ${l() ?? ""} ${a() ?? ""}`, "svelte-124hqw6", P, {
+      "no-click": f() && m(),
+      hide: C.get(y),
       translucent: l() === "center" && (e.status === "pending" || e.status === "error") || u() || a() === "minimal" || f(),
       generating: e.status === "generating" && a() === "full",
       border: d()
-    }), L = y.set_style(N, "", L, {
+    }), L = C.set_style(N, "", L, {
       position: h() ? "absolute" : "static",
       padding: h() ? "0" : "var(--size-8) 0"
     });
-  }), y.append(i, N), y.pop();
+  }), C.append(i, N), C.pop();
 }
-y.from_html('<span class="toast-count svelte-17ll3xi"> </span>');
-y.from_html('<div class="toast-separator svelte-17ll3xi"></div>');
-y.from_html('<div><div data-testid="toast-text"><!></div></div> <!>', 1);
-y.from_html('<div class="toast-messages svelte-17ll3xi"></div>');
-y.from_html("<div></div>");
-y.from_html('<div role="status" aria-live="polite" data-testid="toast-body"><div class="toast-header svelte-17ll3xi" role="button" tabindex="0"><div><!></div> <div class="toast-title-row svelte-17ll3xi"><span> <!></span> <div><!></div></div> <button type="button" aria-label="Close" data-testid="toast-close"><span aria-hidden="true">&#215;</span></button></div> <!> <!></div>');
-y.from_html('<div class="toast-item svelte-l56nvb"><!></div>');
-y.from_html('<div class="toast-wrap svelte-l56nvb"></div>');
-y.from_html('<div class="streaming-bar svelte-xj6qzf"></div>');
-var N1 = y.from_html('<!> <div class="niivue-container svelte-r41nsf"><canvas class="svelte-r41nsf"></canvas></div>', 1);
+C.from_html('<span class="toast-count svelte-17ll3xi"> </span>');
+C.from_html('<div class="toast-separator svelte-17ll3xi"></div>');
+C.from_html('<div><div data-testid="toast-text"><!></div></div> <!>', 1);
+C.from_html('<div class="toast-messages svelte-17ll3xi"></div>');
+C.from_html("<div></div>");
+C.from_html('<div role="status" aria-live="polite" data-testid="toast-body"><div class="toast-header svelte-17ll3xi" role="button" tabindex="0"><div><!></div> <div class="toast-title-row svelte-17ll3xi"><span> <!></span> <div><!></div></div> <button type="button" aria-label="Close" data-testid="toast-close"><span aria-hidden="true">&#215;</span></button></div> <!> <!></div>');
+C.from_html('<div class="toast-item svelte-l56nvb"><!></div>');
+C.from_html('<div class="toast-wrap svelte-l56nvb"></div>');
+C.from_html('<div class="streaming-bar svelte-xj6qzf"></div>');
+var N1 = C.from_html('<!> <div class="niivue-container svelte-r41nsf"><canvas class="svelte-r41nsf"></canvas></div>', 1);
 function _1(i, e) {
-  y.push(e, !0);
-  var t = this && this.__awaiter || function(m, p, v, A) {
-    function x(w) {
-      return w instanceof v ? w : new v(function(D) {
-        D(w);
+  C.push(e, !0);
+  var t = this && this.__awaiter || function(p, v, A, x) {
+    function w(D) {
+      return D instanceof A ? D : new A(function(b) {
+        b(D);
       });
     }
-    return new (v || (v = Promise))(function(w, D) {
-      function b(F) {
+    return new (A || (A = Promise))(function(D, b) {
+      function y(M) {
         try {
-          E(A.next(F));
-        } catch (M) {
-          D(M);
+          F(x.next(M));
+        } catch (S) {
+          b(S);
         }
       }
-      function C(F) {
+      function E(M) {
         try {
-          E(A.throw(F));
-        } catch (M) {
-          D(M);
+          F(x.throw(M));
+        } catch (S) {
+          b(S);
         }
       }
-      function E(F) {
-        F.done ? w(F.value) : x(F.value).then(b, C);
+      function F(M) {
+        M.done ? D(M.value) : w(M.value).then(y, E);
       }
-      E((A = A.apply(m, p || [])).next());
+      F((x = x.apply(p, v || [])).next());
     });
   };
-  let s = y.prop(e, "value", 3, null);
-  y.prop(e, "show_label", 3, !0);
-  let r = y.prop(e, "elem_id", 3, ""), a = y.prop(e, "elem_classes", 19, () => []), n = y.prop(e, "visible", 3, !0), o = y.prop(e, "height", 3, 500), l = y.prop(e, "container", 3, !0), c = y.prop(e, "scale", 3, null), h = y.prop(e, "min_width", 3, void 0), u, d = null, f;
+  let s = C.prop(e, "value", 3, null);
+  C.prop(e, "show_label", 3, !0);
+  let r = C.prop(e, "elem_id", 3, ""), a = C.prop(e, "elem_classes", 19, () => []), n = C.prop(e, "visible", 3, !0), o = C.prop(e, "height", 3, 500), l = C.prop(e, "container", 3, !0), c = C.prop(e, "scale", 3, null), h = C.prop(e, "min_width", 3, void 0), u, d = null, f, m = !1;
   mn(() => t(void 0, void 0, void 0, function* () {
-    d = new A0({
-      backColor: [0, 0, 0, 1],
-      show3Dcrosshair: !0,
-      logging: !1
-      // Reduce noise
-    }), yield d.attachToCanvas(f), yield g();
+    try {
+      d = new A0({
+        backColor: [0, 0, 0, 1],
+        show3Dcrosshair: !0,
+        logging: !1
+      }), yield d.attachToCanvas(f), yield g(), m = !0;
+    } catch (p) {
+      console.error("[NiiVue] Initialization failed:", p);
+    }
   })), Fa(() => {
     d && (d.cleanup(), d = null);
   });
@@ -37035,12 +37038,12 @@ function _1(i, e) {
         d.drawScene();
         return;
       }
-      const m = [];
-      s().background_url && m.push({ url: s().background_url }), s().overlay_url && m.push({ url: s().overlay_url, colormap: "red", opacity: 0.5 }), m.length > 0 ? yield d.loadVolumes(m) : d.drawScene();
+      const p = [];
+      s().background_url && p.push({ url: s().background_url }), s().overlay_url && p.push({ url: s().overlay_url, colormap: "red", opacity: 0.5 }), p.length > 0 ? yield d.loadVolumes(p) : d.drawScene();
     });
   }
-  y.user_effect(() => {
-    (s() || s() === null) && g();
+  C.user_effect(() => {
+    m && s() !== void 0 && g();
   }), y0(i, {
     get visible() {
       return n();
@@ -37066,21 +37069,31 @@ function _1(i, e) {
     get min_width() {
       return h();
     },
-    children: (m, p) => {
-      var v = N1(), A = y.first_child(v);
+    children: (p, v) => {
+      var A = N1(), x = C.first_child(A);
       {
-        var x = (b) => {
-          U1(b, y.spread_props({ autoscroll: !1 }, () => e.loading_status));
+        var w = (y) => {
+          U1(y, C.spread_props(
+            {
+              get autoscroll() {
+                return e.gradio.autoscroll;
+              },
+              get i18n() {
+                return e.gradio.i18n;
+              }
+            },
+            () => e.loading_status
+          ));
         };
-        y.if(A, (b) => {
-          e.loading_status && b(x);
+        C.if(x, (y) => {
+          e.loading_status && y(w);
         });
       }
-      var w = y.sibling(A, 2), D = y.child(w);
-      y.bind_this(D, (b) => f = b, () => f), y.reset(w), y.bind_this(w, (b) => u = b, () => u), y.template_effect(() => y.set_style(w, `height: ${o() ?? ""}px;`)), y.append(m, v);
+      var D = C.sibling(x, 2), b = C.child(D);
+      C.bind_this(b, (y) => f = y, () => f), C.reset(D), C.bind_this(D, (y) => u = y, () => u), C.template_effect(() => C.set_style(D, `height: ${o() ?? ""}px;`)), C.append(p, A);
     },
     $$slots: { default: !0 }
-  }), y.pop();
+  }), C.pop();
 }
 export {
   _1 as default
