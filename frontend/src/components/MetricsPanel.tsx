@@ -1,9 +1,4 @@
-interface Metrics {
-  caseId: string
-  diceScore: number | null
-  volumeMl: number | null
-  elapsedSeconds: number
-}
+import type { Metrics } from '../types'
 
 interface MetricsPanelProps {
   metrics: Metrics

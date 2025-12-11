@@ -10,7 +10,13 @@ interface NiiVueViewerProps {
 export function NiiVueViewer({ backgroundUrl, overlayUrl, onError }: NiiVueViewerProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const nvRef = useRef<Niivue | null>(null)
+  const onErrorRef = useRef(onError)
   const [loadError, setLoadError] = useState<string | null>(null)
+
+  // Keep onError ref current without triggering effect re-runs
+  useEffect(() => {
+    onErrorRef.current = onError
+  })
 
   // Effect 1: Mount/unmount - instantiate and cleanup NiiVue ONCE
   useEffect(() => {
@@ -71,9 +77,9 @@ export function NiiVueViewer({ backgroundUrl, overlayUrl, onError }: NiiVueViewe
     nv.loadVolumes(volumes).catch((err: unknown) => {
       const message = err instanceof Error ? err.message : 'Failed to load volume'
       setLoadError(message)
-      onError?.(message)
+      onErrorRef.current?.(message)
     })
-  }, [backgroundUrl, overlayUrl, onError])
+  }, [backgroundUrl, overlayUrl])
 
   return (
     <div className="bg-gray-900 rounded-lg p-2">

@@ -6,21 +6,21 @@
 
 ---
 
-## Security Note: React 18 is SAFE
+## Security Note: CVE-2025-55182 Does NOT Affect This App
 
 **CVE-2025-55182 (React2Shell)** is a critical RCE vulnerability disclosed December 3, 2025.
 
 | What | Status |
 |------|--------|
-| **React 19.x** | VULNERABLE (19.0, 19.1.0, 19.1.1, 19.2.0) |
-| **React 19.x patched** | SAFE (19.0.1, 19.1.2, 19.2.1) |
+| **React 19.x with RSC** | VULNERABLE if using Server Components |
+| **React 19.x client-only** | SAFE - no Server Components = no vulnerability |
 | **React 18.x** | NOT AFFECTED - no Server Components |
 
-**We use React 18.3.1** which is **completely unaffected** because:
+**We use React 19.2.0** which is **safe for our use case** because:
 - CVE-2025-55182 only affects React Server Components (RSC)
-- RSC was introduced in React 19
-- React 18 does not have Server Components
-- Our app is client-only (Static Space = no server)
+- Our app is **client-only** (Static Space = no server-side rendering)
+- We do not use React Server Components
+- The vulnerability requires SSR/RSC to be exploitable
 
 Sources:
 - [React Security Advisory](https://react.dev/blog/2025/12/03/critical-security-vulnerability-in-react-server-components)
@@ -28,15 +28,16 @@ Sources:
 
 ---
 
-## The Stack (No Options - This Is It)
+## The Stack
 
 | Component | Technology | Version | Purpose |
 |-----------|------------|---------|---------|
-| **Frontend Framework** | React | 18.3.1 | UI components (NOT React 19 - see security note) |
-| **Type Safety** | TypeScript | 5.6.3 | Type checking |
-| **Build Tool** | Vite | 6.0.5 | Fast builds, HMR (stable, not v7/v8 beta) |
-| **CSS Framework** | Tailwind CSS | 4.1.7 | Utility-first styling |
+| **Frontend Framework** | React | 19.2.0 | UI components (client-only, see security note) |
+| **Type Safety** | TypeScript | 5.9.3 | Type checking |
+| **Build Tool** | Vite | 7.2.4 | Fast builds, HMR |
+| **CSS Framework** | Tailwind CSS | 4.1.17 | Utility-first styling |
 | **3D Viewer** | @niivue/niivue | 0.65.0 | WebGL2 NIfTI viewer |
+| **Testing** | Vitest + Playwright | 4.0.15 / 1.57.0 | Unit, integration, E2E tests |
 | **Backend Framework** | FastAPI | 0.124.2 | Python REST API |
 | **ML Pipeline** | DeepISLES | existing | Stroke segmentation |
 
@@ -53,7 +54,7 @@ You **need both** because:
 │  HuggingFace Static Space           │
 │  stroke-viewer-frontend             │
 │                                     │
-│  React 18 + TypeScript + Tailwind   │
+│  React 19 + TypeScript + Tailwind   │
 │  @niivue/niivue for 3D viewing      │
 │                                     │
 │  Serves: index.html, JS, CSS        │
@@ -126,43 +127,49 @@ stroke-viewer/
 
 ```json
 {
-  "name": "stroke-viewer-frontend",
+  "name": "frontend",
   "private": true,
-  "version": "1.0.0",
+  "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
-    "@niivue/niivue": "0.65.0",
-    "react": "18.3.1",
-    "react-dom": "18.3.1"
+    "@niivue/niivue": "^0.65.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
   },
   "devDependencies": {
-    "@tailwindcss/vite": "4.1.7",
-    "@types/react": "18.3.14",
-    "@types/react-dom": "18.3.3",
-    "@vitejs/plugin-react": "4.3.4",
-    "tailwindcss": "4.1.7",
-    "typescript": "5.6.3",
-    "vite": "6.0.5"
-  },
-  "engines": {
-    "node": ">=20.0.0"
+    "@playwright/test": "^1.57.0",
+    "@tailwindcss/vite": "^4.1.17",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@vitejs/plugin-react": "^5.1.1",
+    "@vitest/coverage-v8": "^4.0.15",
+    "eslint": "^9.39.1",
+    "tailwindcss": "^4.1.17",
+    "typescript": "~5.9.3",
+    "vite": "^7.2.4",
+    "vitest": "^4.0.15"
   }
 }
 ```
 
-**Why these exact versions:**
-- `react` / `react-dom` **18.3.1**: Latest React 18 - NOT React 19 (CVE-2025-55182 vulnerable)
+**Why these versions:**
+- `react` / `react-dom` **19.2.0**: Latest React 19 - client-only so CVE-2025-55182 doesn't apply
 - `@niivue/niivue` **0.65.0**: Latest stable (Dec 2025)
-- `vite` **6.0.5**: Latest stable v6 - NOT v7 (requires Node 20.19+) or v8 beta
-- `tailwindcss` / `@tailwindcss/vite` **4.1.7**: Latest stable v4
-- `typescript` **5.6.3**: Latest 5.6.x stable
-- Removed ESLint (optional, can add later - keeps deps minimal)
+- `vite` **7.2.4**: Latest stable v7
+- `vitest` **4.0.15**: Fast unit testing with React Testing Library
+- `@playwright/test` **1.57.0**: E2E browser testing
+- `tailwindcss` **4.1.17**: Latest stable v4
+- `typescript` **5.9.3**: Latest stable
+- ESLint included for code quality in CI
 
 ### vite.config.ts
 

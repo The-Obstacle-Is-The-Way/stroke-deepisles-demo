@@ -380,7 +380,7 @@ Create `src/components/__tests__/NiiVueViewer.test.tsx`:
 
 ```typescript
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { NiiVueViewer } from '../NiiVueViewer'
 
 // Mock the NiiVue module since it requires actual WebGL
@@ -451,7 +451,7 @@ describe('NiiVueViewer', () => {
     )
 
     // Wait for useEffect to run
-    await vi.waitFor(() => {
+    await waitFor(() => {
       expect(mockInstance.loadVolumes).toHaveBeenCalled()
     })
 

@@ -36,16 +36,18 @@ describe('apiClient', () => {
       expect(result.predictionUrl).toContain('prediction.nii.gz')
     })
 
-    it('sends fast_mode parameter', async () => {
+    it('sends fast_mode=false parameter (slower processing)', async () => {
       const result = await apiClient.runSegmentation('sub-stroke0001', false)
 
-      expect(result).toBeDefined()
+      // Mock returns 45.0s when fast_mode=false
+      expect(result.elapsedSeconds).toBe(45.0)
     })
 
-    it('defaults fast_mode to true', async () => {
+    it('defaults fast_mode to true (faster processing)', async () => {
       const result = await apiClient.runSegmentation('sub-stroke0001')
 
-      expect(result).toBeDefined()
+      // Mock returns 12.5s when fast_mode=true (the default)
+      expect(result.elapsedSeconds).toBe(12.5)
     })
 
     it('throws ApiError on server error', async () => {
