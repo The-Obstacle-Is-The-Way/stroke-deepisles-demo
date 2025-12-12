@@ -75,8 +75,12 @@ EXPOSE 7860
 # Reset ENTRYPOINT from base image
 ENTRYPOINT []
 
-# Explicit frontend origin for CORS (backup to regex)
+# Explicit frontend origin for CORS
 ENV FRONTEND_ORIGIN=https://vibecodermcswaggins-stroke-viewer-frontend.hf.space
+
+# Explicit backend public URL for constructing file URLs
+# This ensures correct https:// URLs even if proxy headers aren't forwarded correctly
+ENV BACKEND_PUBLIC_URL=https://vibecodermcswaggins-stroke-deepisles-demo.hf.space
 
 # Run FastAPI with uvicorn (module path: stroke_deepisles_demo.api.main:app)
 # --proxy-headers: Trust X-Forwarded-Proto from HF Spaces proxy (ensures https:// in request.base_url)

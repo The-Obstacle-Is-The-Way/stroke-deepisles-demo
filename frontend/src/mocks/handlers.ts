@@ -159,19 +159,28 @@ export const handlers = [
 
     // Include result if completed
     if (updatedJob.status === "completed") {
+      // Filenames must match actual backend output format
       response.result = {
         caseId: updatedJob.caseId,
         diceScore: 0.847,
         volumeMl: 15.32,
         elapsedSeconds: updatedJob.fastMode ? 12.5 : 45.0,
-        dwiUrl: `${API_BASE}/files/${jobId}/${updatedJob.caseId}/dwi.nii.gz`,
-        predictionUrl: `${API_BASE}/files/${jobId}/${updatedJob.caseId}/prediction.nii.gz`,
+        dwiUrl: `${API_BASE}/files/${jobId}/${updatedJob.caseId}/${updatedJob.caseId}_dwi.nii.gz`,
+        predictionUrl: `${API_BASE}/files/${jobId}/${updatedJob.caseId}/lesion_msk.nii.gz`,
       };
     }
 
     return HttpResponse.json(response);
   }),
 ];
+
+// Track retry attempts for cold-start testing
+let casesAttempts = 0;
+
+/** Reset the cases attempt counter (call in test beforeEach) */
+export function resetCasesAttempts(): void {
+  casesAttempts = 0;
+}
 
 // Error handlers for testing error states
 export const errorHandlers = {
@@ -184,6 +193,21 @@ export const errorHandlers = {
 
   casesNetworkError: http.get(`${API_BASE}/api/cases`, () => {
     return HttpResponse.error();
+  }),
+
+  // 503 on first attempt, success on retry (tests cold-start retry)
+  casesColdStart: http.get(`${API_BASE}/api/cases`, async () => {
+    casesAttempts++;
+    if (casesAttempts === 1) {
+      return HttpResponse.json(
+        { detail: "Service Unavailable" },
+        { status: 503 },
+      );
+    }
+    // Succeed on retry
+    return HttpResponse.json({
+      cases: ["sub-stroke0001", "sub-stroke0002", "sub-stroke0003"],
+    });
   }),
 
   segmentCreateError: http.post(`${API_BASE}/api/segment`, () => {

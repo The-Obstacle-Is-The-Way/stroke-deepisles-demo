@@ -21,14 +21,21 @@ def get_case(case_id: str | int) -> CaseFiles:
     """
     Load a single case by ID or index.
 
+    Uses context manager to ensure HuggingFace temp files are cleaned up.
+    This prevents unbounded disk usage from accumulating temp NIfTI files.
+
     Returns:
         CaseFiles dictionary
     """
-    dataset = load_isles_dataset()
-    return dataset.get_case(case_id)
+    with load_isles_dataset() as dataset:
+        return dataset.get_case(case_id)
 
 
 def list_case_ids() -> list[str]:
-    """List all available case IDs."""
-    dataset = load_isles_dataset()
-    return dataset.list_case_ids()
+    """List all available case IDs.
+
+    Uses context manager to ensure HuggingFace temp files are cleaned up.
+    This prevents unbounded disk usage from accumulating temp NIfTI files.
+    """
+    with load_isles_dataset() as dataset:
+        return dataset.list_case_ids()
