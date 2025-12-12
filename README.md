@@ -46,6 +46,17 @@ This project provides a complete end-to-end workflow:
 -   🖥️ **Interactive UI**: Gradio-based web interface with 3D rendering (NiiVue).
 -   ⚙️ **Production Ready**: Type-safe, tested, and configurable via environment variables.
 
+## Requirements
+
+### Hardware
+- **GPU Required**: This demo requires a T4 GPU (`t4-small` hardware on HF Spaces)
+- Free tier (`cpu-basic`) will NOT work - DeepISLES requires CUDA for inference
+- Recommended: `t4-small` or better
+
+### Browser
+- WebGL2 support required (Chrome 56+, Firefox 51+, Safari 15+, Edge 79+)
+- Check compatibility: https://get.webgl.org/webgl2/
+
 ## Quickstart
 
 ### Prerequisites
