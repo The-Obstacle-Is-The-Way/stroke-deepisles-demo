@@ -111,7 +111,19 @@ export function useSegmentation() {
         // Ignore abort errors
         if (err instanceof Error && err.name === "AbortError") return;
 
-        // Don't stop polling on transient network errors - retry next interval
+        // 404 = job expired or lost (HF restart) - this is TERMINAL, not transient
+        if (err instanceof ApiError && err.status === 404) {
+          stopPolling();
+          setIsLoading(false);
+          setJobStatus("failed");
+          setError(
+            "Job expired or lost. This can happen if the backend restarted. Please try again.",
+          );
+          setResult(null);
+          return;
+        }
+
+        // Other errors (network, 5xx) - retry next interval
         console.warn("Polling error (will retry):", err);
       }
     },

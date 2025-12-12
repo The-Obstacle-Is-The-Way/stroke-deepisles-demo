@@ -1,5 +1,10 @@
-import { useEffect, useState } from "react";
-import { apiClient } from "../api/client";
+import { useEffect, useState, useCallback } from "react";
+import { apiClient, ApiError } from "../api/client";
+
+// Cold start retry configuration (matches useSegmentation.ts)
+const MAX_COLD_START_RETRIES = 5;
+const INITIAL_RETRY_DELAY = 2000;
+const MAX_RETRY_DELAY = 30000;
 
 interface CaseSelectorProps {
   selectedCase: string | null;
@@ -13,36 +18,78 @@ export function CaseSelector({
   const [cases, setCases] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
+  const [isWakingUp, setIsWakingUp] = useState(false);
+
+  const fetchCases = useCallback(async (signal: AbortSignal) => {
+    let attempts = 0;
+
+    while (attempts <= MAX_COLD_START_RETRIES) {
+      try {
+        const data = await apiClient.getCases(signal);
+        setCases(data.cases);
+        setIsWakingUp(false);
+        setRetryCount(0);
+        return; // Success
+      } catch (err) {
+        if (err instanceof Error && err.name === "AbortError") return;
+
+        const is503 = err instanceof ApiError && err.status === 503;
+        const isNetworkError =
+          err instanceof TypeError &&
+          err.message.toLowerCase().includes("fetch");
+
+        // Retry on cold start (503) or network errors
+        if ((is503 || isNetworkError) && attempts < MAX_COLD_START_RETRIES) {
+          attempts++;
+          setRetryCount(attempts);
+          setIsWakingUp(true);
+
+          // Exponential backoff
+          const delay = Math.min(
+            INITIAL_RETRY_DELAY * Math.pow(2, attempts - 1),
+            MAX_RETRY_DELAY,
+          );
+          await new Promise((resolve) => setTimeout(resolve, delay));
+          continue;
+        }
+
+        // Max retries exceeded or non-retryable error
+        const message =
+          is503 || isNetworkError
+            ? "Backend failed to wake up. Please refresh the page."
+            : err instanceof Error
+              ? err.message
+              : "Unknown error";
+        setError(`Failed to load cases: ${message}`);
+        setIsWakingUp(false);
+        return;
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const abortController = new AbortController();
 
-    const fetchCases = async () => {
-      try {
-        const data = await apiClient.getCases(abortController.signal);
-        setCases(data.cases);
-      } catch (err) {
-        // Ignore abort errors - component unmounted
-        if (err instanceof Error && err.name === "AbortError") return;
-
-        const message = err instanceof Error ? err.message : "Unknown error";
-        setError(`Failed to load cases: ${message}`);
-      } finally {
-        if (!abortController.signal.aborted) {
-          setIsLoading(false);
-        }
+    fetchCases(abortController.signal).finally(() => {
+      if (!abortController.signal.aborted) {
+        setIsLoading(false);
       }
-    };
-
-    fetchCases();
+    });
 
     return () => abortController.abort();
-  }, []);
+  }, [fetchCases]);
 
   if (isLoading) {
     return (
       <div className="bg-gray-800 rounded-lg p-4">
-        <p className="text-gray-400">Loading cases...</p>
+        {isWakingUp ? (
+          <p className="text-yellow-400">
+            Backend waking up... Retry {retryCount}/{MAX_COLD_START_RETRIES}
+          </p>
+        ) : (
+          <p className="text-gray-400">Loading cases...</p>
+        )}
       </div>
     );
   }

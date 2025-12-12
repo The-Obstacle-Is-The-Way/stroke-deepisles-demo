@@ -16,22 +16,19 @@ Architecture designed to work within HuggingFace Spaces constraints:
 import os
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
-from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
+from stroke_deepisles_demo.api.config import RESULTS_DIR
+from stroke_deepisles_demo.api.files import files_router
 from stroke_deepisles_demo.api.job_store import init_job_store
 from stroke_deepisles_demo.api.routes import router
 from stroke_deepisles_demo.core.logging import get_logger
 
 logger = get_logger(__name__)
-
-# Results directory (must be in /tmp for HF Spaces)
-RESULTS_DIR = Path("/tmp/stroke-results")
 
 
 @asynccontextmanager
@@ -115,24 +112,25 @@ if FRONTEND_ORIGIN and FRONTEND_ORIGIN not in CORS_ORIGINS:
 # Add CORP middleware first (for COEP compatibility)
 app.add_middleware(CORPMiddleware)
 
-# Add CORS middleware with strict security settings
+# Add CORS middleware with settings for NiiVue binary file fetching
 # Note: Using allow_origins list for exact matching (no regex needed)
 # This eliminates regex security concerns while maintaining single source of truth
 app.add_middleware(
     CORSMiddleware,
     allow_origins=CORS_ORIGINS,
     allow_credentials=False,  # Not needed - no cookies/auth
-    allow_methods=["GET", "POST"],  # Only methods we use
-    allow_headers=["Content-Type"],  # Only headers we need
+    allow_methods=["GET", "POST", "HEAD"],  # HEAD for preflight checks
+    allow_headers=["Content-Type", "Range"],  # Range needed for partial content requests
+    expose_headers=["Content-Range", "Content-Length", "Accept-Ranges"],  # NiiVue needs these
 )
 
-# API routes
+# API routes (includes /api/* endpoints)
 app.include_router(router, prefix="/api")
 
-# Static files for NIfTI results
-# Note: Mount happens at import time; ensure directory exists here as well.
-RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-app.mount("/files", StaticFiles(directory=str(RESULTS_DIR)), name="files")
+# File routes (serves NIfTI results through main app's middleware for CORS)
+# BUG-004 FIX: Previously used StaticFiles mount which bypassed CORS middleware.
+# Now using explicit routes so CORS headers are applied to file responses.
+app.include_router(files_router)
 
 
 @app.get("/")

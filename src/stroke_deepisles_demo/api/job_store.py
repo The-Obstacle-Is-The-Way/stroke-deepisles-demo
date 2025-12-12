@@ -23,10 +23,13 @@ import threading
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
-from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
+from stroke_deepisles_demo.api.config import RESULTS_DIR
 from stroke_deepisles_demo.core.logging import get_logger
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 logger = get_logger(__name__)
 
@@ -135,7 +138,7 @@ class JobStore:
         self._jobs: dict[str, Job] = {}
         self._lock = threading.RLock()
         self._ttl = ttl
-        self._results_dir = results_dir or Path("/tmp/stroke-results")
+        self._results_dir = results_dir or RESULTS_DIR
         self._cleanup_thread: threading.Thread | None = None
         self._shutdown = threading.Event()
 

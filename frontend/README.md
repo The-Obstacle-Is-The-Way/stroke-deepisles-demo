@@ -99,7 +99,7 @@ If you fork this repository, update these files before deploying:
    ```
 
 2. **Backend CORS** (`src/stroke_deepisles_demo/api/main.py`):
-   Update the `allow_origin_regex` to match your frontend Space URL.
+   Add your frontend URL to the `CORS_ORIGINS` list, or set `FRONTEND_ORIGIN` env var.
 
 3. **Rebuild frontend**:
    ```bash
