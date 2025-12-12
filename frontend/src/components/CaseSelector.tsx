@@ -30,6 +30,7 @@ export function CaseSelector({
         setCases(data.cases);
         setIsWakingUp(false);
         setRetryCount(0);
+        setIsLoading(false);
         return; // Success
       } catch (err) {
         if (err instanceof Error && err.name === "AbortError") return;
@@ -63,6 +64,7 @@ export function CaseSelector({
               : "Unknown error";
         setError(`Failed to load cases: ${message}`);
         setIsWakingUp(false);
+        setIsLoading(false);
         return;
       }
     }
@@ -70,13 +72,7 @@ export function CaseSelector({
 
   useEffect(() => {
     const abortController = new AbortController();
-
-    fetchCases(abortController.signal).finally(() => {
-      if (!abortController.signal.aborted) {
-        setIsLoading(false);
-      }
-    });
-
+    fetchCases(abortController.signal);
     return () => abortController.abort();
   }, [fetchCases]);
 

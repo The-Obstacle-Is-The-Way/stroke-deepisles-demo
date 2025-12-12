@@ -48,9 +48,12 @@ async def get_result_file(job_id: str, case_id: str, filename: str) -> FileRespo
     file_path = RESULTS_DIR / job_id / case_id / filename
 
     # Security: Ensure path doesn't escape RESULTS_DIR (path traversal protection)
+    # Using is_relative_to() instead of startswith() to prevent prefix-collision bypass
+    # e.g., /tmp/stroke-results-evil/file.txt would pass startswith but fail is_relative_to
     try:
+        base_dir = RESULTS_DIR.resolve()
         resolved = file_path.resolve()
-        if not str(resolved).startswith(str(RESULTS_DIR.resolve())):
+        if not resolved.is_relative_to(base_dir):
             logger.warning("Path traversal attempt blocked: %s", filename)
             raise HTTPException(status_code=404, detail="File not found")
     except (OSError, ValueError):
