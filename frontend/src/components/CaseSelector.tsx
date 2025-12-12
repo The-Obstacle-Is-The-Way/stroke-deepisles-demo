@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { apiClient, ApiError } from "../api/client";
 
 // Cold start retry configuration (matches useSegmentation.ts)
@@ -21,60 +21,70 @@ export function CaseSelector({
   const [retryCount, setRetryCount] = useState(0);
   const [isWakingUp, setIsWakingUp] = useState(false);
 
-  const fetchCases = useCallback(async (signal: AbortSignal) => {
-    let attempts = 0;
+  // Fetch cases on mount with cold-start retry logic
+  // Using inline async function pattern recommended by React docs for data fetching
+  useEffect(() => {
+    let isActive = true;
+    const abortController = new AbortController();
 
-    while (attempts <= MAX_COLD_START_RETRIES) {
-      try {
-        const data = await apiClient.getCases(signal);
-        setCases(data.cases);
-        setIsWakingUp(false);
-        setRetryCount(0);
-        setIsLoading(false);
-        return; // Success
-      } catch (err) {
-        if (err instanceof Error && err.name === "AbortError") return;
+    async function fetchCases() {
+      let attempts = 0;
 
-        const is503 = err instanceof ApiError && err.status === 503;
-        const isNetworkError =
-          err instanceof TypeError &&
-          err.message.toLowerCase().includes("fetch");
+      while (attempts <= MAX_COLD_START_RETRIES && isActive) {
+        try {
+          const data = await apiClient.getCases(abortController.signal);
+          if (!isActive) return;
+          setCases(data.cases);
+          setIsWakingUp(false);
+          setRetryCount(0);
+          setIsLoading(false);
+          return; // Success
+        } catch (err) {
+          if (!isActive) return;
+          if (err instanceof Error && err.name === "AbortError") return;
 
-        // Retry on cold start (503) or network errors
-        if ((is503 || isNetworkError) && attempts < MAX_COLD_START_RETRIES) {
-          attempts++;
-          setRetryCount(attempts);
-          setIsWakingUp(true);
+          const is503 = err instanceof ApiError && err.status === 503;
+          const isNetworkError =
+            err instanceof TypeError &&
+            err.message.toLowerCase().includes("fetch");
 
-          // Exponential backoff
-          const delay = Math.min(
-            INITIAL_RETRY_DELAY * Math.pow(2, attempts - 1),
-            MAX_RETRY_DELAY,
-          );
-          await new Promise((resolve) => setTimeout(resolve, delay));
-          continue;
+          // Retry on cold start (503) or network errors
+          if ((is503 || isNetworkError) && attempts < MAX_COLD_START_RETRIES) {
+            attempts++;
+            setRetryCount(attempts);
+            setIsWakingUp(true);
+
+            // Exponential backoff
+            const delay = Math.min(
+              INITIAL_RETRY_DELAY * Math.pow(2, attempts - 1),
+              MAX_RETRY_DELAY,
+            );
+            await new Promise((resolve) => setTimeout(resolve, delay));
+            continue;
+          }
+
+          // Max retries exceeded or non-retryable error
+          const message =
+            is503 || isNetworkError
+              ? "Backend failed to wake up. Please refresh the page."
+              : err instanceof Error
+                ? err.message
+                : "Unknown error";
+          setError(`Failed to load cases: ${message}`);
+          setIsWakingUp(false);
+          setIsLoading(false);
+          return;
         }
-
-        // Max retries exceeded or non-retryable error
-        const message =
-          is503 || isNetworkError
-            ? "Backend failed to wake up. Please refresh the page."
-            : err instanceof Error
-              ? err.message
-              : "Unknown error";
-        setError(`Failed to load cases: ${message}`);
-        setIsWakingUp(false);
-        setIsLoading(false);
-        return;
       }
     }
-  }, []);
 
-  useEffect(() => {
-    const abortController = new AbortController();
-    fetchCases(abortController.signal);
-    return () => abortController.abort();
-  }, [fetchCases]);
+    fetchCases();
+
+    return () => {
+      isActive = false;
+      abortController.abort();
+    };
+  }, []);
 
   if (isLoading) {
     return (

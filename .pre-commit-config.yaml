@@ -1,4 +1,7 @@
 repos:
+  # ============================================
+  # BACKEND HOOKS (Python)
+  # ============================================
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.14.8
     hooks:
@@ -17,6 +20,36 @@ repos:
         # Exclude auto-generated Gradio custom component files
         exclude: ^packages/niivueviewer/
 
+  # ============================================
+  # FRONTEND HOOKS (TypeScript/React)
+  # ============================================
+  - repo: local
+    hooks:
+      - id: frontend-lint
+        name: frontend-lint (eslint)
+        entry: bash -c 'cd frontend && npm run lint'
+        language: system
+        files: ^frontend/.*\.(ts|tsx|js|jsx)$
+        pass_filenames: false
+
+      - id: frontend-typecheck
+        name: frontend-typecheck (tsc)
+        entry: bash -c 'cd frontend && npx tsc --noEmit'
+        language: system
+        files: ^frontend/.*\.(ts|tsx)$
+        pass_filenames: false
+
+      - id: frontend-test
+        name: frontend-test (vitest coverage)
+        entry: bash -c 'cd frontend && npm run test:coverage'
+        language: system
+        files: ^frontend/.*\.(ts|tsx)$
+        pass_filenames: false
+        stages: [pre-push]  # Run on push only (tests are slow)
+
+  # ============================================
+  # GENERAL HOOKS
+  # ============================================
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:

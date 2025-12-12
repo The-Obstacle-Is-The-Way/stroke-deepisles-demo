@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { server } from "../../mocks/server";
-import { errorHandlers } from "../../mocks/handlers";
+import { errorHandlers, resetCasesAttempts } from "../../mocks/handlers";
 import { CaseSelector } from "../CaseSelector";
 
 describe("CaseSelector", () => {
@@ -10,6 +10,7 @@ describe("CaseSelector", () => {
 
   beforeEach(() => {
     mockOnSelectCase.mockClear();
+    resetCasesAttempts();
   });
 
   it("shows loading state initially", () => {
@@ -116,5 +117,33 @@ describe("CaseSelector", () => {
 
     const container = screen.getByRole("combobox").closest("div");
     expect(container).toHaveClass("bg-gray-800");
+  });
+
+  it("retries on 503 cold-start and succeeds", async () => {
+    server.use(errorHandlers.casesColdStart);
+
+    render(
+      <CaseSelector selectedCase={null} onSelectCase={mockOnSelectCase} />,
+    );
+
+    // Should show waking up message during retry
+    await waitFor(
+      () => {
+        expect(screen.getByText(/waking up/i)).toBeInTheDocument();
+      },
+      { timeout: 3000 },
+    );
+
+    // Should eventually succeed and show cases
+    await waitFor(
+      () => {
+        expect(screen.getByRole("combobox")).toBeInTheDocument();
+      },
+      { timeout: 5000 },
+    );
+
+    expect(
+      screen.getByRole("option", { name: /sub-stroke0001/i }),
+    ).toBeInTheDocument();
   });
 });
