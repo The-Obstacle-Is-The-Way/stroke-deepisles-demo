@@ -97,24 +97,30 @@ class CORPMiddleware(BaseHTTPMiddleware):
         return response
 
 
-# CORS configuration
-FRONTEND_ORIGIN = os.environ.get("FRONTEND_ORIGIN", "")
-CORS_ORIGINS = [
+# CORS configuration - Single source of truth (no regex needed for exact origins)
+# Production HF Space frontend origin
+HF_SPACE_FRONTEND = "https://vibecodermcswaggins-stroke-viewer-frontend.hf.space"
+
+CORS_ORIGINS: list[str] = [
     "http://localhost:5173",  # Vite dev server
     "http://localhost:3000",  # Alternative local port
+    HF_SPACE_FRONTEND,  # Production HF Space frontend
 ]
-if FRONTEND_ORIGIN:
+
+# Allow override via environment variable (for custom deployments)
+FRONTEND_ORIGIN = os.environ.get("FRONTEND_ORIGIN", "")
+if FRONTEND_ORIGIN and FRONTEND_ORIGIN not in CORS_ORIGINS:
     CORS_ORIGINS.append(FRONTEND_ORIGIN)
 
 # Add CORP middleware first (for COEP compatibility)
 app.add_middleware(CORPMiddleware)
 
 # Add CORS middleware with strict security settings
+# Note: Using allow_origins list for exact matching (no regex needed)
+# This eliminates regex security concerns while maintaining single source of truth
 app.add_middleware(
     CORSMiddleware,
     allow_origins=CORS_ORIGINS,
-    # Anchored regex: only allow our specific HF Space (security fix for BUG-002)
-    allow_origin_regex=r"https://vibecodermcswaggins-stroke-viewer-frontend\.hf\.space",
     allow_credentials=False,  # Not needed - no cookies/auth
     allow_methods=["GET", "POST"],  # Only methods we use
     allow_headers=["Content-Type"],  # Only headers we need
