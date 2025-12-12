@@ -159,13 +159,16 @@ export const handlers = [
 
     // Include result if completed
     if (updatedJob.status === "completed") {
+      // Filenames must match actual backend output:
+      // - DWI: {case_id}_dwi.nii.gz (pipeline.py:123)
+      // - Prediction: lesion_msk.nii.gz (direct.py:85)
       response.result = {
         caseId: updatedJob.caseId,
         diceScore: 0.847,
         volumeMl: 15.32,
         elapsedSeconds: updatedJob.fastMode ? 12.5 : 45.0,
-        dwiUrl: `${API_BASE}/files/${jobId}/${updatedJob.caseId}/dwi.nii.gz`,
-        predictionUrl: `${API_BASE}/files/${jobId}/${updatedJob.caseId}/prediction.nii.gz`,
+        dwiUrl: `${API_BASE}/files/${jobId}/${updatedJob.caseId}/${updatedJob.caseId}_dwi.nii.gz`,
+        predictionUrl: `${API_BASE}/files/${jobId}/${updatedJob.caseId}/lesion_msk.nii.gz`,
       };
     }
 

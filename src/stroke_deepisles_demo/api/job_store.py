@@ -150,6 +150,18 @@ class JobStore:
         """
         return bool(job_id) and _SAFE_JOB_ID_PATTERN.match(job_id) is not None
 
+    def get_active_job_count(self) -> int:
+        """Return the number of active (pending or running) jobs.
+
+        Used for concurrency limiting to prevent GPU memory exhaustion.
+        """
+        with self._lock:
+            return sum(
+                1
+                for job in self._jobs.values()
+                if job.status in (JobStatus.PENDING, JobStatus.RUNNING)
+            )
+
     def create_job(self, job_id: str, case_id: str, fast_mode: bool) -> Job:
         """Create a new job in PENDING status.
 
