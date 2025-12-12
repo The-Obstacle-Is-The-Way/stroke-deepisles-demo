@@ -3,6 +3,8 @@ import { Component, type ReactNode } from "react";
 interface Props {
   children: ReactNode;
   fallback?: ReactNode;
+  /** Show error details even in production (defaults to false) */
+  showDetails?: boolean;
 }
 
 interface State {
@@ -53,16 +55,18 @@ export class ErrorBoundary extends Component<Props, State> {
             <p className="text-gray-300">
               An unexpected error occurred while rendering the application.
             </p>
-            {this.state.error && (
-              <details className="text-left">
-                <summary className="text-gray-400 cursor-pointer hover:text-gray-300">
-                  Error details
-                </summary>
-                <pre className="mt-2 p-2 bg-gray-900 rounded text-xs text-red-300 overflow-auto max-h-32">
-                  {this.state.error.message}
-                </pre>
-              </details>
-            )}
+            {/* Only show error details in development or if explicitly enabled (security) */}
+            {this.state.error &&
+              (import.meta.env.DEV || this.props.showDetails) && (
+                <details className="text-left">
+                  <summary className="text-gray-400 cursor-pointer hover:text-gray-300">
+                    Error details
+                  </summary>
+                  <pre className="mt-2 p-2 bg-gray-900 rounded text-xs text-red-300 overflow-auto max-h-32">
+                    {this.state.error.message}
+                  </pre>
+                </details>
+              )}
             <button
               onClick={this.handleRetry}
               className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"

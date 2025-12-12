@@ -113,8 +113,9 @@ app.add_middleware(CORPMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=CORS_ORIGINS,
-    # Anchored regex: only allow our specific HF Space (security fix for BUG-002)
-    allow_origin_regex=r"https://vibecodermcswaggins-stroke-viewer-frontend\.hf\.space",
+    # Fully anchored regex: only allow our specific HF Space (security fix for BUG-002)
+    # CRITICAL: ^ and $ anchors prevent subdomain attacks like .hf.space.evil.com
+    allow_origin_regex=r"^https://vibecodermcswaggins-stroke-viewer-frontend\.hf\.space$",
     allow_credentials=False,  # Not needed - no cookies/auth
     allow_methods=["GET", "POST"],  # Only methods we use
     allow_headers=["Content-Type"],  # Only headers we need

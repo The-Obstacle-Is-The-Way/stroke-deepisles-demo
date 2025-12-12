@@ -30,25 +30,23 @@ export interface SegmentResponse {
   warning?: string | null;
 }
 
-// Job Status Types
-export type JobStatus =
-  | "pending"
-  | "running"
-  | "completed"
-  | "failed"
-  | "waking_up";
+// Backend Job Status Types (returned by API - never includes 'waking_up')
+export type BackendJobStatus = "pending" | "running" | "completed" | "failed";
+
+// Frontend Job Status Types (includes client-side states like 'waking_up')
+export type JobStatus = BackendJobStatus | "waking_up";
 
 // Response from POST /api/segment (job creation)
 export interface CreateJobResponse {
   jobId: string;
-  status: JobStatus;
+  status: BackendJobStatus; // Backend never returns 'waking_up'
   message: string;
 }
 
 // Response from GET /api/jobs/{jobId} (status polling)
 export interface JobStatusResponse {
   jobId: string;
-  status: JobStatus;
+  status: BackendJobStatus; // Backend never returns 'waking_up'
   progress: number;
   progressMessage: string;
   elapsedSeconds?: number;
