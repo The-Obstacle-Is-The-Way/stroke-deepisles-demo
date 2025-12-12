@@ -28,7 +28,10 @@ if FRONTEND_ORIGIN:
 app.add_middleware(
     CORSMiddleware,
     allow_origins=CORS_ORIGINS,
-    allow_origin_regex=r"https://.*--stroke-viewer-frontend(--.*)?\.hf\.space",
+    # Match HF Spaces URLs in both formats:
+    # - Direct: https://username-spacename.hf.space
+    # - Proxy:  https://username--spacename--hash.hf.space
+    allow_origin_regex=r"https://.*stroke-viewer-frontend.*\.hf\.space",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
