@@ -93,7 +93,7 @@ app.add_middleware(
 app.include_router(router, prefix="/api")
 
 # Static files for NIfTI results
-# Note: Directory created in lifespan startup before this runs
+# Note: Mount happens at import time; ensure directory exists here as well.
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 app.mount("/files", StaticFiles(directory=str(RESULTS_DIR)), name="files")
 

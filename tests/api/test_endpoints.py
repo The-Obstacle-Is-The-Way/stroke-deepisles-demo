@@ -75,7 +75,8 @@ class TestGetCases:
             response = client.get("/api/cases")
 
             assert response.status_code == 500
-            assert "Dataset not found" in response.json()["detail"]
+            # Note: Error message is sanitized (doesn't expose internal details)
+            assert "Failed to retrieve cases" in response.json()["detail"]
 
 
 class TestPostSegment:

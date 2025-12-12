@@ -37,7 +37,7 @@ When this issue occurred:
 
 ### Architecture
 
-```
+```text
 BEFORE (Synchronous - Timeout Risk):
   Frontend                    Backend
      |--POST /api/segment------->|

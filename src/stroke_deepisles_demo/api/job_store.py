@@ -6,6 +6,8 @@ jobs. Jobs are stored in-memory, which is appropriate for HuggingFace Spaces sin
 2. Jobs are ephemeral (results cached, cleanup after TTL)
 3. No external dependencies (Redis, DB) required
 
+Note: Multi-worker deployments would require a shared store (Redis/DB).
+
 Architecture:
 - Jobs are created with PENDING status
 - Background tasks update status to RUNNING, then COMPLETED/FAILED
@@ -15,6 +17,7 @@ Architecture:
 
 from __future__ import annotations
 
+import re
 import shutil
 import threading
 from dataclasses import dataclass
@@ -26,6 +29,9 @@ from typing import Any
 from stroke_deepisles_demo.core.logging import get_logger
 
 logger = get_logger(__name__)
+
+# Regex for safe job IDs (alphanumeric, hyphens, underscores only)
+_SAFE_JOB_ID_PATTERN = re.compile(r"^[a-zA-Z0-9_-]+$")
 
 
 class JobStatus(str, Enum):
@@ -42,7 +48,7 @@ class Job:
     """Represents an async segmentation job.
 
     Attributes:
-        id: Unique job identifier (UUID[:8])
+        id: Unique job identifier (full UUID hex)
         status: Current job status
         case_id: The case being processed
         fast_mode: Whether to use fast inference mode
@@ -84,13 +90,13 @@ class Job:
             "progressMessage": self.progress_message,
         }
 
-        if self.started_at:
+        if self.started_at is not None:
             data["elapsedSeconds"] = round(self.elapsed_seconds, 2)
 
-        if self.status == JobStatus.COMPLETED and self.result:
+        if self.status == JobStatus.COMPLETED and self.result is not None:
             data["result"] = self.result
 
-        if self.status == JobStatus.FAILED and self.error:
+        if self.status == JobStatus.FAILED and self.error is not None:
             data["error"] = self.error
 
         return data
@@ -133,6 +139,14 @@ class JobStore:
         self._cleanup_thread: threading.Thread | None = None
         self._shutdown = threading.Event()
 
+    @staticmethod
+    def _is_safe_job_id(job_id: str) -> bool:
+        """Validate job ID to prevent path traversal attacks.
+
+        Only allows alphanumeric characters, hyphens, and underscores.
+        """
+        return bool(job_id) and _SAFE_JOB_ID_PATTERN.match(job_id) is not None
+
     def create_job(self, job_id: str, case_id: str, fast_mode: bool) -> Job:
         """Create a new job in PENDING status.
 
@@ -143,7 +157,14 @@ class JobStore:
 
         Returns:
             The created Job object
+
+        Raises:
+            ValueError: If job_id is invalid (contains unsafe characters)
+            KeyError: If job_id already exists
         """
+        if not self._is_safe_job_id(job_id):
+            raise ValueError(f"Invalid job_id: {job_id!r}")
+
         job = Job(
             id=job_id,
             status=JobStatus.PENDING,
@@ -152,8 +173,11 @@ class JobStore:
             created_at=datetime.now(),
         )
         with self._lock:
+            if job_id in self._jobs:
+                raise KeyError(f"Job already exists: {job_id}")
             self._jobs[job_id] = job
-        logger.info("Created job %s for case %s", job_id, case_id)
+        # Note: Don't log case_id as it may be sensitive (medical domain)
+        logger.info("Created job %s", job_id)
         return job
 
     def get_job(self, job_id: str) -> Job | None:
@@ -212,6 +236,9 @@ class JobStore:
         with self._lock:
             job = self._jobs.get(job_id)
             if job:
+                # Ensure started_at is set for elapsed time calculation
+                if job.started_at is None:
+                    job.started_at = datetime.now()
                 job.status = JobStatus.COMPLETED
                 job.completed_at = datetime.now()
                 job.progress = 100
@@ -233,6 +260,9 @@ class JobStore:
         with self._lock:
             job = self._jobs.get(job_id)
             if job:
+                # Ensure started_at is set for elapsed time calculation
+                if job.started_at is None:
+                    job.started_at = datetime.now()
                 job.status = JobStatus.FAILED
                 job.completed_at = datetime.now()
                 job.progress_message = "Error occurred"
@@ -259,8 +289,20 @@ class JobStore:
                 del self._jobs[job_id]
 
         # Clean up result files outside the lock
+        # Use path validation to prevent path traversal attacks
+        base_dir = self._results_dir.resolve()
         for job_id in expired_ids:
-            result_dir = self._results_dir / job_id
+            # Skip cleanup for unsafe job IDs (shouldn't happen, but defense in depth)
+            if not self._is_safe_job_id(job_id):
+                logger.warning("Skipping cleanup for unsafe job id %r", job_id)
+                continue
+
+            result_dir = (self._results_dir / job_id).resolve()
+            # Verify path is within results directory (prevent traversal)
+            if not result_dir.is_relative_to(base_dir):
+                logger.warning("Path traversal attempt blocked for job %s", job_id)
+                continue
+
             if result_dir.exists():
                 try:
                     shutil.rmtree(result_dir)

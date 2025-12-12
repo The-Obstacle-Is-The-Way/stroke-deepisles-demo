@@ -72,7 +72,7 @@ Based on research and experience, here are common issues to watch for:
 
 The complete flow from frontend to backend and back:
 
-```
+```text
 1. Frontend loads
    ├── CaseSelector fetches GET /api/cases
    ├── CORS: origin regex must match frontend URL

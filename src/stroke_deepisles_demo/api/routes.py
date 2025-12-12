@@ -63,8 +63,9 @@ def get_cases() -> CasesResponse:
         return CasesResponse(cases=cases)
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e)) from None
+    except Exception:
+        logger.exception("Failed to list cases")
+        raise HTTPException(status_code=500, detail="Failed to retrieve cases") from None
 
 
 @router.post(
@@ -93,7 +94,8 @@ def create_segment_job(
     - Returning immediately avoids timeout errors
     """
     try:
-        job_id = str(uuid.uuid4())[:8]
+        # Use full UUID hex for uniqueness (no truncation)
+        job_id = uuid.uuid4().hex
         store = get_job_store()
         backend_url = get_backend_base_url(request)
 
@@ -109,7 +111,8 @@ def create_segment_job(
             backend_url=backend_url,
         )
 
-        logger.info("Created segmentation job %s for case %s", job_id, body.case_id)
+        # Note: Don't log case_id as it may be sensitive (medical domain)
+        logger.info("Created segmentation job %s", job_id)
 
         return CreateJobResponse(
             jobId=job_id,
@@ -117,9 +120,9 @@ def create_segment_job(
             message=f"Segmentation job queued for {body.case_id}",
         )
 
-    except Exception as e:
+    except Exception:
         logger.exception("Failed to create segmentation job")
-        raise HTTPException(status_code=500, detail=str(e)) from None
+        raise HTTPException(status_code=500, detail="Failed to create segmentation job") from None
 
 
 @router.get(
@@ -254,6 +257,7 @@ def run_segmentation_job(
             result.elapsed_seconds,
         )
 
-    except Exception as e:
+    except Exception:
         logger.exception("Job %s failed", job_id)
-        store.fail_job(job_id, str(e))
+        # Sanitize error message - don't expose internal details to clients
+        store.fail_job(job_id, "Segmentation failed")
