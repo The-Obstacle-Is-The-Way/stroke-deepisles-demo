@@ -25,37 +25,52 @@ describe('apiClient', () => {
     })
   })
 
-  describe('runSegmentation', () => {
-    it('returns segmentation result', async () => {
-      const result = await apiClient.runSegmentation('sub-stroke0001')
+  describe('createSegmentJob', () => {
+    it('returns job ID and pending status', async () => {
+      const result = await apiClient.createSegmentJob('sub-stroke0001')
 
-      expect(result.caseId).toBe('sub-stroke0001')
-      expect(result.diceScore).toBe(0.847)
-      expect(result.volumeMl).toBe(15.32)
-      expect(result.dwiUrl).toContain('dwi.nii.gz')
-      expect(result.predictionUrl).toContain('prediction.nii.gz')
+      expect(result.jobId).toBeDefined()
+      expect(result.status).toBe('pending')
+      expect(result.message).toContain('sub-stroke0001')
     })
 
-    it('sends fast_mode=false parameter (slower processing)', async () => {
-      const result = await apiClient.runSegmentation('sub-stroke0001', false)
+    it('sends fast_mode parameter', async () => {
+      const result = await apiClient.createSegmentJob('sub-stroke0001', false)
 
-      // Mock returns 45.0s when fast_mode=false
-      expect(result.elapsedSeconds).toBe(45.0)
-    })
-
-    it('defaults fast_mode to true (faster processing)', async () => {
-      const result = await apiClient.runSegmentation('sub-stroke0001')
-
-      // Mock returns 12.5s when fast_mode=true (the default)
-      expect(result.elapsedSeconds).toBe(12.5)
+      expect(result.jobId).toBeDefined()
+      expect(result.status).toBe('pending')
     })
 
     it('throws ApiError on server error', async () => {
-      server.use(errorHandlers.segmentServerError)
+      server.use(errorHandlers.segmentCreateError)
 
       await expect(
-        apiClient.runSegmentation('sub-stroke0001')
-      ).rejects.toThrow(/segmentation failed/i)
+        apiClient.createSegmentJob('sub-stroke0001')
+      ).rejects.toThrow(/failed to create job/i)
+    })
+  })
+
+  describe('getJobStatus', () => {
+    it('returns job status with progress', async () => {
+      // First create a job
+      const createResult = await apiClient.createSegmentJob('sub-stroke0001')
+
+      // Then get its status
+      const status = await apiClient.getJobStatus(createResult.jobId)
+
+      expect(status.jobId).toBe(createResult.jobId)
+      expect(['pending', 'running', 'completed']).toContain(status.status)
+      expect(status.progress).toBeGreaterThanOrEqual(0)
+      expect(status.progress).toBeLessThanOrEqual(100)
+      expect(status.progressMessage).toBeDefined()
+    })
+
+    it('throws ApiError when job not found', async () => {
+      server.use(errorHandlers.jobNotFound)
+
+      await expect(
+        apiClient.getJobStatus('nonexistent-job')
+      ).rejects.toThrow(/not found/i)
     })
   })
 })

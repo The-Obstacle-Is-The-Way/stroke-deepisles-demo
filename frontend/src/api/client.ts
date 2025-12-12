@@ -1,4 +1,8 @@
-import type { CasesResponse, SegmentResponse } from '../types'
+import type {
+  CasesResponse,
+  CreateJobResponse,
+  JobStatusResponse,
+} from '../types'
 
 function getApiBase(): string {
   const url = import.meta.env.VITE_API_URL
@@ -36,6 +40,9 @@ class ApiClient {
     this.baseUrl = baseUrl
   }
 
+  /**
+   * Get list of available cases
+   */
   async getCases(signal?: AbortSignal): Promise<CasesResponse> {
     const response = await fetch(`${this.baseUrl}/api/cases`, { signal })
 
@@ -51,11 +58,17 @@ class ApiClient {
     return response.json()
   }
 
-  async runSegmentation(
+  /**
+   * Create a segmentation job (async - returns immediately with job ID)
+   *
+   * The actual ML inference runs in the background. Poll getJobStatus()
+   * to track progress and retrieve results when complete.
+   */
+  async createSegmentJob(
     caseId: string,
     fastMode: boolean = true,
     signal?: AbortSignal
-  ): Promise<SegmentResponse> {
+  ): Promise<CreateJobResponse> {
     const response = await fetch(`${this.baseUrl}/api/segment`, {
       method: 'POST',
       headers: {
@@ -71,7 +84,42 @@ class ApiClient {
     if (!response.ok) {
       const error = await response.json().catch(() => ({}))
       throw new ApiError(
-        `Segmentation failed: ${error.detail || response.statusText}`,
+        `Failed to create job: ${error.detail || response.statusText}`,
+        response.status,
+        error.detail
+      )
+    }
+
+    return response.json()
+  }
+
+  /**
+   * Get the status of a segmentation job
+   *
+   * Poll this endpoint to track progress and retrieve results.
+   * When status is 'completed', the result field contains segmentation data.
+   * When status is 'failed', the error field contains the error message.
+   */
+  async getJobStatus(
+    jobId: string,
+    signal?: AbortSignal
+  ): Promise<JobStatusResponse> {
+    const response = await fetch(`${this.baseUrl}/api/jobs/${jobId}`, {
+      signal,
+    })
+
+    if (response.status === 404) {
+      throw new ApiError(
+        'Job not found or expired',
+        404,
+        'Jobs expire after 1 hour'
+      )
+    }
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}))
+      throw new ApiError(
+        `Failed to get job status: ${error.detail || response.statusText}`,
         response.status,
         error.detail
       )

@@ -19,7 +19,7 @@ export class HomePage {
     })
     this.caseSelector = page.getByRole('combobox')
     this.runButton = page.getByRole('button', { name: /run segmentation/i })
-    this.processingText = page.getByText(/processing/i)
+    this.processingText = page.getByRole('button', { name: /processing/i })
     this.metricsPanel = page.getByRole('heading', { name: /results/i })
     this.diceScore = page.getByText(/0\.\d{3}/)
     this.viewer = page.locator('canvas')
