@@ -123,92 +123,98 @@ export function useSegmentation() {
    *
    * @param caseId - The case ID to process
    * @param fastMode - Whether to use fast inference mode
-   * @param retryCount - Internal retry counter for cold start handling (do not set manually)
    */
   const runSegmentation = useCallback(
-    async (caseId: string, fastMode = true, retryCount = 0) => {
-      // Only reset state on first attempt (not retries)
-      if (retryCount === 0) {
-        // Cancel any existing job/polling
-        stopPolling()
-        abortControllerRef.current?.abort()
+    async (caseId: string, fastMode = true) => {
+      // Cancel any existing job/polling
+      stopPolling()
+      abortControllerRef.current?.abort()
 
-        const abortController = new AbortController()
-        abortControllerRef.current = abortController
+      const abortController = new AbortController()
+      abortControllerRef.current = abortController
 
-        // Reset state
-        setError(null)
-        setResult(null)
-        setProgress(0)
-        setProgressMessage('Creating job...')
-        setJobStatus('pending')
-        setElapsedSeconds(undefined)
-        setIsLoading(true)
-      }
+      // Reset state
+      setError(null)
+      setResult(null)
+      setProgress(0)
+      setProgressMessage('Creating job...')
+      setJobStatus('pending')
+      setElapsedSeconds(undefined)
+      setIsLoading(true)
 
-      const abortController = abortControllerRef.current
-      if (!abortController) return
-
-      try {
-        // Create the job
-        const response = await apiClient.createSegmentJob(
-          caseId,
-          fastMode,
-          abortController.signal
-        )
-
-        // Store job reference
-        const newJobId = response.jobId
-        setJobId(newJobId)
-        currentJobRef.current = newJobId
-        setJobStatus(response.status)
-        setProgressMessage(response.message)
-
-        // Start polling
-        pollingIntervalRef.current = window.setInterval(() => {
-          pollJobStatus(newJobId, abortController.signal)
-        }, POLLING_INTERVAL)
-
-        // Do an initial poll immediately
-        await pollJobStatus(newJobId, abortController.signal)
-      } catch (err) {
-        // Ignore abort errors
-        if (err instanceof Error && err.name === 'AbortError') return
-
-        // Detect cold start (503 Service Unavailable or network failure)
-        const is503 = err instanceof ApiError && err.status === 503
-        const isNetworkError =
-          err instanceof TypeError && err.message.toLowerCase().includes('fetch')
-
-        // Retry on cold start errors with exponential backoff
-        if ((is503 || isNetworkError) && retryCount < MAX_COLD_START_RETRIES) {
-          setJobStatus('waking_up')
-          setProgressMessage(
-            `Backend is waking up... Please wait (~30-60s). Retry ${retryCount + 1}/${MAX_COLD_START_RETRIES}`
+      // Retry loop for cold start handling (replaces recursive call)
+      let retryCount = 0
+      while (retryCount <= MAX_COLD_START_RETRIES) {
+        try {
+          // Create the job
+          const response = await apiClient.createSegmentJob(
+            caseId,
+            fastMode,
+            abortController.signal
           )
-          setProgress(0)
 
-          // Exponential backoff: 2s, 4s, 8s, 16s, 30s (capped)
-          const delay = Math.min(
-            INITIAL_RETRY_DELAY * Math.pow(2, retryCount),
-            MAX_RETRY_DELAY
-          )
-          await sleep(delay)
+          // Store job reference
+          const newJobId = response.jobId
+          setJobId(newJobId)
+          currentJobRef.current = newJobId
+          setJobStatus(response.status)
+          setProgressMessage(response.message)
 
-          // Recursive retry
-          return runSegmentation(caseId, fastMode, retryCount + 1)
+          // Start polling
+          pollingIntervalRef.current = window.setInterval(() => {
+            pollJobStatus(newJobId, abortController.signal)
+          }, POLLING_INTERVAL)
+
+          // Do an initial poll immediately
+          await pollJobStatus(newJobId, abortController.signal)
+
+          // Success - exit retry loop
+          return
+        } catch (err) {
+          // Ignore abort errors
+          if (err instanceof Error && err.name === 'AbortError') return
+
+          // Detect cold start (503 Service Unavailable or network failure)
+          const is503 = err instanceof ApiError && err.status === 503
+          const isNetworkError =
+            err instanceof TypeError &&
+            err.message.toLowerCase().includes('fetch')
+
+          // Retry on cold start errors with exponential backoff
+          if (
+            (is503 || isNetworkError) &&
+            retryCount < MAX_COLD_START_RETRIES
+          ) {
+            retryCount++
+            setJobStatus('waking_up')
+            setProgressMessage(
+              `Backend is waking up... Please wait (~30-60s). Retry ${retryCount}/${MAX_COLD_START_RETRIES}`
+            )
+            setProgress(0)
+
+            // Exponential backoff: 2s, 4s, 8s, 16s, 30s (capped)
+            const delay = Math.min(
+              INITIAL_RETRY_DELAY * Math.pow(2, retryCount - 1),
+              MAX_RETRY_DELAY
+            )
+            await sleep(delay)
+
+            // Continue to next iteration of retry loop
+            continue
+          }
+
+          // Max retries exceeded or non-retryable error
+          const message =
+            is503 || isNetworkError
+              ? 'Backend failed to wake up. Please try again later.'
+              : err instanceof Error
+                ? err.message
+                : 'Failed to start job'
+          setError(message)
+          setIsLoading(false)
+          setJobStatus('failed')
+          return
         }
-
-        // Max retries exceeded or non-retryable error
-        const message =
-          is503 || isNetworkError
-            ? 'Backend failed to wake up. Please try again later.'
-            : err instanceof Error
-              ? err.message
-              : 'Failed to start job'
-        setError(message)
-        setIsLoading(false)
-        setJobStatus('failed')
       }
     },
     [pollJobStatus, stopPolling]
