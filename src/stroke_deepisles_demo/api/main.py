@@ -19,9 +19,10 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
 from stroke_deepisles_demo.api.job_store import init_job_store
 from stroke_deepisles_demo.api.routes import router
@@ -47,6 +48,18 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
     # Startup
     logger.info("Starting stroke segmentation API...")
 
+    # Check for GPU availability (DeepISLES requires GPU)
+    try:
+        import torch
+
+        if not torch.cuda.is_available():
+            logger.warning(
+                "GPU not available! DeepISLES requires GPU for inference. "
+                "This Space should be configured with t4-small or better hardware."
+            )
+    except ImportError:
+        pass  # torch may not be available in all environments
+
     # Create results directory
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -68,6 +81,23 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# Cross-Origin Resource Policy middleware (required for COEP)
+# This must be added BEFORE CORSMiddleware for proper header ordering
+class CORPMiddleware(BaseHTTPMiddleware):
+    """Add Cross-Origin-Resource-Policy header to all responses.
+
+    Required when frontend uses COEP (Cross-Origin-Embedder-Policy: require-corp)
+    to enable SharedArrayBuffer for WebGL performance optimizations.
+    """
+
+    async def dispatch(
+        self, request: Request, call_next: RequestResponseEndpoint
+    ) -> Response:
+        response = await call_next(request)
+        response.headers["Cross-Origin-Resource-Policy"] = "cross-origin"
+        return response
+
+
 # CORS configuration
 FRONTEND_ORIGIN = os.environ.get("FRONTEND_ORIGIN", "")
 CORS_ORIGINS = [
@@ -77,16 +107,18 @@ CORS_ORIGINS = [
 if FRONTEND_ORIGIN:
     CORS_ORIGINS.append(FRONTEND_ORIGIN)
 
+# Add CORP middleware first (for COEP compatibility)
+app.add_middleware(CORPMiddleware)
+
+# Add CORS middleware with strict security settings
 app.add_middleware(
     CORSMiddleware,
     allow_origins=CORS_ORIGINS,
-    # Match HF Spaces URLs in both formats:
-    # - Direct: https://username-spacename.hf.space
-    # - Proxy:  https://username--spacename--hash.hf.space
-    allow_origin_regex=r"https://.*stroke-viewer-frontend.*\.hf\.space",
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    # Anchored regex: only allow our specific HF Space (security fix for BUG-002)
+    allow_origin_regex=r"https://vibecodermcswaggins-stroke-viewer-frontend\.hf\.space",
+    allow_credentials=False,  # Not needed - no cookies/auth
+    allow_methods=["GET", "POST"],  # Only methods we use
+    allow_headers=["Content-Type"],  # Only headers we need
 )
 
 # API routes
