@@ -4,9 +4,7 @@ This directory tracks bugs found during deployment to HuggingFace Spaces.
 
 ## Active Bugs
 
-| ID | Title | Severity | Status |
-|----|-------|----------|--------|
-| [003](./003-gateway-timeout-long-inference.md) | Gateway timeout risk for long ML inference | Medium | DOCUMENTED |
+None currently.
 
 ## Fixed Bugs
 
@@ -14,6 +12,7 @@ This directory tracks bugs found during deployment to HuggingFace Spaces.
 |----|-------|----------|--------|
 | [001](./001-cors-static-files-hf-spaces.md) | CORS regex blocking static file requests | Critical | FIXED |
 | [002](./002-http-vs-https-proxy-headers.md) | HTTP vs HTTPS URL mismatch behind proxy | High | FIXED |
+| [003](./003-gateway-timeout-long-inference.md) | Gateway timeout for long ML inference | Medium | FIXED |
 
 ## HF Spaces Deployment Checklist
 
@@ -27,9 +26,10 @@ Last audit: 2025-12-12
 | Static files mounted after dir exists | PASS | `mkdir()` before `app.mount()` in main.py |
 | HF_SPACES env var set | PASS | Set in Dockerfile |
 | Using port 7860 | PASS | Configured in Dockerfile CMD |
-| Inference timeout < 60s | WARN | 30-60s typical, HF proxy ~60s limit |
+| Inference timeout handled | PASS | Async job queue pattern (no timeout risk) |
 | Error responses return JSON | PASS | HTTPException with detail |
 | CORS preflight (OPTIONS) handled | PASS | CORSMiddleware handles automatically |
+| Progress updates for long tasks | PASS | Polling with ProgressIndicator component |
 
 ## Common HuggingFace Spaces Pitfalls
 
@@ -61,13 +61,14 @@ Based on research and experience, here are common issues to watch for:
 - `SPACE_ID` contains the space identifier
 - Use these to detect production environment
 
-### 6. Gateway Timeouts (NEW)
+### 6. Gateway Timeouts (SOLVED)
 - HF Spaces proxy has ~60 second timeout
-- Long-running ML inference may exceed this limit
-- Consider async/polling patterns for >30s operations
-- See [Bug 003](./003-gateway-timeout-long-inference.md) for details
+- Solution: Async job queue pattern with polling
+- POST returns immediately with job ID
+- Frontend polls GET /api/jobs/{id} for progress
+- See [Bug 003](./003-gateway-timeout-long-inference.md) and [Spec](../specs/async-job-queue.md)
 
-## E2E Flow Audit
+## E2E Flow (v2.0 - Async Job Pattern)
 
 The complete flow from frontend to backend and back:
 
@@ -79,34 +80,49 @@ The complete flow from frontend to backend and back:
 
 2. User runs segmentation
    ├── App calls POST /api/segment {case_id, fast_mode}
-   ├── CORS: preflight OPTIONS handled by middleware
-   └── Backend: sync endpoint runs in threadpool
+   ├── Backend creates job record
+   └── Response: 202 Accepted + {jobId, status: "pending"}
 
-3. Backend processes
-   ├── Generates unique run_id (UUID[:8])
-   ├── Runs DeepISLES inference (30-60s)
-   ├── Writes results to /tmp/stroke-results/{run_id}/
-   └── WARNING: May timeout if >60s
+3. Frontend polls for status
+   ├── GET /api/jobs/{jobId} every 2 seconds
+   ├── Response: {status, progress, progressMessage}
+   └── ProgressIndicator shows real-time updates
 
-4. Backend returns response
-   ├── Constructs URLs using get_backend_base_url()
-   ├── --proxy-headers ensures https:// prefix
-   └── Response: JSON with dwiUrl, predictionUrl, metrics
+4. Backend processes (in background thread)
+   ├── Job status: "running"
+   ├── Progress updates: 10% → 30% → 85% → 95%
+   ├── Runs DeepISLES inference
+   └── Writes results to /tmp/stroke-results/{jobId}/
 
-5. Frontend receives response
-   ├── Updates state with result URLs
+5. Job completes
+   ├── Status: "completed"
+   ├── Result includes file URLs
+   └── Frontend stops polling
+
+6. Frontend receives result
+   ├── Updates state with URLs
    ├── Passes URLs to NiiVueViewer
-   └── Error handling for 504/network errors
+   └── Shows metrics in MetricsPanel
 
-6. NiiVue fetches static files
+7. NiiVue fetches static files
    ├── Cross-origin fetch to backend /files/...
-   ├── CORS headers required on static file response
-   ├── Content-Type: application/gzip for .nii.gz
-   └── Binary transfer must complete successfully
+   ├── CORS headers on static file response
+   └── Binary NIfTI files download
 
-7. Viewer displays
+8. Viewer displays
    └── NIfTI volumes rendered in WebGL canvas
 ```
+
+## API Endpoints (v2.0)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | /api/cases | List available cases |
+| POST | /api/segment | Create segmentation job (202 Accepted) |
+| GET | /api/jobs/{id} | Get job status/progress/results |
+| GET | /files/{jobId}/{caseId}/* | Static NIfTI files |
+| GET | / | Health check |
+| GET | /health | Detailed health with job count |
 
 ## Sources
 
@@ -115,4 +131,5 @@ The complete flow from frontend to backend and back:
 - [FastAPI HTTPS Discussion](https://github.com/fastapi/fastapi/discussions/6670)
 - [HF Docker Spaces Docs](https://huggingface.co/docs/hub/en/spaces-sdks-docker)
 - [504 Gateway Timeout - HF Forums](https://discuss.huggingface.co/t/504-gateway-timeout-with-http-request/24018)
-- [CORS Issue with HF Spaces - HF Forums](https://discuss.huggingface.co/t/cors-issue-with-huggingface-spaces-and-netlify-hosted-react-app/62634)
+- [FastAPI Background Tasks](https://fastapi.tiangolo.com/tutorial/background-tasks/)
+- [FastAPI Polling Strategy](https://openillumi.com/en/en-fastapi-long-task-progress-polling/)

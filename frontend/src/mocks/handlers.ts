@@ -1,8 +1,49 @@
 import { http, HttpResponse, delay } from 'msw'
+import type { JobStatus } from '../types'
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:7860'
 
+// In-memory job store for mocking
+interface MockJob {
+  id: string
+  caseId: string
+  status: JobStatus
+  progress: number
+  progressMessage: string
+  elapsedSeconds: number
+  fastMode: boolean
+  createdAt: number
+}
+
+const mockJobs = new Map<string, MockJob>()
+let jobCounter = 0
+
+// Simulate job progression over time
+function getJobProgress(job: MockJob): MockJob {
+  const elapsed = (Date.now() - job.createdAt) / 1000
+
+  if (job.status === 'completed' || job.status === 'failed') {
+    return job
+  }
+
+  // Progress through stages based on elapsed time
+  // Total time: ~3 seconds for fast mock testing
+  if (elapsed < 0.5) {
+    return { ...job, status: 'running', progress: 10, progressMessage: 'Loading case data...', elapsedSeconds: elapsed }
+  } else if (elapsed < 1.0) {
+    return { ...job, status: 'running', progress: 30, progressMessage: 'Running DeepISLES inference...', elapsedSeconds: elapsed }
+  } else if (elapsed < 2.0) {
+    return { ...job, status: 'running', progress: 70, progressMessage: 'Processing results...', elapsedSeconds: elapsed }
+  } else if (elapsed < 2.5) {
+    return { ...job, status: 'running', progress: 90, progressMessage: 'Computing metrics...', elapsedSeconds: elapsed }
+  } else {
+    // Job complete
+    return { ...job, status: 'completed', progress: 100, progressMessage: 'Segmentation complete', elapsedSeconds: elapsed }
+  }
+}
+
 export const handlers = [
+  // GET /api/cases - List available cases
   http.get(`${API_BASE}/api/cases`, async () => {
     await delay(100)
     return HttpResponse.json({
@@ -10,18 +51,75 @@ export const handlers = [
     })
   }),
 
+  // POST /api/segment - Create segmentation job (returns immediately)
   http.post(`${API_BASE}/api/segment`, async ({ request }) => {
     const body = (await request.json()) as { case_id: string; fast_mode?: boolean }
-    await delay(200)
-    return HttpResponse.json({
+    await delay(50) // Small delay to simulate network
+
+    // Create a new job
+    const jobId = `mock-${++jobCounter}`
+    const job: MockJob = {
+      id: jobId,
       caseId: body.case_id,
-      diceScore: 0.847,
-      volumeMl: 15.32,
-      // Reflect fast_mode in response - slower when fast_mode=false
-      elapsedSeconds: body.fast_mode === false ? 45.0 : 12.5,
-      dwiUrl: `${API_BASE}/files/dwi.nii.gz`,
-      predictionUrl: `${API_BASE}/files/prediction.nii.gz`,
-    })
+      status: 'pending',
+      progress: 0,
+      progressMessage: 'Job queued',
+      elapsedSeconds: 0,
+      fastMode: body.fast_mode !== false,
+      createdAt: Date.now(),
+    }
+    mockJobs.set(jobId, job)
+
+    // Return 202 Accepted with job ID
+    return HttpResponse.json(
+      {
+        jobId: jobId,
+        status: 'pending',
+        message: `Segmentation job queued for ${body.case_id}`,
+      },
+      { status: 202 }
+    )
+  }),
+
+  // GET /api/jobs/:jobId - Get job status
+  http.get(`${API_BASE}/api/jobs/:jobId`, async ({ params }) => {
+    const jobId = params.jobId as string
+    await delay(50) // Small delay to simulate network
+
+    const job = mockJobs.get(jobId)
+    if (!job) {
+      return HttpResponse.json(
+        { detail: `Job not found: ${jobId}. Jobs expire after 1 hour.` },
+        { status: 404 }
+      )
+    }
+
+    // Update job progress based on elapsed time
+    const updatedJob = getJobProgress(job)
+    mockJobs.set(jobId, updatedJob)
+
+    // Build response
+    const response: Record<string, unknown> = {
+      jobId: updatedJob.id,
+      status: updatedJob.status,
+      progress: updatedJob.progress,
+      progressMessage: updatedJob.progressMessage,
+      elapsedSeconds: Math.round(updatedJob.elapsedSeconds * 100) / 100,
+    }
+
+    // Include result if completed
+    if (updatedJob.status === 'completed') {
+      response.result = {
+        caseId: updatedJob.caseId,
+        diceScore: 0.847,
+        volumeMl: 15.32,
+        elapsedSeconds: updatedJob.fastMode ? 12.5 : 45.0,
+        dwiUrl: `${API_BASE}/files/${jobId}/${updatedJob.caseId}/dwi.nii.gz`,
+        predictionUrl: `${API_BASE}/files/${jobId}/${updatedJob.caseId}/prediction.nii.gz`,
+      }
+    }
+
+    return HttpResponse.json(response)
   }),
 ]
 
@@ -38,15 +136,54 @@ export const errorHandlers = {
     return HttpResponse.error()
   }),
 
-  segmentServerError: http.post(`${API_BASE}/api/segment`, () => {
+  segmentCreateError: http.post(`${API_BASE}/api/segment`, () => {
     return HttpResponse.json(
-      { detail: 'Segmentation failed: out of memory' },
-      { status: 500 }
+      { detail: 'Failed to create job: case not found' },
+      { status: 400 }
     )
   }),
 
-  segmentTimeout: http.post(`${API_BASE}/api/segment`, async () => {
-    await delay(30000)
-    return HttpResponse.json({ detail: 'Timeout' }, { status: 504 })
+  jobNotFound: http.get(`${API_BASE}/api/jobs/:jobId`, () => {
+    return HttpResponse.json(
+      { detail: 'Job not found or expired' },
+      { status: 404 }
+    )
   }),
+
+  // Simulate a job that fails during processing
+  jobFailed: [
+    http.post(`${API_BASE}/api/segment`, async ({ request }) => {
+      const body = (await request.json()) as { case_id: string }
+      const jobId = `fail-${++jobCounter}`
+      mockJobs.set(jobId, {
+        id: jobId,
+        caseId: body.case_id,
+        status: 'failed',
+        progress: 30,
+        progressMessage: 'Error occurred',
+        elapsedSeconds: 5.2,
+        fastMode: true,
+        createdAt: Date.now(),
+      })
+      return HttpResponse.json(
+        { jobId, status: 'pending', message: 'Job queued' },
+        { status: 202 }
+      )
+    }),
+    http.get(`${API_BASE}/api/jobs/:jobId`, ({ params }) => {
+      const jobId = params.jobId as string
+      const job = mockJobs.get(jobId)
+      if (!job) {
+        return HttpResponse.json({ detail: 'Not found' }, { status: 404 })
+      }
+      return HttpResponse.json({
+        jobId: job.id,
+        status: 'failed',
+        progress: 30,
+        progressMessage: 'Error occurred',
+        elapsedSeconds: 5.2,
+        error: 'Segmentation failed: out of memory',
+      })
+    }),
+  ],
 }

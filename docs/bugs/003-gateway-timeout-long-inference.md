@@ -1,18 +1,21 @@
 # Bug 003: Gateway Timeout Risk for Long ML Inference
 
-**Status**: DOCUMENTED (Risk Acknowledged)
+**Status**: FIXED
 **Date Found**: 2025-12-12
-**Severity**: Medium (intermittent failures for slower cases)
+**Date Fixed**: 2025-12-12
+**Severity**: Medium (was causing intermittent failures)
 
 ---
 
 ## Summary
 
 HuggingFace Spaces has an approximately 60-second proxy/gateway timeout. The DeepISLES
-ML inference typically takes 30-60 seconds in fast mode. This creates a risk of
-intermittent 504 Gateway Timeout errors, especially for larger or more complex cases.
+ML inference typically takes 30-60 seconds in fast mode, which was causing intermittent
+504 Gateway Timeout errors.
 
-## Evidence
+**Solution**: Implemented async job queue pattern with client-side polling.
+
+## Original Problem
 
 ### HF Spaces Timeout Behavior
 
@@ -21,85 +24,120 @@ From HuggingFace community forums:
 - "After the POST request, the inference is run, but the API does not get the result
    since it's long timed out by then"
 
-### Current Inference Times
+### Symptoms
 
-Based on the codebase configuration:
-- Default timeout: 1800 seconds (30 minutes) in `src/stroke_deepisles_demo/core/config.py:86`
-- Typical fast mode inference: 30-60 seconds (observed in deployment)
-- E2E test expects results within 30 seconds: `frontend/e2e/pages/HomePage.ts:48`
-
-## Symptoms
-
-When this issue occurs:
+When this issue occurred:
 1. User clicks "Run Segmentation"
 2. UI shows "Processing..." for ~60 seconds
 3. Browser receives 504 Gateway Timeout
-4. Error displayed: "Segmentation failed: Gateway Timeout" (or similar network error)
+4. Error displayed: "Segmentation failed: Gateway Timeout"
 5. Backend may still complete the inference (results exist but response lost)
 
-## Root Cause
+## Solution: Async Job Queue Pattern
 
-HuggingFace Spaces runs containers behind a reverse proxy with a hard ~60 second timeout.
-This timeout is enforced at the infrastructure level and cannot be changed by:
-- Uvicorn configuration
-- FastAPI settings
-- Client-side timeout settings
-- Gradio queue settings
+### Architecture
 
-## Risk Assessment
-
-| Scenario | Inference Time | Risk Level |
-|----------|---------------|------------|
-| Small/simple cases | 20-30s | Low |
-| Typical cases | 30-45s | Medium |
-| Complex/large cases | 45-60s | High |
-| Edge cases | >60s | Certain failure |
-
-## Mitigation Options
-
-### Option 1: Accept the Risk (Current)
-- Pros: Simple, no code changes needed
-- Cons: Some users will experience timeouts
-- Best for: Demo/prototype where occasional failures are acceptable
-
-### Option 2: Async/Polling Pattern
-```python
-# 1. POST /api/segment returns job_id immediately
-# 2. Frontend polls GET /api/jobs/{job_id}/status
-# 3. When complete, fetch results from GET /api/jobs/{job_id}/result
 ```
-- Pros: No timeout issues, better UX with progress updates
-- Cons: Significant refactor, more complex state management
+BEFORE (Synchronous - Timeout Risk):
+  Frontend                    Backend
+     |--POST /api/segment------->|
+     |       (30-60s wait)       |
+     |<--200 OK + results--------|  # TIMEOUT!
 
-### Option 3: WebSocket/SSE for Progress
-- Pros: Real-time progress updates
-- Cons: WebSockets have issues on HF Spaces (reported 404 errors), SSE may work
+AFTER (Async with Polling - No Timeout):
+  Frontend                    Backend
+     |--POST /api/segment------->|
+     |<--202 + jobId (<1s)-------|
+     |--GET /api/jobs/{id}------>|
+     |<--200 {progress: 30%}----|
+     |--GET /api/jobs/{id}------>|
+     |<--200 {progress: 70%}----|
+     |--GET /api/jobs/{id}------>|
+     |<--200 {complete, result}--|
+```
 
-### Option 4: Dedicated Inference Endpoint
-- Use HuggingFace Inference Endpoints instead of Spaces
-- Configure custom timeout limits
-- Pros: Full control over timeouts
-- Cons: Additional cost, separate deployment
+### Implementation
 
-## Current Decision
+#### Backend Changes
 
-**Accept the Risk** - This is a demo application where occasional timeouts are acceptable.
-The typical inference time (30-45s) usually completes within the limit.
+1. **Job Store** (`src/stroke_deepisles_demo/api/job_store.py`)
+   - In-memory job storage with thread-safe operations
+   - Automatic cleanup of old jobs (1 hour TTL)
+   - Progress tracking with status updates
 
-Users who experience timeouts can:
-1. Retry the same case (results may already exist from previous attempt)
-2. Try a different case
-3. Wait and retry if the system is under load
+2. **Routes** (`src/stroke_deepisles_demo/api/routes.py`)
+   - `POST /api/segment` returns 202 with job ID immediately
+   - `GET /api/jobs/{job_id}` returns current status/progress/results
+   - Background task executes inference
 
-## Monitoring
+3. **Schemas** (`src/stroke_deepisles_demo/api/schemas.py`)
+   - `CreateJobResponse` for job creation
+   - `JobStatusResponse` for polling
 
-To track this issue in production:
-1. Monitor 504 error rates in HF Spaces logs
-2. Track inference durations in application logs
-3. Consider adding client-side timing to report slow requests
+#### Frontend Changes
+
+1. **Types** (`frontend/src/types/index.ts`)
+   - `JobStatus`, `CreateJobResponse`, `JobStatusResponse`
+
+2. **API Client** (`frontend/src/api/client.ts`)
+   - `createSegmentJob()` - creates job
+   - `getJobStatus()` - polls for status
+
+3. **Hook** (`frontend/src/hooks/useSegmentation.ts`)
+   - Polls every 2 seconds
+   - Tracks progress, status, elapsed time
+   - Handles completion and errors
+
+4. **Components**
+   - `ProgressIndicator` - shows progress bar and status
+   - `App` - integrates progress display and cancel button
+
+### Spec Document
+
+Full specification: `docs/specs/async-job-queue.md`
+
+## Performance Impact
+
+| Metric | Before (Sync) | After (Async) |
+|--------|--------------|---------------|
+| Initial response time | 30-60s | <1s |
+| Total request count | 1 | ~15-30 (polling) |
+| Timeout risk | HIGH | NONE |
+| User feedback | None during wait | Real-time progress |
+
+## Files Changed
+
+### Backend
+- `src/stroke_deepisles_demo/api/job_store.py` (NEW)
+- `src/stroke_deepisles_demo/api/schemas.py`
+- `src/stroke_deepisles_demo/api/routes.py`
+- `src/stroke_deepisles_demo/api/main.py`
+
+### Frontend
+- `frontend/src/types/index.ts`
+- `frontend/src/api/client.ts`
+- `frontend/src/hooks/useSegmentation.ts`
+- `frontend/src/components/ProgressIndicator.tsx` (NEW)
+- `frontend/src/App.tsx`
+- `frontend/src/mocks/handlers.ts`
+
+### Tests
+- `frontend/src/api/__tests__/client.test.ts`
+- `frontend/src/hooks/__tests__/useSegmentation.test.tsx`
+- `frontend/src/App.test.tsx`
+
+## Verification
+
+After fix:
+1. Deploy backend to HF Spaces
+2. Refresh frontend
+3. Run segmentation on any case
+4. Observe progress bar updating in real-time
+5. Results display after completion - NO timeout errors
 
 ## References
 
-- [504 Gateway Timeout with http request - HF Forums](https://discuss.huggingface.co/t/504-gateway-timeout-with-http-request/24018)
-- [504 Gateway Timeout on Hugging Face space - Gradio Issue #3114](https://github.com/gradio-app/gradio/issues/3114)
-- [Deploying FastAPI on HF Spaces](https://medium.com/@na.mazaheri/deploying-a-fastapi-app-on-hugging-face-spaces-and-handling-all-its-restrictions-d494d97a78fa)
+- [FastAPI Background Tasks](https://fastapi.tiangolo.com/tutorial/background-tasks/)
+- [FastAPI Polling Strategy](https://openillumi.com/en/en-fastapi-long-task-progress-polling/)
+- [504 Gateway Timeout - HF Forums](https://discuss.huggingface.co/t/504-gateway-timeout-with-http-request/24018)
+- [Real Time Polling in React Query 2025](https://samwithcode.in/tutorial/react-js/real-time-polling-in-react-query-2025)

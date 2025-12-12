@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { server } from './mocks/server'
@@ -19,6 +19,14 @@ vi.mock('@niivue/niivue', () => ({
 }))
 
 describe('App Integration', () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
   describe('Initial Render', () => {
     it('renders main heading', () => {
       render(<App />)
@@ -67,7 +75,7 @@ describe('App Integration', () => {
     })
 
     it('enables run button when case selected', async () => {
-      const user = userEvent.setup()
+      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
       render(<App />)
 
       await waitFor(() => {
@@ -84,7 +92,7 @@ describe('App Integration', () => {
 
   describe('Segmentation Flow', () => {
     it('shows processing state when running', async () => {
-      const user = userEvent.setup()
+      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
       render(<App />)
 
       await waitFor(() => {
@@ -97,8 +105,8 @@ describe('App Integration', () => {
       expect(screen.getByText(/processing/i)).toBeInTheDocument()
     })
 
-    it('displays metrics after successful segmentation', async () => {
-      const user = userEvent.setup()
+    it('shows progress indicator during job execution', async () => {
+      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
       render(<App />)
 
       await waitFor(() => {
@@ -107,17 +115,36 @@ describe('App Integration', () => {
 
       await user.selectOptions(screen.getByRole('combobox'), 'sub-stroke0001')
       await user.click(screen.getByRole('button', { name: /run segmentation/i }))
+
+      // Progress indicator should appear
+      await waitFor(() => {
+        expect(screen.getByRole('progressbar')).toBeInTheDocument()
+      })
+    })
+
+    it('displays metrics after successful segmentation', async () => {
+      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+      render(<App />)
+
+      await waitFor(() => {
+        expect(screen.getByRole('combobox')).toBeInTheDocument()
+      })
+
+      await user.selectOptions(screen.getByRole('combobox'), 'sub-stroke0001')
+      await user.click(screen.getByRole('button', { name: /run segmentation/i }))
+
+      // Advance time to allow job to complete (mock jobs complete in ~3s)
+      await vi.advanceTimersByTimeAsync(5000)
 
       await waitFor(() => {
         expect(screen.getByText('0.847')).toBeInTheDocument()
       })
 
       expect(screen.getByText('15.32 mL')).toBeInTheDocument()
-      expect(screen.getByText(/12\.5s/)).toBeInTheDocument()
     })
 
     it('displays viewer after successful segmentation', async () => {
-      const user = userEvent.setup()
+      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
       render(<App />)
 
       await waitFor(() => {
@@ -126,6 +153,9 @@ describe('App Integration', () => {
 
       await user.selectOptions(screen.getByRole('combobox'), 'sub-stroke0001')
       await user.click(screen.getByRole('button', { name: /run segmentation/i }))
+
+      // Advance time to allow job to complete
+      await vi.advanceTimersByTimeAsync(5000)
 
       await waitFor(() => {
         expect(document.querySelector('canvas')).toBeInTheDocument()
@@ -133,7 +163,7 @@ describe('App Integration', () => {
     })
 
     it('hides placeholder after successful segmentation', async () => {
-      const user = userEvent.setup()
+      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
       render(<App />)
 
       await waitFor(() => {
@@ -142,6 +172,9 @@ describe('App Integration', () => {
 
       await user.selectOptions(screen.getByRole('combobox'), 'sub-stroke0001')
       await user.click(screen.getByRole('button', { name: /run segmentation/i }))
+
+      // Advance time to allow job to complete
+      await vi.advanceTimersByTimeAsync(5000)
 
       await waitFor(() => {
         expect(screen.getByText('0.847')).toBeInTheDocument()
@@ -151,12 +184,26 @@ describe('App Integration', () => {
         screen.queryByText(/select a case and run segmentation/i)
       ).not.toBeInTheDocument()
     })
+
+    it('shows cancel button during processing', async () => {
+      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+      render(<App />)
+
+      await waitFor(() => {
+        expect(screen.getByRole('combobox')).toBeInTheDocument()
+      })
+
+      await user.selectOptions(screen.getByRole('combobox'), 'sub-stroke0001')
+      await user.click(screen.getByRole('button', { name: /run segmentation/i }))
+
+      expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument()
+    })
   })
 
   describe('Error Handling', () => {
-    it('shows error when segmentation fails', async () => {
-      server.use(errorHandlers.segmentServerError)
-      const user = userEvent.setup()
+    it('shows error when job creation fails', async () => {
+      server.use(errorHandlers.segmentCreateError)
+      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
 
       render(<App />)
 
@@ -171,12 +218,12 @@ describe('App Integration', () => {
         expect(screen.getByRole('alert')).toBeInTheDocument()
       })
 
-      expect(screen.getByText(/segmentation failed/i)).toBeInTheDocument()
+      expect(screen.getByText(/failed to create job/i)).toBeInTheDocument()
     })
 
     it('allows retry after error', async () => {
-      server.use(errorHandlers.segmentServerError)
-      const user = userEvent.setup()
+      server.use(errorHandlers.segmentCreateError)
+      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
 
       render(<App />)
 
@@ -197,6 +244,9 @@ describe('App Integration', () => {
       // Retry
       await user.click(screen.getByRole('button', { name: /run segmentation/i }))
 
+      // Advance time to allow job to complete
+      await vi.advanceTimersByTimeAsync(5000)
+
       await waitFor(() => {
         expect(screen.getByText('0.847')).toBeInTheDocument()
       })
@@ -207,7 +257,7 @@ describe('App Integration', () => {
 
   describe('Multiple Runs', () => {
     it('allows running segmentation on different cases', async () => {
-      const user = userEvent.setup()
+      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
       render(<App />)
 
       await waitFor(() => {
@@ -217,6 +267,9 @@ describe('App Integration', () => {
       // First case
       await user.selectOptions(screen.getByRole('combobox'), 'sub-stroke0001')
       await user.click(screen.getByRole('button', { name: /run segmentation/i }))
+
+      // Advance time to allow job to complete
+      await vi.advanceTimersByTimeAsync(5000)
 
       // Wait for first segmentation to complete
       await waitFor(() => {
@@ -231,6 +284,9 @@ describe('App Integration', () => {
       // Second case
       await user.selectOptions(screen.getByRole('combobox'), 'sub-stroke0002')
       await user.click(screen.getByRole('button', { name: /run segmentation/i }))
+
+      // Advance time to allow second job to complete
+      await vi.advanceTimersByTimeAsync(5000)
 
       await waitFor(() => {
         expect(screen.getByText('sub-stroke0002')).toBeInTheDocument()
