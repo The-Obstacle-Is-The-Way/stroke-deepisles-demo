@@ -10,7 +10,6 @@ This pattern avoids HuggingFace Spaces' ~60s gateway timeout.
 
 from __future__ import annotations
 
-import contextlib
 import os
 import uuid
 from pathlib import Path
@@ -94,6 +93,14 @@ def create_segment_job(
     - Returning immediately avoids timeout errors
     """
     try:
+        # Validate case_id exists before creating job (BUG-012 fix)
+        valid_cases = list_case_ids()
+        if body.case_id not in valid_cases:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid case ID: '{body.case_id}'. Use GET /api/cases for available cases.",
+            )
+
         # Use full UUID hex for uniqueness (no truncation)
         job_id = uuid.uuid4().hex
         store = get_job_store()
@@ -225,10 +232,16 @@ def run_segmentation_job(
 
         store.update_progress(job_id, 85, "Computing metrics...")
 
-        # Compute volume (may fail for edge cases)
+        # Compute volume - log failures but don't crash the job (BUG-011 fix)
         volume_ml = None
-        with contextlib.suppress(Exception):
+        try:
             volume_ml = round(compute_volume_ml(result.prediction_mask, threshold=0.5), 2)
+        except (FileNotFoundError, ValueError) as e:
+            # Expected failures: missing mask file or invalid threshold
+            logger.warning("Could not compute volume for job %s: %s", job_id, e)
+        except Exception:
+            # Unexpected failures - log full traceback for debugging
+            logger.exception("Unexpected error computing volume for job %s", job_id)
 
         store.update_progress(job_id, 95, "Preparing results...")
 
