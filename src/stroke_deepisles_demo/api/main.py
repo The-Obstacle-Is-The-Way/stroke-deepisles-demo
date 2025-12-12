@@ -13,7 +13,6 @@ Architecture designed to work within HuggingFace Spaces constraints:
 - /tmp writable only (results stored there)
 """
 
-import os
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from typing import Any
@@ -22,10 +21,10 @@ from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
-from stroke_deepisles_demo.api.config import RESULTS_DIR
 from stroke_deepisles_demo.api.files import files_router
 from stroke_deepisles_demo.api.job_store import init_job_store
 from stroke_deepisles_demo.api.routes import router
+from stroke_deepisles_demo.core.config import get_settings
 from stroke_deepisles_demo.core.logging import get_logger
 
 logger = get_logger(__name__)
@@ -44,6 +43,7 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
     """
     # Startup
     logger.info("Starting stroke segmentation API...")
+    settings = get_settings()
 
     # Check for GPU availability (DeepISLES requires GPU)
     try:
@@ -58,10 +58,10 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
         pass  # torch may not be available in all environments
 
     # Create results directory
-    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    settings.results_dir.mkdir(parents=True, exist_ok=True)
 
     # Initialize job store with cleanup scheduler
-    job_store = init_job_store(results_dir=RESULTS_DIR)
+    job_store = init_job_store(results_dir=settings.results_dir)
     logger.info("Job store initialized with %d jobs", len(job_store))
 
     yield
@@ -94,21 +94,7 @@ class CORPMiddleware(BaseHTTPMiddleware):
         return response
 
 
-# CORS configuration - Single source of truth (no regex needed for exact origins)
-# Production HF Space frontend origin
-HF_SPACE_FRONTEND = "https://vibecodermcswaggins-stroke-viewer-frontend.hf.space"
-
-CORS_ORIGINS: list[str] = [
-    "http://localhost:5173",  # Vite dev server
-    "http://localhost:3000",  # Alternative local port
-    HF_SPACE_FRONTEND,  # Production HF Space frontend
-]
-
-# Allow override via environment variable (for custom deployments)
-FRONTEND_ORIGIN = os.environ.get("FRONTEND_ORIGIN", "")
-if FRONTEND_ORIGIN and FRONTEND_ORIGIN not in CORS_ORIGINS:
-    CORS_ORIGINS.append(FRONTEND_ORIGIN)
-
+# CORS configuration - Single source of truth from Settings
 # Add CORP middleware first (for COEP compatibility)
 app.add_middleware(CORPMiddleware)
 
@@ -117,7 +103,7 @@ app.add_middleware(CORPMiddleware)
 # This eliminates regex security concerns while maintaining single source of truth
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=CORS_ORIGINS,
+    allow_origins=get_settings().frontend_origins,
     allow_credentials=False,  # Not needed - no cookies/auth
     allow_methods=["GET", "POST", "HEAD"],  # HEAD for preflight checks
     allow_headers=["Content-Type", "Range"],  # Range needed for partial content requests
@@ -150,9 +136,10 @@ async def health() -> dict[str, Any]:
     from stroke_deepisles_demo.api.job_store import get_job_store
 
     store = get_job_store()
+    settings = get_settings()
     return {
         "status": "healthy",
         "jobs_in_memory": len(store),
-        "results_dir": str(RESULTS_DIR),
-        "results_dir_exists": RESULTS_DIR.exists(),
+        "results_dir": str(settings.results_dir),
+        "results_dir_exists": settings.results_dir.exists(),
     }

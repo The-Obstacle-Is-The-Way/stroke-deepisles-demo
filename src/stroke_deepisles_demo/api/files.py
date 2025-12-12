@@ -18,7 +18,7 @@ Reference: https://github.com/fastapi/fastapi/discussions/7319
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
 
-from stroke_deepisles_demo.api.config import RESULTS_DIR
+from stroke_deepisles_demo.core.config import get_settings
 from stroke_deepisles_demo.core.logging import get_logger
 
 logger = get_logger(__name__)
@@ -45,13 +45,14 @@ async def get_result_file(job_id: str, case_id: str, filename: str) -> FileRespo
         404: File not found (job expired, invalid path, or doesn't exist)
     """
     # Construct file path
-    file_path = RESULTS_DIR / job_id / case_id / filename
+    results_dir = get_settings().results_dir
+    file_path = results_dir / job_id / case_id / filename
 
     # Security: Ensure path doesn't escape RESULTS_DIR (path traversal protection)
     # Using is_relative_to() instead of startswith() to prevent prefix-collision bypass
     # e.g., /tmp/stroke-results-evil/file.txt would pass startswith but fail is_relative_to
     try:
-        base_dir = RESULTS_DIR.resolve()
+        base_dir = results_dir.resolve()
         resolved = file_path.resolve()
         if not resolved.is_relative_to(base_dir):
             logger.warning("Path traversal attempt blocked: %s", filename)
