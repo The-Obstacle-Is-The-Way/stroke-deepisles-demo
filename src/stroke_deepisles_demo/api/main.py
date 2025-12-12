@@ -14,9 +14,10 @@ Architecture designed to work within HuggingFace Spaces constraints:
 """
 
 import os
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import Any, AsyncIterator
+from typing import Any
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -33,7 +34,7 @@ RESULTS_DIR = Path("/tmp/stroke-results")
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
     """Application lifespan handler for startup/shutdown tasks.
 
     Startup:
