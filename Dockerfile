@@ -76,4 +76,5 @@ EXPOSE 7860
 ENTRYPOINT []
 
 # Run FastAPI with uvicorn (module path: stroke_deepisles_demo.api.main:app)
-CMD ["uvicorn", "stroke_deepisles_demo.api.main:app", "--host", "0.0.0.0", "--port", "7860"]
+# --proxy-headers: Trust X-Forwarded-Proto from HF Spaces proxy (ensures https:// in request.base_url)
+CMD ["uvicorn", "stroke_deepisles_demo.api.main:app", "--host", "0.0.0.0", "--port", "7860", "--proxy-headers"]
