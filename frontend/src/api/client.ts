@@ -4,6 +4,29 @@ import type {
   JobStatusResponse,
 } from '../types'
 
+/**
+ * Safely parse JSON error response, logging failures in development.
+ * Returns empty object if parsing fails (e.g., HTML error pages from proxies).
+ * (BUG-013 fix: was silently returning {} without any logging)
+ */
+async function parseErrorJson(response: Response): Promise<{ detail?: string }> {
+  try {
+    return await response.json()
+  } catch (parseError) {
+    // Log in development to help debug malformed responses
+    if (import.meta.env.DEV) {
+      console.warn(
+        'Failed to parse error response as JSON:',
+        parseError,
+        'Status:',
+        response.status,
+        response.statusText
+      )
+    }
+    return {}
+  }
+}
+
 function getApiBase(): string {
   const url = import.meta.env.VITE_API_URL
 
@@ -47,7 +70,7 @@ class ApiClient {
     const response = await fetch(`${this.baseUrl}/api/cases`, { signal })
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({}))
+      const error = await parseErrorJson(response)
       throw new ApiError(
         `Failed to fetch cases: ${response.statusText}`,
         response.status,
@@ -82,7 +105,7 @@ class ApiClient {
     })
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({}))
+      const error = await parseErrorJson(response)
       throw new ApiError(
         `Failed to create job: ${error.detail || response.statusText}`,
         response.status,
@@ -117,7 +140,7 @@ class ApiClient {
     }
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({}))
+      const error = await parseErrorJson(response)
       throw new ApiError(
         `Failed to get job status: ${error.detail || response.statusText}`,
         response.status,
