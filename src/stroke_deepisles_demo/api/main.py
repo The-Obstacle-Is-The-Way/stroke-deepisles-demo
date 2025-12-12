@@ -50,7 +50,7 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
 
     # Check for GPU availability (DeepISLES requires GPU)
     try:
-        import torch
+        import torch  # type: ignore[import-not-found]
 
         if not torch.cuda.is_available():
             logger.warning(
