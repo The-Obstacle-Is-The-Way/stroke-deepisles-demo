@@ -12,10 +12,10 @@ from __future__ import annotations
 
 import os
 import uuid
-from pathlib import Path
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Request
 
+from stroke_deepisles_demo.api.config import RESULTS_DIR
 from stroke_deepisles_demo.api.job_store import JobStatus, get_job_store
 from stroke_deepisles_demo.api.schemas import (
     CasesResponse,
@@ -32,9 +32,6 @@ from stroke_deepisles_demo.pipeline import run_pipeline_on_case
 logger = get_logger(__name__)
 
 router = APIRouter()
-
-# Base directory for results
-RESULTS_BASE = Path("/tmp/stroke-results")
 
 
 def get_backend_base_url(request: Request) -> str:
@@ -215,7 +212,7 @@ def run_segmentation_job(
         store.update_progress(job_id, 10, "Loading case data...")
 
         # Set up output directory
-        output_dir = RESULTS_BASE / job_id
+        output_dir = RESULTS_DIR / job_id
 
         store.update_progress(job_id, 20, "Staging files for DeepISLES...")
 
