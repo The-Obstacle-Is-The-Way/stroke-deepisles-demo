@@ -1,7 +1,7 @@
 # Bug Audit Report - 2024-12-12
 
 Consolidated audit findings validated from first principles by reading source code.
-**Status: AWAITING SENIOR REVIEW** - Do not implement fixes until reviewed.
+**Status: FIXED** - P1 and P2 bugs addressed in PR #40.
 
 ---
 
@@ -52,19 +52,6 @@ spawns a GPU-bound background task without limits.
 1. Add `asyncio.Semaphore(1)` to limit concurrent inference
 2. Add job queue depth limit (reject if >N pending jobs)
 3. Add rate limiting middleware (slowapi or similar)
-
----
-
-### BUG-007: No Authentication on GPU-Expensive Endpoint
-
-**File:** `src/stroke_deepisles_demo/api/routes.py`
-
-**Issue:** POST /api/segment triggers GPU inference (~30-60s) with no authentication.
-Public endpoint allowing anyone to consume expensive GPU resources.
-
-**Impact:** Resource abuse, cost exhaustion on paid GPU tiers.
-
-**Note:** May be acceptable for demo purposes. Document as intentional if so.
 
 ---
 
@@ -195,17 +182,27 @@ The current CORS config includes `https://vibecodermcswaggins-stroke-viewer-fron
 
 ---
 
+## Fix Status
+
+| Bug | Status | PR |
+|-----|--------|-----|
+| BUG-005 | ✅ FIXED | #40 |
+| BUG-006 | ✅ FIXED | #40 |
+| BUG-008 | ✅ FIXED | #40 |
+| BUG-009 | 🔄 DEFERRED | See NEXT-CONCERNS.md |
+| BUG-010 | ✅ FIXED | #40 |
+| BUG-011 | ✅ FIXED | #40 |
+| BUG-012 | 🔄 DEFERRED | See NEXT-CONCERNS.md |
+
 ## Notes
 
 1. **BUG-004 (StaticFiles CORS bypass)** was already fixed in the codebase via `files.py` router.
    The fix comment at `api/main.py:131-132` documents this.
 
-2. **Backend deployment status** is currently paused - this is an operational issue, not a code bug.
-
-3. Items marked P1 should be addressed before next production deployment.
+2. **BUG-007 (No Authentication)** was removed from audit - intentional design for public demo.
 
 ---
 
 **Audited by:** Claude Code
 **Date:** 2024-12-12
-**Next step:** Senior review before implementing any fixes
+**Fixed:** 2024-12-12 (PR #40)

@@ -9,8 +9,8 @@ from pathlib import Path
 # CRITICAL: This is the single source of truth. Import this instead of hardcoding.
 RESULTS_DIR = Path("/tmp/stroke-results")
 
-# Maximum concurrent jobs (pending + running)
-# GPU inference is memory-intensive; too many concurrent jobs = OOM
+# Maximum active jobs (pending + running) accepted by the API
+# This limits how many jobs can be queued/running at once, NOT serialized GPU execution
 # T4 GPU (16GB) can handle ~1-2 concurrent DeepISLES inferences safely
-# Setting to 10 provides queue capacity while preventing runaway resource consumption
+# Value of 10 allows reasonable queue depth while preventing unbounded accumulation
 MAX_CONCURRENT_JOBS = 10

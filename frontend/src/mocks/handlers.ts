@@ -159,9 +159,7 @@ export const handlers = [
 
     // Include result if completed
     if (updatedJob.status === "completed") {
-      // Filenames must match actual backend output:
-      // - DWI: {case_id}_dwi.nii.gz (pipeline.py:123)
-      // - Prediction: lesion_msk.nii.gz (direct.py:85)
+      // Filenames must match actual backend output format
       response.result = {
         caseId: updatedJob.caseId,
         diceScore: 0.847,
