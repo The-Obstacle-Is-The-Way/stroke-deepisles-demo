@@ -15,7 +15,7 @@ import uuid
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Request
 
-from stroke_deepisles_demo.api.config import RESULTS_DIR
+from stroke_deepisles_demo.api.config import MAX_CONCURRENT_JOBS, RESULTS_DIR
 from stroke_deepisles_demo.api.job_store import JobStatus, get_job_store
 from stroke_deepisles_demo.api.schemas import (
     CasesResponse,
@@ -90,7 +90,15 @@ def create_segment_job(
     - Returning immediately avoids timeout errors
     """
     try:
-        # Validate case_id exists before creating job (BUG-012 fix)
+        # Concurrency limit to prevent GPU memory exhaustion (BUG-006 fix)
+        store = get_job_store()
+        if store.get_active_job_count() >= MAX_CONCURRENT_JOBS:
+            raise HTTPException(
+                status_code=503,
+                detail="Server busy: too many active jobs. Please try again later.",
+            )
+
+        # Validate case_id exists before creating job
         valid_cases = list_case_ids()
         if body.case_id not in valid_cases:
             raise HTTPException(
@@ -100,7 +108,6 @@ def create_segment_job(
 
         # Use full UUID hex for uniqueness (no truncation)
         job_id = uuid.uuid4().hex
-        store = get_job_store()
         backend_url = get_backend_base_url(request)
 
         # Create job record
@@ -124,6 +131,10 @@ def create_segment_job(
             message=f"Segmentation job queued for {body.case_id}",
         )
 
+    except HTTPException:
+        # Re-raise HTTP exceptions (400, 404, 503, etc.) as-is
+        # Without this, they'd be caught by `except Exception` and converted to 500
+        raise
     except Exception:
         logger.exception("Failed to create segmentation job")
         raise HTTPException(status_code=500, detail="Failed to create segmentation job") from None
@@ -260,10 +271,10 @@ def run_segmentation_job(
         # Mark as completed
         store.complete_job(job_id, result_data)
 
+        # Note: Don't log case_id as it may be sensitive (medical domain)
         logger.info(
-            "Job %s completed: case=%s, dice=%.3f, time=%.1fs",
+            "Job %s completed: dice=%.3f, time=%.1fs",
             job_id,
-            case_id,
             result.dice_score or 0,
             result.elapsed_seconds,
         )
