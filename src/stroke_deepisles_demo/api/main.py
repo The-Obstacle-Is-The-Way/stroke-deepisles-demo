@@ -81,6 +81,7 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+
 # Cross-Origin Resource Policy middleware (required for COEP)
 # This must be added BEFORE CORSMiddleware for proper header ordering
 class CORPMiddleware(BaseHTTPMiddleware):
@@ -90,9 +91,7 @@ class CORPMiddleware(BaseHTTPMiddleware):
     to enable SharedArrayBuffer for WebGL performance optimizations.
     """
 
-    async def dispatch(
-        self, request: Request, call_next: RequestResponseEndpoint
-    ) -> Response:
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         response = await call_next(request)
         response.headers["Cross-Origin-Resource-Policy"] = "cross-origin"
         return response

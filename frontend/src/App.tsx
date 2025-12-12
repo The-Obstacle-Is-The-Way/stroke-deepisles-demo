@@ -1,14 +1,14 @@
-import { useState } from 'react'
-import { Layout } from './components/Layout'
-import { CaseSelector } from './components/CaseSelector'
-import { NiiVueViewer } from './components/NiiVueViewer'
-import { MetricsPanel } from './components/MetricsPanel'
-import { ProgressIndicator } from './components/ProgressIndicator'
-import { ErrorBoundary } from './components/ErrorBoundary'
-import { useSegmentation } from './hooks/useSegmentation'
+import { useState } from "react";
+import { Layout } from "./components/Layout";
+import { CaseSelector } from "./components/CaseSelector";
+import { NiiVueViewer } from "./components/NiiVueViewer";
+import { MetricsPanel } from "./components/MetricsPanel";
+import { ProgressIndicator } from "./components/ProgressIndicator";
+import { ErrorBoundary } from "./components/ErrorBoundary";
+import { useSegmentation } from "./hooks/useSegmentation";
 
 function AppContent() {
-  const [selectedCase, setSelectedCase] = useState<string | null>(null)
+  const [selectedCase, setSelectedCase] = useState<string | null>(null);
   const {
     result,
     isLoading,
@@ -19,16 +19,16 @@ function AppContent() {
     elapsedSeconds,
     runSegmentation,
     cancelJob,
-  } = useSegmentation()
+  } = useSegmentation();
 
   const handleRunSegmentation = async () => {
     if (selectedCase) {
-      await runSegmentation(selectedCase)
+      await runSegmentation(selectedCase);
     }
-  }
+  };
 
   // Show progress indicator when job is active
-  const showProgress = isLoading && jobStatus && jobStatus !== 'completed'
+  const showProgress = isLoading && jobStatus && jobStatus !== "completed";
 
   return (
     <Layout>
@@ -47,7 +47,7 @@ function AppContent() {
                        disabled:cursor-not-allowed text-white font-medium
                        py-3 px-4 rounded-lg transition-colors"
           >
-            {isLoading ? 'Processing...' : 'Run Segmentation'}
+            {isLoading ? "Processing..." : "Run Segmentation"}
           </button>
 
           {/* Cancel button when processing */}
@@ -97,15 +97,15 @@ function AppContent() {
             <div className="bg-gray-900 rounded-lg h-[500px] flex items-center justify-center">
               <p className="text-gray-400">
                 {isLoading
-                  ? 'Processing segmentation...'
-                  : 'Select a case and run segmentation to view results'}
+                  ? "Processing segmentation..."
+                  : "Select a case and run segmentation to view results"}
               </p>
             </div>
           )}
         </div>
       </div>
     </Layout>
-  )
+  );
 }
 
 /**
@@ -120,5 +120,5 @@ export default function App() {
     <ErrorBoundary>
       <AppContent />
     </ErrorBoundary>
-  )
+  );
 }

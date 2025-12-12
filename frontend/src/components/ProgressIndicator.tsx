@@ -1,10 +1,10 @@
-import type { JobStatus } from '../types'
+import type { JobStatus } from "../types";
 
 interface ProgressIndicatorProps {
-  progress: number
-  message: string
-  status: JobStatus
-  elapsedSeconds?: number
+  progress: number;
+  message: string;
+  status: JobStatus;
+  elapsedSeconds?: number;
 }
 
 /**
@@ -22,24 +22,24 @@ export function ProgressIndicator({
   status,
   elapsedSeconds,
 }: ProgressIndicatorProps) {
-  const isError = status === 'failed'
-  const isComplete = status === 'completed'
-  const isWakingUp = status === 'waking_up'
+  const isError = status === "failed";
+  const isComplete = status === "completed";
+  const isWakingUp = status === "waking_up";
 
   // Determine bar color based on status
   const barColorClass = isError
-    ? 'bg-red-500'
+    ? "bg-red-500"
     : isComplete
-      ? 'bg-green-500'
+      ? "bg-green-500"
       : isWakingUp
-        ? 'bg-yellow-500'
-        : 'bg-blue-500'
+        ? "bg-yellow-500"
+        : "bg-blue-500";
 
   // Animate the bar while running or waking up
   const animationClass =
-    status === 'running' || status === 'pending' || status === 'waking_up'
-      ? 'animate-pulse'
-      : ''
+    status === "running" || status === "pending" || status === "waking_up"
+      ? "animate-pulse"
+      : "";
 
   return (
     <div className="bg-gray-800 rounded-lg p-4 space-y-3">
@@ -75,17 +75,17 @@ export function ProgressIndicator({
         <span
           className={`capitalize ${
             isError
-              ? 'text-red-400'
+              ? "text-red-400"
               : isComplete
-                ? 'text-green-400'
+                ? "text-green-400"
                 : isWakingUp
-                  ? 'text-yellow-400'
-                  : 'text-blue-400'
+                  ? "text-yellow-400"
+                  : "text-blue-400"
           }`}
         >
-          {status === 'waking_up' ? 'waking up' : status}
+          {status === "waking_up" ? "waking up" : status}
         </span>
       </div>
     </div>
-  )
+  );
 }

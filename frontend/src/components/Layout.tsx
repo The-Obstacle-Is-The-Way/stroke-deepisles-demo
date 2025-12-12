@@ -1,7 +1,7 @@
-import type { ReactNode } from 'react'
+import type { ReactNode } from "react";
 
 interface LayoutProps {
-  children: ReactNode
+  children: ReactNode;
 }
 
 export function Layout({ children }: LayoutProps) {
@@ -17,5 +17,5 @@ export function Layout({ children }: LayoutProps) {
       </header>
       <main className="container mx-auto px-4 py-6">{children}</main>
     </div>
-  )
+  );
 }

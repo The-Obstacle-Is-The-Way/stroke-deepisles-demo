@@ -1,7 +1,7 @@
-import type { Metrics } from '../types'
+import type { Metrics } from "../types";
 
 interface MetricsPanelProps {
-  metrics: Metrics
+  metrics: Metrics;
 }
 
 export function MetricsPanel({ metrics }: MetricsPanelProps) {
@@ -48,5 +48,5 @@ export function MetricsPanel({ metrics }: MetricsPanelProps) {
         </div>
       )}
     </div>
-  )
+  );
 }

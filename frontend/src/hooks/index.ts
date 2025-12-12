@@ -1,1 +1,1 @@
-export { useSegmentation } from './useSegmentation'
+export { useSegmentation } from "./useSegmentation";

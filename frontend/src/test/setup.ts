@@ -1,26 +1,26 @@
-import '@testing-library/jest-dom/vitest'
-import { cleanup } from '@testing-library/react'
-import { afterEach, beforeAll, afterAll, vi } from 'vitest'
-import { server } from '../mocks/server'
+import "@testing-library/jest-dom/vitest";
+import { cleanup } from "@testing-library/react";
+import { afterEach, beforeAll, afterAll, vi } from "vitest";
+import { server } from "../mocks/server";
 
 // Establish API mocking before all tests
-beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))
+beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
 
 // Clean up after each test
 afterEach(() => {
-  cleanup()
-  server.resetHandlers()
-})
+  cleanup();
+  server.resetHandlers();
+});
 
 // Clean up after all tests
-afterAll(() => server.close())
+afterAll(() => server.close());
 
 // Mock ResizeObserver (needed for some UI components)
 global.ResizeObserver = class ResizeObserver {
   observe() {}
   unobserve() {}
   disconnect() {}
-}
+};
 
 // Mock WebGL2 context for NiiVue
 // NiiVue requires specific extensions for float textures (overlays)
@@ -43,7 +43,7 @@ const mockExtensions: Record<string, object> = {
     UNMASKED_VENDOR_WEBGL: 0x9245,
     UNMASKED_RENDERER_WEBGL: 0x9246,
   },
-}
+};
 
 const mockWebGL2Context = {
   canvas: null as HTMLCanvasElement | null,
@@ -53,12 +53,12 @@ const mockWebGL2Context = {
   shaderSource: vi.fn(),
   compileShader: vi.fn(),
   getShaderParameter: vi.fn(() => true),
-  getShaderInfoLog: vi.fn(() => ''),
+  getShaderInfoLog: vi.fn(() => ""),
   createProgram: vi.fn(() => ({})),
   attachShader: vi.fn(),
   linkProgram: vi.fn(),
   getProgramParameter: vi.fn(() => true),
-  getProgramInfoLog: vi.fn(() => ''),
+  getProgramInfoLog: vi.fn(() => ""),
   useProgram: vi.fn(),
   getAttribLocation: vi.fn(() => 0),
   getUniformLocation: vi.fn(() => ({})),
@@ -106,10 +106,10 @@ const mockWebGL2Context = {
   getExtension: vi.fn((name: string) => mockExtensions[name] || null),
   getParameter: vi.fn((pname: number) => {
     // Return reasonable defaults for common parameter queries
-    if (pname === 0x0d33) return 16384 // MAX_TEXTURE_SIZE
-    if (pname === 0x8073) return 2048 // MAX_3D_TEXTURE_SIZE
-    if (pname === 0x851c) return 16 // MAX_TEXTURE_IMAGE_UNITS
-    return 0
+    if (pname === 0x0d33) return 16384; // MAX_TEXTURE_SIZE
+    if (pname === 0x8073) return 2048; // MAX_3D_TEXTURE_SIZE
+    if (pname === 0x851c) return 16; // MAX_TEXTURE_IMAGE_UNITS
+    return 0;
   }),
   getSupportedExtensions: vi.fn(() => Object.keys(mockExtensions)),
   pixelStorei: vi.fn(),
@@ -134,18 +134,18 @@ const mockWebGL2Context = {
   flush: vi.fn(),
   finish: vi.fn(),
   isContextLost: vi.fn(() => false),
-}
+};
 
 // Override getContext to return WebGL mock - uses type assertion for test mocking
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(HTMLCanvasElement.prototype as any).getContext = function (
-  contextType: string
+(HTMLCanvasElement.prototype as any).getContext = function (
+  contextType: string,
 ): RenderingContext | null {
-  if (contextType === 'webgl2' || contextType === 'webgl') {
+  if (contextType === "webgl2" || contextType === "webgl") {
     return {
       ...mockWebGL2Context,
       canvas: this,
-    } as unknown as WebGL2RenderingContext
+    } as unknown as WebGL2RenderingContext;
   }
-  return null
-}
+  return null;
+};
