@@ -4,6 +4,7 @@ export interface Metrics {
   diceScore: number | null
   volumeMl: number | null
   elapsedSeconds: number
+  warning?: string | null
 }
 
 // Final segmentation result with URLs and metrics
@@ -26,10 +27,11 @@ export interface SegmentResponse {
   elapsedSeconds: number
   dwiUrl: string
   predictionUrl: string
+  warning?: string | null
 }
 
 // Job Status Types
-export type JobStatus = 'pending' | 'running' | 'completed' | 'failed'
+export type JobStatus = 'pending' | 'running' | 'completed' | 'failed' | 'waking_up'
 
 // Response from POST /api/segment (job creation)
 export interface CreateJobResponse {

@@ -24,17 +24,22 @@ export function ProgressIndicator({
 }: ProgressIndicatorProps) {
   const isError = status === 'failed'
   const isComplete = status === 'completed'
+  const isWakingUp = status === 'waking_up'
 
   // Determine bar color based on status
   const barColorClass = isError
     ? 'bg-red-500'
     : isComplete
       ? 'bg-green-500'
-      : 'bg-blue-500'
+      : isWakingUp
+        ? 'bg-yellow-500'
+        : 'bg-blue-500'
 
-  // Animate the bar while running
+  // Animate the bar while running or waking up
   const animationClass =
-    status === 'running' || status === 'pending' ? 'animate-pulse' : ''
+    status === 'running' || status === 'pending' || status === 'waking_up'
+      ? 'animate-pulse'
+      : ''
 
   return (
     <div className="bg-gray-800 rounded-lg p-4 space-y-3">
@@ -73,10 +78,12 @@ export function ProgressIndicator({
               ? 'text-red-400'
               : isComplete
                 ? 'text-green-400'
-                : 'text-blue-400'
+                : isWakingUp
+                  ? 'text-yellow-400'
+                  : 'text-blue-400'
           }`}
         >
-          {status}
+          {status === 'waking_up' ? 'waking up' : status}
         </span>
       </div>
     </div>
