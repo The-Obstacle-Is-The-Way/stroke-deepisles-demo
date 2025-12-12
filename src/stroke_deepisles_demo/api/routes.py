@@ -244,6 +244,7 @@ def run_segmentation_job(
             "elapsedSeconds": round(result.elapsed_seconds, 2),
             "dwiUrl": f"{backend_url}{file_path_prefix}/{dwi_filename}",
             "predictionUrl": f"{backend_url}{file_path_prefix}/{pred_filename}",
+            "warning": "Results are temporary and will be lost if the Space restarts. Download promptly.",
         }
 
         # Mark as completed

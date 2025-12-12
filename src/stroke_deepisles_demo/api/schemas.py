@@ -27,6 +27,9 @@ class SegmentResponse(BaseModel):
     elapsedSeconds: float
     dwiUrl: str
     predictionUrl: str
+    warning: str | None = Field(
+        None, description="Warning message about result storage (e.g., ephemeral disk)"
+    )
 
 
 # Job status type for strong typing

@@ -40,6 +40,13 @@ export function MetricsPanel({ metrics }: MetricsPanelProps) {
           </span>
         </div>
       </div>
+
+      {/* Ephemeral storage warning */}
+      {metrics.warning && (
+        <div className="mt-3 p-2 bg-yellow-900/30 border border-yellow-600/50 rounded text-xs text-yellow-300">
+          {metrics.warning}
+        </div>
+      )}
     </div>
   )
 }
