@@ -18,23 +18,40 @@ interface MockJob {
 const mockJobs = new Map<string, MockJob>()
 let jobCounter = 0
 
+// Configurable job duration for tests (ms)
+// Default: 500ms for fast tests
+let mockJobDurationMs = 500
+
+/**
+ * Set the mock job duration for tests.
+ * Jobs will complete after this many milliseconds.
+ */
+export function setMockJobDuration(durationMs: number): void {
+  mockJobDurationMs = durationMs
+}
+
 // Simulate job progression over time
 function getJobProgress(job: MockJob): MockJob {
   const elapsed = (Date.now() - job.createdAt) / 1000
+  const duration = mockJobDurationMs / 1000 // Convert to seconds
 
   if (job.status === 'completed' || job.status === 'failed') {
     return job
   }
 
-  // Progress through stages based on elapsed time
-  // Total time: ~3 seconds for fast mock testing
-  if (elapsed < 0.5) {
+  // Progress through stages based on elapsed time relative to configured duration
+  // Stages: 20% loading, 40% inference, 30% processing, 10% finalizing
+  const progress20 = duration * 0.2
+  const progress60 = duration * 0.6
+  const progress90 = duration * 0.9
+
+  if (elapsed < progress20) {
     return { ...job, status: 'running', progress: 10, progressMessage: 'Loading case data...', elapsedSeconds: elapsed }
-  } else if (elapsed < 1.0) {
+  } else if (elapsed < progress60) {
     return { ...job, status: 'running', progress: 30, progressMessage: 'Running DeepISLES inference...', elapsedSeconds: elapsed }
-  } else if (elapsed < 2.0) {
+  } else if (elapsed < progress90) {
     return { ...job, status: 'running', progress: 70, progressMessage: 'Processing results...', elapsedSeconds: elapsed }
-  } else if (elapsed < 2.5) {
+  } else if (elapsed < duration) {
     return { ...job, status: 'running', progress: 90, progressMessage: 'Computing metrics...', elapsedSeconds: elapsed }
   } else {
     // Job complete
