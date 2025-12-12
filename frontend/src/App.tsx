@@ -4,9 +4,10 @@ import { CaseSelector } from './components/CaseSelector'
 import { NiiVueViewer } from './components/NiiVueViewer'
 import { MetricsPanel } from './components/MetricsPanel'
 import { ProgressIndicator } from './components/ProgressIndicator'
+import { ErrorBoundary } from './components/ErrorBoundary'
 import { useSegmentation } from './hooks/useSegmentation'
 
-export default function App() {
+function AppContent() {
   const [selectedCase, setSelectedCase] = useState<string | null>(null)
   const {
     result,
@@ -104,5 +105,20 @@ export default function App() {
         </div>
       </div>
     </Layout>
+  )
+}
+
+/**
+ * Main App component wrapped in ErrorBoundary.
+ *
+ * The ErrorBoundary catches React rendering errors (e.g., WebGL failures
+ * in NiiVueViewer) and displays a user-friendly error message instead
+ * of crashing to a white screen.
+ */
+export default function App() {
+  return (
+    <ErrorBoundary>
+      <AppContent />
+    </ErrorBoundary>
   )
 }
