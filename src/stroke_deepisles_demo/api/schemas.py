@@ -61,9 +61,7 @@ class JobStatusResponse(BaseModel):
     result: SegmentResponse | None = Field(
         None, description="Segmentation results (only present when status='completed')"
     )
-    error: str | None = Field(
-        None, description="Error message (only present when status='failed')"
-    )
+    error: str | None = Field(None, description="Error message (only present when status='failed')")
 
 
 class ErrorResponse(BaseModel):
