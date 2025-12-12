@@ -9,6 +9,10 @@ app_build_command: npm run build
 # CRITICAL: Vite 7 requires Node.js >= 20. HF Spaces defaults to Node 18.
 nodejs_version: "20"
 pinned: false
+custom_headers:
+  cross-origin-embedder-policy: require-corp
+  cross-origin-opener-policy: same-origin
+  cross-origin-resource-policy: cross-origin
 ---
 
 # Stroke Lesion Segmentation Viewer
@@ -22,6 +26,13 @@ Built with React, TypeScript, Tailwind CSS, and Vite.
 - **NiiVue WebGL2 Viewer**: Pan, zoom, and navigate through NIfTI volumes
 - **Real-time Segmentation**: Run DeepISLES inference on ISLES24 dataset cases
 - **Metrics Display**: Dice score, volume (mL), processing time
+
+## Browser Requirements
+
+- **WebGL2 Required**: This viewer uses NiiVue which requires WebGL2 support.
+- Supported browsers: Chrome 56+, Firefox 51+, Safari 15+, Edge 79+
+- Test your browser: https://get.webgl.org/webgl2/
+- Mobile devices may have limited support
 
 ## Architecture
 
@@ -77,3 +88,20 @@ npm run build
 
 # The dist/ folder is deployed to HF Static Space
 ```
+
+## Fork Deployment
+
+If you fork this repository, update these files before deploying:
+
+1. **Frontend API URL** (`frontend/.env.production`):
+   ```
+   VITE_API_URL=https://{YOUR_HF_USERNAME}-stroke-deepisles-demo.hf.space
+   ```
+
+2. **Backend CORS** (`src/stroke_deepisles_demo/api/main.py`):
+   Update the `allow_origin_regex` to match your frontend Space URL.
+
+3. **Rebuild frontend**:
+   ```bash
+   cd frontend && npm run build
+   ```
