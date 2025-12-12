@@ -4,7 +4,9 @@ This directory tracks bugs found during deployment to HuggingFace Spaces.
 
 ## Active Bugs
 
-None currently.
+| ID | Title | Severity | Status |
+|----|-------|----------|--------|
+| [004](./004-staticfiles-cors-middleware-not-applied.md) | CORS/CORP middleware not applied to mounted StaticFiles | **CRITICAL** | OPEN - Awaiting Senior Review |
 
 ## Fixed Bugs
 
@@ -20,7 +22,8 @@ Last audit: 2025-12-12
 
 | Check | Status | Notes |
 |-------|--------|-------|
-| CORS regex matches both URL formats | PASS | `r"https://.*stroke-viewer-frontend.*\.hf\.space"` |
+| CORS regex matches both URL formats | N/A | Replaced with exact-match list (PR #38) |
+| **CORS on StaticFiles mount** | **FAIL** | BUG-004: Middleware doesn't apply to mounted apps |
 | All URLs use HTTPS | PASS | `--proxy-headers` flag in Dockerfile |
 | File outputs to /tmp/ | PASS | Uses `/tmp/stroke-results/` |
 | Static files mounted after dir exists | PASS | `mkdir()` before `app.mount()` in main.py |
@@ -61,7 +64,14 @@ Based on research and experience, here are common issues to watch for:
 - `SPACE_ID` contains the space identifier
 - Use these to detect production environment
 
-### 6. Gateway Timeouts (SOLVED)
+### 6. chmod "Operation not permitted" Warnings (HARMLESS)
+DeepISLES tries to chmod model weight files but fails due to container permissions:
+```
+chmod: changing permissions of '/app/weights/SEALS/...': Operation not permitted
+```
+These are **benign warnings**, not errors. The container can still READ the files.
+
+### 7. Gateway Timeouts (SOLVED)
 - HF Spaces proxy has ~60 second timeout
 - Solution: Async job queue pattern with polling
 - POST returns immediately with job ID
@@ -106,8 +116,9 @@ The complete flow from frontend to backend and back:
 
 7. NiiVue fetches static files
    ├── Cross-origin fetch to backend /files/...
-   ├── CORS headers on static file response
-   └── Binary NIfTI files download
+   ├── ⚠️ BUG-004: StaticFiles mount doesn't get CORS headers!
+   ├── Browser blocks fetch (no Access-Control-Allow-Origin)
+   └── "Failed to load volume: Failed to fetch"
 
 8. Viewer displays
    └── NIfTI volumes rendered in WebGL canvas
