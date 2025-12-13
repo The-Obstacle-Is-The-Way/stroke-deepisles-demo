@@ -2,9 +2,8 @@
 # Generated: December 2025
 # See: docs/specs/07-hf-spaces-deployment.md
 
-# Core - Tobias's fork with BIDS + NIfTI lazy loading
-# Pinned to specific commit for reproducibility (Dec 2025)
-git+https://github.com/CloseChoice/datasets.git@c1c15aaa4f00f28f1916f3a896283494162eac49
+# Core - BIDS + NIfTI lazy loading (maintained fork)
+neuroimaging-go-brrrr @ git+https://github.com/The-Obstacle-Is-The-Way/neuroimaging-go-brrrr.git@v0.2.1
 
 # HuggingFace
 huggingface-hub>=0.25.0

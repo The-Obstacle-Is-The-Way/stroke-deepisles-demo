@@ -10,12 +10,10 @@ This pattern avoids HuggingFace Spaces' ~60s gateway timeout.
 
 from __future__ import annotations
 
-import os
 import uuid
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Request
 
-from stroke_deepisles_demo.api.config import MAX_CONCURRENT_JOBS, RESULTS_DIR
 from stroke_deepisles_demo.api.job_store import JobStatus, get_job_store
 from stroke_deepisles_demo.api.schemas import (
     CasesResponse,
@@ -24,6 +22,7 @@ from stroke_deepisles_demo.api.schemas import (
     SegmentRequest,
     SegmentResponse,
 )
+from stroke_deepisles_demo.core.config import get_settings
 from stroke_deepisles_demo.core.logging import get_logger
 from stroke_deepisles_demo.data import list_case_ids
 from stroke_deepisles_demo.metrics import compute_volume_ml
@@ -38,12 +37,12 @@ def get_backend_base_url(request: Request) -> str:
     """Get the backend's public URL for building absolute file URLs.
 
     Priority:
-    1. BACKEND_PUBLIC_URL env var (for production HF Spaces)
+    1. BACKEND_PUBLIC_URL setting (from env var or config)
     2. Request's base URL (for local development)
     """
-    env_url = os.environ.get("BACKEND_PUBLIC_URL", "").rstrip("/")
-    if env_url:
-        return env_url
+    settings_url = get_settings().backend_public_url
+    if settings_url:
+        return settings_url.rstrip("/")
     return str(request.base_url).rstrip("/")
 
 
@@ -92,7 +91,7 @@ def create_segment_job(
     try:
         # Concurrency limit to prevent GPU memory exhaustion (BUG-006 fix)
         store = get_job_store()
-        if store.get_active_job_count() >= MAX_CONCURRENT_JOBS:
+        if store.get_active_job_count() >= get_settings().max_concurrent_jobs:
             raise HTTPException(
                 status_code=503,
                 detail="Server busy: too many active jobs. Please try again later.",
@@ -223,7 +222,7 @@ def run_segmentation_job(
         store.update_progress(job_id, 10, "Loading case data...")
 
         # Set up output directory
-        output_dir = RESULTS_DIR / job_id
+        output_dir = get_settings().results_dir / job_id
 
         store.update_progress(job_id, 20, "Staging files for DeepISLES...")
 

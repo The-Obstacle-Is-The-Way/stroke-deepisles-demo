@@ -90,7 +90,19 @@ class Settings(BaseSettings):
 
     # Paths
     temp_dir: Path | None = None
-    results_dir: Path = Path("./results")
+    # Results directory - MUST be /tmp for HF Spaces (only /tmp is writable)
+    results_dir: Path = Path("/tmp/stroke-results")
+
+    # API Settings
+    # Concurrency control
+    max_concurrent_jobs: int = 10
+
+    # CORS - frontend origins allowed to call this API
+    frontend_origins: list[str] = Field(default=["http://localhost:5173", "http://localhost:3000"])
+
+    # Public URL for constructing absolute file URLs in responses
+    # If not set, uses request.base_url (works for local dev)
+    backend_public_url: str | None = None
 
     # UI
     gradio_server_name: str = "0.0.0.0"

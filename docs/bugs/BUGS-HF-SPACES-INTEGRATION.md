@@ -357,24 +357,20 @@ Document in README:
 
 ---
 
-### BUG-009: FRONTEND_ORIGIN Env Var Not Explicitly Set
+### BUG-009: FRONTEND_ORIGIN Env Var Not Explicitly Set (RESOLVED)
 
-**Severity**: P3 - LOW
-**Impact**: Relies on regex fallback, less explicit
-**File**: `Dockerfile`
+**Resolved:** 2024-12-12 via Config Consolidation.
+Backend now uses `STROKE_DEMO_FRONTEND_ORIGINS` (JSON list) via Pydantic Settings.
 
-#### Problem
-
+Previous state:
 Code supports `FRONTEND_ORIGIN` but Dockerfile doesn't set it:
 ```python
 FRONTEND_ORIGIN = os.environ.get("FRONTEND_ORIGIN", "")
 ```
 
-#### Optional Fix
-
-Add to Dockerfile:
+Fixed state:
 ```dockerfile
-ENV FRONTEND_ORIGIN=https://vibecodermcswaggins-stroke-viewer-frontend.hf.space
+ENV STROKE_DEMO_FRONTEND_ORIGINS='["https://vibecodermcswaggins-stroke-viewer-frontend.hf.space"]'
 ```
 
 ---

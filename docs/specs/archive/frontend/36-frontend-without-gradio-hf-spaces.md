@@ -4,6 +4,8 @@
 **Date**: 2025-12-11
 **Goal**: Replace Gradio with React frontend for NiiVue, FastAPI backend for DeepISLES
 
+**UPDATE (2025-12-12):** See `NEXT-CONCERNS.md` for latest architecture fixes regarding config consolidation (BUG-009) and dependency reproducibility (BUG-012). The env var `FRONTEND_ORIGIN` is now `STROKE_DEMO_FRONTEND_ORIGINS`.
+
 ---
 
 ## Security Note: CVE-2025-55182 Does NOT Affect This App

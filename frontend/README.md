@@ -98,8 +98,11 @@ If you fork this repository, update these files before deploying:
    VITE_API_URL=https://{YOUR_HF_USERNAME}-stroke-deepisles-demo.hf.space
    ```
 
-2. **Backend CORS** (`src/stroke_deepisles_demo/api/main.py`):
-   Add your frontend URL to the `CORS_ORIGINS` list, or set `FRONTEND_ORIGIN` env var.
+2. **Backend CORS** (`src/stroke_deepisles_demo/core/config.py`):
+   Set `STROKE_DEMO_FRONTEND_ORIGINS` env var (JSON list) on the backend Space:
+   ```bash
+   STROKE_DEMO_FRONTEND_ORIGINS='["https://{YOUR_HF_USERNAME}-stroke-viewer-frontend.hf.space"]'
+   ```
 
 3. **Rebuild frontend**:
    ```bash

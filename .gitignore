@@ -217,3 +217,4 @@ data/scratch/
 .DS_Store
 # Auto-generated at runtime (path is environment-specific)
 src/stroke_deepisles_demo/ui/assets/niivue-loader.html
+results/
