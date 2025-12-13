@@ -25,7 +25,8 @@ class TestSettings:
         assert settings.log_level == "INFO"
         assert settings.hf_dataset_id == "hugging-science/isles24-stroke"
         assert settings.deepisles_timeout_seconds == 1800
-        assert settings.results_dir == Path("./results")
+        # Default is /tmp/stroke-results for HF Spaces compatibility (only /tmp is writable)
+        assert settings.results_dir == Path("/tmp/stroke-results")
 
     def test_env_override(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """Environment variables override defaults."""
