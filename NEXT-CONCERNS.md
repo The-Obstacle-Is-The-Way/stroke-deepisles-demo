@@ -21,7 +21,8 @@
 - **Base Image:** Pinned to `sha256:848c9eceb67dbc585bcb37f093389d142caeaa98878bd31039af04ef297a5af4`.
 - **Lock File:** Dockerfile now uses `uv sync --frozen` to respect `uv.lock`.
 - **Path:** Dockerfile adds `.venv/bin` to `PATH` for correct execution.
-- **Validation:** Docker build succeeds and runtime verifies settings load.
+- **Dependency Migration:** Migrated from hard-forked `datasets` to maintained `neuroimaging-go-brrrr` extension (v0.2.1) + standard `datasets` library. Validated end-to-end in Docker.
+- **Validation:** Docker build succeeds, runtime verifies settings load and modules importable.
 
 ---
 
