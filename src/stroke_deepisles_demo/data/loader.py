@@ -154,23 +154,22 @@ class HuggingFaceDatasetWrapper:
         self._temp_dir = None
 
 
-# Default HuggingFace dataset ID
-DEFAULT_HF_DATASET = "hugging-science/isles24-stroke"
-
-
 def load_isles_dataset(
     source: str | Path | None = None,
     *,
     local_mode: bool | None = None,
+    token: str | None = None,
 ) -> Dataset:
     """
     Load ISLES24 dataset from local directory or HuggingFace Hub.
 
     Args:
         source: Local directory path or HuggingFace dataset ID.
-                If None, uses HuggingFace dataset by default.
+                If None, uses Settings.hf_dataset_id from config.
         local_mode: If True, treat source as local directory.
                     If None, auto-detect based on source type.
+        token: HuggingFace token for private/gated datasets.
+               If None, uses Settings.hf_token from config.
 
     Returns:
         Dataset-like object providing case access. Use as context manager
@@ -184,8 +183,8 @@ def load_isles_dataset(
         # Load from local directory
         ds = load_isles_dataset("data/isles24", local_mode=True)
 
-        # Load specific HuggingFace dataset
-        ds = load_isles_dataset("hugging-science/isles24-stroke")
+        # Load specific HuggingFace dataset with token
+        ds = load_isles_dataset("org/private-dataset", token="hf_xxx")
     """
     # Auto-detect mode if not specified
     if local_mode is None:
@@ -210,12 +209,19 @@ def load_isles_dataset(
     # HuggingFace mode
     from datasets import load_dataset
 
-    dataset_id = str(source) if source else DEFAULT_HF_DATASET
+    from stroke_deepisles_demo.core.config import get_settings
+
+    settings = get_settings()
+
+    # Use settings defaults if not specified
+    dataset_id = str(source) if source else settings.hf_dataset_id
+    hf_token = token if token is not None else settings.hf_token
 
     # Load dataset, selecting only necessary columns to minimize decoding overhead
     # We rely on neuroimaging-go-brrrr's Nifti feature for lazy loading if configured,
     # but select_columns ensures we don't touch other modalities.
-    ds = load_dataset(dataset_id, split="train")
+    # Token enables access to private/gated datasets
+    ds = load_dataset(dataset_id, split="train", token=hf_token)
     ds = ds.select_columns(["subject_id", "dwi", "adc", "lesion_mask"])
 
     return HuggingFaceDatasetWrapper(ds, dataset_id)

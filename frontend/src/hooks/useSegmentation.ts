@@ -1,20 +1,14 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { apiClient, ApiError } from "../api/client";
 import type { SegmentationResult, JobStatus } from "../types";
+import {
+  MAX_COLD_START_RETRIES,
+  getRetryDelay,
+  sleep,
+} from "../utils/retry";
 
 // Polling interval in milliseconds
 const POLLING_INTERVAL = 2000;
-
-// Cold start retry configuration
-const MAX_COLD_START_RETRIES = 5;
-const INITIAL_RETRY_DELAY = 2000; // 2 seconds
-const MAX_RETRY_DELAY = 30000; // 30 seconds
-
-/**
- * Sleep utility for async delays
- */
-const sleep = (ms: number): Promise<void> =>
-  new Promise((resolve) => setTimeout(resolve, ms));
 
 /**
  * Hook for running segmentation with async job polling.
@@ -204,12 +198,8 @@ export function useSegmentation() {
             );
             setProgress(0);
 
-            // Exponential backoff: 2s, 4s, 8s, 16s, 30s (capped)
-            const delay = Math.min(
-              INITIAL_RETRY_DELAY * Math.pow(2, retryCount - 1),
-              MAX_RETRY_DELAY,
-            );
-            await sleep(delay);
+            // Exponential backoff with capped maximum
+            await sleep(getRetryDelay(retryCount));
 
             // Continue to next iteration of retry loop
             continue;

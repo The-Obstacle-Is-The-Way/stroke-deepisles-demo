@@ -195,6 +195,57 @@ class JobStore:
         logger.info("Created job %s", job_id)
         return job
 
+    def create_job_if_under_limit(
+        self,
+        job_id: str,
+        case_id: str,
+        fast_mode: bool,
+        max_active: int,
+    ) -> Job | None:
+        """Atomically create a job if under concurrency limit.
+
+        This prevents TOCTOU race conditions where check-then-create
+        could exceed the limit under concurrent requests.
+
+        Args:
+            job_id: Unique identifier for the job
+            case_id: Case to process
+            fast_mode: Whether to use fast inference
+            max_active: Maximum allowed active (pending/running) jobs
+
+        Returns:
+            The created Job if under limit, None if limit reached
+
+        Raises:
+            ValueError: If job_id is invalid (contains unsafe characters)
+            KeyError: If job_id already exists
+        """
+        if not self._is_safe_job_id(job_id):
+            raise ValueError(f"Invalid job_id: {job_id!r}")
+
+        job = Job(
+            id=job_id,
+            status=JobStatus.PENDING,
+            case_id=case_id,
+            fast_mode=fast_mode,
+            created_at=datetime.now(),
+        )
+
+        with self._lock:
+            # Check limit atomically with creation
+            active_count = sum(
+                1 for j in self._jobs.values() if j.status in (JobStatus.PENDING, JobStatus.RUNNING)
+            )
+            if active_count >= max_active:
+                return None
+
+            if job_id in self._jobs:
+                raise KeyError(f"Job already exists: {job_id}")
+            self._jobs[job_id] = job
+
+        logger.info("Created job %s", job_id)
+        return job
+
     def get_job(self, job_id: str) -> Job | None:
         """Get a job by ID.
 

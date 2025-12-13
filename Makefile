@@ -1,7 +1,7 @@
 .PHONY: install test test-integration test-all lint format check all clean
 
 install:
-	uv sync
+	uv sync --extra api --extra gradio
 
 test:
 	uv run pytest

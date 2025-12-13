@@ -30,10 +30,13 @@ if TYPE_CHECKING:
 
 logger = get_logger(__name__)
 
-# Constants
-DEEPISLES_IMAGE = "isleschallenge/deepisles"
-EXPECTED_INPUT_FILES = ["dwi.nii.gz", "adc.nii.gz"]
-OPTIONAL_INPUT_FILES = ["flair.nii.gz"]
+# Expected input files for validation (named constants for explicit access)
+DWI_FILENAME = "dwi.nii.gz"
+ADC_FILENAME = "adc.nii.gz"
+FLAIR_FILENAME = "flair.nii.gz"
+# Lists preserved for consumers; internal code uses named constants
+EXPECTED_INPUT_FILES = [DWI_FILENAME, ADC_FILENAME]
+OPTIONAL_INPUT_FILES = [FLAIR_FILENAME]
 
 
 @dataclass(frozen=True)
@@ -58,15 +61,22 @@ def validate_input_folder(input_dir: Path) -> tuple[Path, Path, Path | None]:
     Raises:
         MissingInputError: If required files are missing
     """
-    dwi_path = input_dir / "dwi.nii.gz"
-    adc_path = input_dir / "adc.nii.gz"
-    flair_path = input_dir / "flair.nii.gz"
+    # Build paths using named constants (explicit, not order-dependent)
+    dwi_path = input_dir / DWI_FILENAME
+    adc_path = input_dir / ADC_FILENAME
+    flair_path = input_dir / FLAIR_FILENAME
 
     if not dwi_path.exists():
-        raise MissingInputError(f"Required file 'dwi.nii.gz' not found in {input_dir}")
+        raise MissingInputError(
+            f"Required file '{DWI_FILENAME}' not found in {input_dir}. "
+            f"Expected: {EXPECTED_INPUT_FILES}"
+        )
 
     if not adc_path.exists():
-        raise MissingInputError(f"Required file 'adc.nii.gz' not found in {input_dir}")
+        raise MissingInputError(
+            f"Required file '{ADC_FILENAME}' not found in {input_dir}. "
+            f"Expected: {EXPECTED_INPUT_FILES}"
+        )
 
     return dwi_path, adc_path, flair_path if flair_path.exists() else None
 
@@ -135,8 +145,13 @@ def _run_via_docker(
     Run DeepISLES via Docker container.
 
     This is the standard execution path for local development.
+    Uses Settings.deepisles_docker_image for the container image.
     """
     start_time = time.time()
+
+    # Get docker image from settings (allows override via env var)
+    settings = get_settings()
+    docker_image = settings.deepisles_docker_image
 
     # Check GPU if requested
     if gpu:
@@ -163,11 +178,17 @@ def _run_via_docker(
         output_dir.resolve(): "/app/output",
     }
 
-    logger.info("Running DeepISLES via Docker: input=%s, fast=%s, gpu=%s", input_dir, fast, gpu)
+    logger.info(
+        "Running DeepISLES via Docker: image=%s, input=%s, fast=%s, gpu=%s",
+        docker_image,
+        input_dir,
+        fast,
+        gpu,
+    )
 
     # Run the container
     docker_result = run_container(
-        DEEPISLES_IMAGE,
+        docker_image,
         command=command,
         volumes=volumes,
         gpu=gpu,

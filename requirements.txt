@@ -1,6 +1,7 @@
-# requirements.txt for Hugging Face Spaces Docker deployment
+# requirements.txt - Fallback for pip-only environments
+# NOTE: Primary dependency management uses uv.lock (see Dockerfile)
+#       This file is for environments without uv (e.g., some CI systems)
 # Generated: December 2025
-# See: docs/specs/07-hf-spaces-deployment.md
 
 # Core - BIDS + NIfTI lazy loading (maintained fork)
 neuroimaging-go-brrrr @ git+https://github.com/The-Obstacle-Is-The-Way/neuroimaging-go-brrrr.git@v0.2.1
