@@ -21,7 +21,7 @@ logger = get_logger(__name__)
 class LocalDataset:
     """File-based dataset for local ISLES24 data.
 
-    Can be used as a context manager for consistency with HuggingFaceDataset,
+    Can be used as a context manager for consistency with HuggingFaceDatasetWrapper,
     though no cleanup is needed for local files.
 
     Example:

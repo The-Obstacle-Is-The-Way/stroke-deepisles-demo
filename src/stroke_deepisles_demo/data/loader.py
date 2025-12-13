@@ -66,7 +66,7 @@ class HuggingFaceDatasetWrapper:
             self._case_id_to_index = {
                 sid: idx for idx, sid in enumerate(self.dataset["subject_id"])
             }
-        except Exception as e:
+        except (KeyError, TypeError, ValueError) as e:
             logger.warning(
                 "Failed to build index from subject_id column: %s. Fallback to iteration.", e
             )
