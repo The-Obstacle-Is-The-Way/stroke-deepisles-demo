@@ -1,10 +1,6 @@
 import { useEffect, useState } from "react";
 import { apiClient, ApiError } from "../api/client";
-
-// Cold start retry configuration (matches useSegmentation.ts)
-const MAX_COLD_START_RETRIES = 5;
-const INITIAL_RETRY_DELAY = 2000;
-const MAX_RETRY_DELAY = 30000;
+import { MAX_COLD_START_RETRIES, getRetryDelay } from "../utils/retry";
 
 interface CaseSelectorProps {
   selectedCase: string | null;
@@ -54,12 +50,10 @@ export function CaseSelector({
             setRetryCount(attempts);
             setIsWakingUp(true);
 
-            // Exponential backoff
-            const delay = Math.min(
-              INITIAL_RETRY_DELAY * Math.pow(2, attempts - 1),
-              MAX_RETRY_DELAY,
+            // Exponential backoff with capped maximum
+            await new Promise((resolve) =>
+              setTimeout(resolve, getRetryDelay(attempts)),
             );
-            await new Promise((resolve) => setTimeout(resolve, delay));
             continue;
           }
 

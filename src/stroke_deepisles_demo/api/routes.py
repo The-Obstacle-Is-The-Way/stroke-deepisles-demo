@@ -89,13 +89,8 @@ def create_segment_job(
     - Returning immediately avoids timeout errors
     """
     try:
-        # Concurrency limit to prevent GPU memory exhaustion (BUG-006 fix)
         store = get_job_store()
-        if store.get_active_job_count() >= get_settings().max_concurrent_jobs:
-            raise HTTPException(
-                status_code=503,
-                detail="Server busy: too many active jobs. Please try again later.",
-            )
+        settings = get_settings()
 
         # Validate case_id exists before creating job
         valid_cases = list_case_ids()
@@ -109,8 +104,15 @@ def create_segment_job(
         job_id = uuid.uuid4().hex
         backend_url = get_backend_base_url(request)
 
-        # Create job record
-        store.create_job(job_id, body.case_id, body.fast_mode)
+        # Atomic concurrency limit + job creation (prevents TOCTOU race)
+        job = store.create_job_if_under_limit(
+            job_id, body.case_id, body.fast_mode, settings.max_concurrent_jobs
+        )
+        if job is None:
+            raise HTTPException(
+                status_code=503,
+                detail="Server busy: too many active jobs. Please try again later.",
+            )
 
         # Queue background task
         background_tasks.add_task(
@@ -229,10 +231,12 @@ def run_segmentation_job(
         # Run the pipeline
         store.update_progress(job_id, 30, "Running DeepISLES inference...")
 
+        # Note: gpu and timeout default to Settings values via pipeline
         result = run_pipeline_on_case(
             case_id,
             output_dir=output_dir,
             fast=fast_mode,
+            # gpu, timeout use Settings defaults
             compute_dice=True,
             cleanup_staging=True,
         )

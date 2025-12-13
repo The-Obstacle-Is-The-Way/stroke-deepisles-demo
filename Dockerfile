@@ -40,7 +40,8 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 # Install Python dependencies from lock file (frozen = fail if lock stale)
 # This ensures CI, local dev, and production use IDENTICAL versions
-RUN uv sync --frozen --no-dev --no-install-project
+# CRITICAL: --extra api installs FastAPI/uvicorn required by CMD
+RUN uv sync --frozen --no-dev --no-install-project --extra api
 
 # Copy application source code and package files
 COPY --chown=1000:1000 README.md /home/user/demo/README.md
@@ -66,7 +67,7 @@ ENV DEEPISLES_PATH=/app
 ENV HF_HOME=/home/user/demo/cache
 
 # Create directories for data with proper permissions
-# CRITICAL: /tmp/stroke-results is required for FastAPI StaticFiles mount
+# /tmp/stroke-results stores job result files, served via explicit /files/{job_id}/ routes
 RUN mkdir -p /home/user/demo/data /home/user/demo/results /home/user/demo/cache /tmp/stroke-results && \
     chown -R 1000:1000 /home/user/demo /tmp/stroke-results
 

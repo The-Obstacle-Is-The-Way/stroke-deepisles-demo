@@ -23,6 +23,10 @@ from stroke_deepisles_demo.core.logging import get_logger
 
 logger = get_logger(__name__)
 
+# Allowed file extensions (defense-in-depth)
+# Only serve NIfTI files to prevent accidental exposure of logs/metadata
+_ALLOWED_EXTENSIONS = {".nii", ".nii.gz"}
+
 files_router = APIRouter(prefix="/files", tags=["files"])
 
 
@@ -44,6 +48,15 @@ async def get_result_file(job_id: str, case_id: str, filename: str) -> FileRespo
     Raises:
         404: File not found (job expired, invalid path, or doesn't exist)
     """
+    # Security: Validate file extension (defense-in-depth)
+    # Only serve NIfTI files to prevent accidental exposure of logs/metadata
+    if not any(filename.endswith(ext) for ext in _ALLOWED_EXTENSIONS):
+        logger.warning("Blocked request for non-NIfTI file: %s", filename)
+        raise HTTPException(
+            status_code=404,
+            detail="Only NIfTI files (.nii, .nii.gz) can be served.",
+        )
+
     # Construct file path
     results_dir = get_settings().results_dir
     file_path = results_dir / job_id / case_id / filename

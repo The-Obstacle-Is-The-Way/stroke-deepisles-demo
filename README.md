@@ -34,7 +34,9 @@ A demonstration pipeline and UI for ischemic stroke lesion segmentation using **
 This project provides a complete end-to-end workflow:
 1.  **Data Loading**: Lazy-loading of NIfTI neuroimaging data from HuggingFace.
 2.  **Inference**: Running DeepISLES segmentation (SEALS or Ensemble) via Docker.
-3.  **Visualization**: Interactive 3D and multi-planar viewing with NiiVue in Gradio.
+3.  **Visualization**: Interactive 3D viewing with NiiVue in React SPA + FastAPI backend.
+
+> **Note**: A legacy Gradio UI is available for local development (`app.py`).
 
 > **Disclaimer**: This software is for research and demonstration purposes only. It is not intended for clinical use.
 
@@ -43,7 +45,7 @@ This project provides a complete end-to-end workflow:
 -   🧠 **State-of-the-Art Segmentation**: Uses DeepISLES (ISLES'22 winner) for accurate lesion segmentation.
 -   ☁️ **Cloud-Native Data**: Streams data directly from HuggingFace Datasets (no massive downloads).
 -   🐳 **Dockerized Inference**: Encapsulates complex deep learning dependencies in a reproducible container.
--   🖥️ **Interactive UI**: Gradio-based web interface with 3D rendering (NiiVue).
+-   🖥️ **Modern UI**: React SPA + FastAPI backend with NiiVue for 3D neuroimaging visualization.
 -   ⚙️ **Production Ready**: Type-safe, tested, and configurable via environment variables.
 
 ## Requirements
@@ -114,7 +116,8 @@ graph TD
     Staging -->|Mount Volume| Docker[DeepISLES Container]
     Docker -->|Inference| Results[Prediction Mask]
     Results -->|Load| Metrics["Metrics (Dice)"]
-    Results -->|Render| UI["Gradio UI / NiiVue"]
+    Results -->|Serve via API| FastAPI[FastAPI Backend]
+    FastAPI -->|JSON + Files| React[React SPA + NiiVue]
 ```
 
 ## License

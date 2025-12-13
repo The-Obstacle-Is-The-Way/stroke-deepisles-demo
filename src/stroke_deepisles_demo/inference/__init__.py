@@ -1,7 +1,6 @@
 """Inference module for stroke-deepisles-demo."""
 
 from stroke_deepisles_demo.inference.deepisles import (
-    DEEPISLES_IMAGE,
     DeepISLESResult,
     run_deepisles_on_folder,
     validate_input_folder,
@@ -19,7 +18,7 @@ from stroke_deepisles_demo.inference.docker import (
 )
 
 __all__ = [
-    "DEEPISLES_IMAGE",
+    # Note: Docker image is now configurable via Settings.deepisles_docker_image
     "DeepISLESResult",
     "DirectInvocationResult",
     "DockerRunResult",

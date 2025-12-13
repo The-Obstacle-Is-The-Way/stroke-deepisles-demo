@@ -1,7 +1,7 @@
 [project]
 name = "stroke-deepisles-demo"
 version = "0.1.0"
-description = "Demo: HF datasets + DeepISLES stroke segmentation + Gradio visualization"
+description = "Demo: HF datasets + DeepISLES stroke segmentation + React SPA + FastAPI backend"
 readme = "README.md"
 license = { text = "Apache-2.0" }
 requires-python = ">=3.11"

@@ -59,8 +59,9 @@ def run_pipeline_on_case(
     *,
     dataset_id: str | None = None,
     output_dir: Path | None = None,
-    fast: bool = True,
-    gpu: bool = True,
+    fast: bool | None = None,
+    gpu: bool | None = None,
+    timeout: float | None = None,
     compute_dice: bool = True,
     cleanup_staging: bool = True,
 ) -> PipelineResult:
@@ -69,25 +70,35 @@ def run_pipeline_on_case(
 
     Args:
         case_id: Case identifier (string) or index (int)
-        dataset_id: HF dataset ID (default from settings - currently ignored/local)
+        dataset_id: HF dataset ID (default from Settings.hf_dataset_id)
         output_dir: Directory for results (default: temp dir)
-        fast: Use SEALS-only mode (ISLES'22 winner, DWI+ADC only, no FLAIR needed)
-        gpu: Use GPU acceleration
+        fast: Use SEALS-only mode (default from Settings.deepisles_fast_mode)
+        gpu: Use GPU acceleration (default from Settings.deepisles_use_gpu)
+        timeout: Maximum inference time in seconds (default from Settings.deepisles_timeout_seconds)
         compute_dice: Compute Dice score if ground truth available
         cleanup_staging: Remove staging directory after inference
 
     Returns:
         PipelineResult with all paths and optional metrics
     """
-    # Note: dataset_id is currently unused as we default to local loading.
-    # It's kept for interface compatibility with future cloud mode.
-    _ = dataset_id
+    from stroke_deepisles_demo.core.config import get_settings
+
+    settings = get_settings()
+
+    # Apply settings defaults if not specified
+    if fast is None:
+        fast = settings.deepisles_fast_mode
+    if gpu is None:
+        gpu = settings.deepisles_use_gpu
+    if timeout is None:
+        timeout = settings.deepisles_timeout_seconds
 
     start_time = time.time()
 
     # Use context manager to ensure HuggingFace temp files are cleaned up
     # This prevents unbounded disk usage from accumulating temp NIfTI files
-    with load_isles_dataset() as dataset:
+    # dataset_id is wired through to loader (defaults to Settings.hf_dataset_id)
+    with load_isles_dataset(dataset_id) as dataset:
         # Resolve ID if integer
         if isinstance(case_id, int):
             all_ids = dataset.list_case_ids()
@@ -150,6 +161,7 @@ def run_pipeline_on_case(
         output_dir=results_dir,
         fast=fast,
         gpu=gpu,
+        timeout=timeout,
     )
 
     # 4. Compute Metrics (using copied ground truth)

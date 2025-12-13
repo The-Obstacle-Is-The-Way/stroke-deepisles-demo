@@ -1,9 +1,11 @@
-"""Alternative entry point for local development.
+"""Alternative entry point for local Gradio development.
 
-NOTE: HuggingFace Spaces Docker deployment uses `python -m stroke_deepisles_demo.ui.app`
-(see Dockerfile CMD). This file is for local development convenience only.
+NOTE: HuggingFace Spaces Docker deployment uses FastAPI via uvicorn:
+  uvicorn stroke_deepisles_demo.api.main:app --host 0.0.0.0 --port 7860
+(see Dockerfile CMD). This file runs the legacy Gradio UI for local development.
 
-For HF Spaces deployment, see: src/stroke_deepisles_demo/ui/app.py
+For HF Spaces deployment, see: src/stroke_deepisles_demo/api/main.py
+For legacy Gradio UI, see: src/stroke_deepisles_demo/ui/app.py
 """
 
 import gradio as gr
