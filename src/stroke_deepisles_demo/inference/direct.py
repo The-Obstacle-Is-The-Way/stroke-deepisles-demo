@@ -197,11 +197,13 @@ def run_deepisles_direct(
             cwd="/app",  # Run from DeepISLES directory
         )
 
-        # Log output
+        # Log verbose output at DEBUG to avoid log explosion
+        # DeepISLES produces extensive stdout/stderr that would overwhelm INFO logs
         if result.stdout:
-            logger.info("DeepISLES stdout:\n%s", result.stdout)
+            logger.debug("DeepISLES stdout:\n%s", result.stdout)
         if result.stderr:
-            logger.warning("DeepISLES stderr:\n%s", result.stderr)
+            # Log stderr at DEBUG unless it's a failure (handled below)
+            logger.debug("DeepISLES stderr:\n%s", result.stderr)
 
         # Check for failure
         if result.returncode != 0:

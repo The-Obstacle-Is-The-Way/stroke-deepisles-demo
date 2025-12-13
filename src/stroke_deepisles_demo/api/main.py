@@ -25,7 +25,7 @@ from stroke_deepisles_demo.api.files import files_router
 from stroke_deepisles_demo.api.job_store import init_job_store
 from stroke_deepisles_demo.api.routes import router
 from stroke_deepisles_demo.core.config import get_settings
-from stroke_deepisles_demo.core.logging import get_logger
+from stroke_deepisles_demo.core.logging import get_logger, setup_logging
 
 logger = get_logger(__name__)
 
@@ -42,8 +42,12 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
     - Stop cleanup scheduler
     """
     # Startup
-    logger.info("Starting stroke segmentation API...")
     settings = get_settings()
+
+    # Apply log settings from environment (STROKE_DEMO_LOG_LEVEL, STROKE_DEMO_LOG_FORMAT)
+    setup_logging(settings.log_level, format_style=settings.log_format)
+
+    logger.info("Starting stroke segmentation API...")
 
     # Check for GPU availability (DeepISLES requires GPU)
     try:
@@ -105,7 +109,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=get_settings().frontend_origins,
     allow_credentials=False,  # Not needed - no cookies/auth
-    allow_methods=["GET", "POST", "HEAD"],  # HEAD for preflight checks
+    allow_methods=["GET", "POST", "OPTIONS"],  # OPTIONS for CORS preflight
     allow_headers=["Content-Type", "Range"],  # Range needed for partial content requests
     expose_headers=["Content-Range", "Content-Length", "Accept-Ranges"],  # NiiVue needs these
 )

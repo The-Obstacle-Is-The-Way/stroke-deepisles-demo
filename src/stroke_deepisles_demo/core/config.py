@@ -76,8 +76,8 @@ class Settings(BaseSettings):
     log_format: Literal["simple", "detailed", "json"] = "simple"
 
     # HuggingFace
+    # Note: To control HF cache location, use HF_HOME env var (set in Dockerfile)
     hf_dataset_id: str = "hugging-science/isles24-stroke"
-    hf_cache_dir: Path | None = None
     hf_token: str | None = Field(default=None, repr=False)  # Hidden from logs
 
     # DeepISLES
@@ -85,17 +85,16 @@ class Settings(BaseSettings):
     deepisles_fast_mode: bool = True  # SEALS-only (ISLES'22 winner, no FLAIR needed)
     deepisles_timeout_seconds: int = 1800  # 30 minutes
     deepisles_use_gpu: bool = True
-    # Path to DeepISLES repo (for direct invocation mode)
-    deepisles_repo_path: Path | None = None
 
     # Paths
-    temp_dir: Path | None = None
+    # Note: To control temp location, use TMPDIR env var (Python tempfile respects it)
     # Results directory - MUST be /tmp for HF Spaces (only /tmp is writable)
     results_dir: Path = Path("/tmp/stroke-results")
 
     # API Settings
-    # Concurrency control
-    max_concurrent_jobs: int = 10
+    # Concurrency control - default to 1 for single-GPU safety (T4 has 16GB VRAM)
+    # Increase via STROKE_DEMO_MAX_CONCURRENT_JOBS if you have multiple GPUs
+    max_concurrent_jobs: int = 1
 
     # CORS - frontend origins allowed to call this API
     frontend_origins: list[str] = Field(default=["http://localhost:5173", "http://localhost:3000"])

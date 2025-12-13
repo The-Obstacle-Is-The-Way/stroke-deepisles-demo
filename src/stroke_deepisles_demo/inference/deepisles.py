@@ -220,6 +220,7 @@ def _run_via_direct_invocation(
     *,
     flair_path: Path | None,
     fast: bool,
+    timeout: float,
 ) -> DeepISLESResult:
     """
     Run DeepISLES via direct Python invocation.
@@ -234,9 +235,10 @@ def _run_via_direct_invocation(
     adc_path = input_dir / "adc.nii.gz"
 
     logger.info(
-        "Running DeepISLES via direct invocation: input=%s, fast=%s",
+        "Running DeepISLES via direct invocation: input=%s, fast=%s, timeout=%s",
         input_dir,
         fast,
+        timeout,
     )
 
     result = run_deepisles_direct(
@@ -245,6 +247,7 @@ def _run_via_direct_invocation(
         output_dir=output_dir,
         flair_path=flair_path,
         fast=fast,
+        timeout=timeout,
     )
 
     return DeepISLESResult(
@@ -275,7 +278,7 @@ def run_deepisles_on_folder(
         output_dir: Where to write results (default: input_dir/results)
         fast: If True, use single-model mode (faster, slightly less accurate)
         gpu: If True, use GPU acceleration (only affects Docker mode)
-        timeout: Maximum seconds to wait for inference (only affects Docker mode)
+        timeout: Maximum seconds to wait for inference
 
     Returns:
         DeepISLESResult with path to prediction mask
@@ -312,6 +315,7 @@ def run_deepisles_on_folder(
             output_dir=output_dir,
             flair_path=flair_path,
             fast=fast,
+            timeout=timeout if timeout is not None else 1800,
         )
     else:
         logger.info("Using Docker-based DeepISLES invocation")
