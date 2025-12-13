@@ -65,17 +65,20 @@ from datasets import load_dataset
 # neuroimaging-go-brrrr provides the patched datasets with Nifti() support
 ds = load_dataset("hugging-science/isles24-stroke", split="train")
 
-# Access data - Nifti() handles lazy loading automatically
+# Access data - Nifti() returns nibabel.Nifti1Image objects
 example = ds[0]
-dwi = example["dwi"]           # numpy array
-adc = example["adc"]           # numpy array
-lesion_mask = example["lesion_mask"]  # numpy array
+dwi = example["dwi"]           # nibabel.Nifti1Image (NOT numpy array)
+adc = example["adc"]           # nibabel.Nifti1Image
+lesion_mask = example["lesion_mask"]  # nibabel.Nifti1Image
+
+# To get numpy array: dwi.get_fdata()
+# To save to file: dwi.to_filename("dwi.nii.gz")
 ```
 
 This is the **intended consumption pattern**. It should just work because:
 1. `neuroimaging-go-brrrr` provides the patched `datasets` with `Nifti()` support
 2. The dataset was uploaded with `Nifti()` features
-3. `load_dataset()` automatically handles lazy loading
+3. `Nifti(decode=True)` returns nibabel images with affine/header preserved
 
 ---
 
