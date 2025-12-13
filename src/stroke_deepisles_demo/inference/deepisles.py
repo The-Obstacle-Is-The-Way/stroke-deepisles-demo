@@ -30,9 +30,13 @@ if TYPE_CHECKING:
 
 logger = get_logger(__name__)
 
-# Expected input files for validation
-EXPECTED_INPUT_FILES = ["dwi.nii.gz", "adc.nii.gz"]
-OPTIONAL_INPUT_FILES = ["flair.nii.gz"]
+# Expected input files for validation (named constants for explicit access)
+DWI_FILENAME = "dwi.nii.gz"
+ADC_FILENAME = "adc.nii.gz"
+FLAIR_FILENAME = "flair.nii.gz"
+# Lists preserved for consumers; internal code uses named constants
+EXPECTED_INPUT_FILES = [DWI_FILENAME, ADC_FILENAME]
+OPTIONAL_INPUT_FILES = [FLAIR_FILENAME]
 
 
 @dataclass(frozen=True)
@@ -57,22 +61,21 @@ def validate_input_folder(input_dir: Path) -> tuple[Path, Path, Path | None]:
     Raises:
         MissingInputError: If required files are missing
     """
-    # Build paths from constants
-    dwi_file, adc_file = EXPECTED_INPUT_FILES
-    flair_file = OPTIONAL_INPUT_FILES[0]
-
-    dwi_path = input_dir / dwi_file
-    adc_path = input_dir / adc_file
-    flair_path = input_dir / flair_file
+    # Build paths using named constants (explicit, not order-dependent)
+    dwi_path = input_dir / DWI_FILENAME
+    adc_path = input_dir / ADC_FILENAME
+    flair_path = input_dir / FLAIR_FILENAME
 
     if not dwi_path.exists():
         raise MissingInputError(
-            f"Required file '{dwi_file}' not found in {input_dir}. Expected: {EXPECTED_INPUT_FILES}"
+            f"Required file '{DWI_FILENAME}' not found in {input_dir}. "
+            f"Expected: {EXPECTED_INPUT_FILES}"
         )
 
     if not adc_path.exists():
         raise MissingInputError(
-            f"Required file '{adc_file}' not found in {input_dir}. Expected: {EXPECTED_INPUT_FILES}"
+            f"Required file '{ADC_FILENAME}' not found in {input_dir}. "
+            f"Expected: {EXPECTED_INPUT_FILES}"
         )
 
     return dwi_path, adc_path, flair_path if flair_path.exists() else None
