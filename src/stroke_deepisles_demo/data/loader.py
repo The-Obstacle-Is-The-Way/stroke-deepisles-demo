@@ -2,12 +2,19 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+import shutil
+import tempfile
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING, Protocol, Self
 
+from stroke_deepisles_demo.core.logging import get_logger
+from stroke_deepisles_demo.core.types import CaseFiles  # noqa: TC001
+
 if TYPE_CHECKING:
-    from stroke_deepisles_demo.core.types import CaseFiles
+    from datasets import Dataset as HFDataset
+
+logger = get_logger(__name__)
 
 
 class Dataset(Protocol):
@@ -37,6 +44,103 @@ class DatasetInfo:
     num_cases: int
     modalities: list[str]
     has_ground_truth: bool
+
+
+@dataclass
+class HuggingFaceDatasetWrapper:
+    """Wrapper for HuggingFace dataset to match the Dataset protocol.
+
+    Uses the standard datasets library (with neuroimaging-go-brrrr patched Nifti feature)
+    to load data. Materializes NIfTI images to temporary files on demand.
+    """
+
+    dataset: HFDataset
+    dataset_id: str
+    _temp_dir: Path | None = field(default=None, repr=False)
+    _case_id_to_index: dict[str, int] = field(default_factory=dict, repr=False)
+
+    def __post_init__(self) -> None:
+        """Build index of subject IDs for O(1) lookup."""
+        try:
+            # Efficiently build index from 'subject_id' column
+            self._case_id_to_index = {
+                sid: idx for idx, sid in enumerate(self.dataset["subject_id"])
+            }
+        except (KeyError, TypeError, ValueError) as e:
+            logger.warning(
+                "Failed to build index from subject_id column: %s. Fallback to iteration.", e
+            )
+            for idx, item in enumerate(self.dataset):
+                self._case_id_to_index[item["subject_id"]] = idx
+
+    def __len__(self) -> int:
+        return len(self.dataset)
+
+    def __enter__(self) -> Self:
+        return self
+
+    def __exit__(self, *args: object) -> None:
+        self.cleanup()
+
+    def list_case_ids(self) -> list[str]:
+        return sorted(self._case_id_to_index.keys())
+
+    def get_case(self, case_id: str | int) -> CaseFiles:
+        """Get files for a case by ID or index.
+
+        Materializes NIfTI objects to temporary files.
+        """
+        # Resolve case_id to index
+        if isinstance(case_id, int):
+            if case_id < 0 or case_id >= len(self.dataset):
+                raise IndexError(f"Case index {case_id} out of range")
+            idx = case_id
+        else:
+            if case_id not in self._case_id_to_index:
+                raise KeyError(f"Case ID {case_id} not found")
+            idx = self._case_id_to_index[case_id]
+
+        row = self.dataset[idx]
+        subject_id = row["subject_id"]
+
+        # Prepare temp dir
+        if self._temp_dir is None:
+            self._temp_dir = Path(tempfile.mkdtemp(prefix="isles24_hf_wrapper_"))
+
+        case_dir = self._temp_dir / subject_id
+        case_dir.mkdir(exist_ok=True)
+
+        dwi_path = case_dir / f"{subject_id}_dwi.nii.gz"
+        adc_path = case_dir / f"{subject_id}_adc.nii.gz"
+
+        # Materialize files if they don't exist
+        if not dwi_path.exists():
+            row["dwi"].to_filename(str(dwi_path))
+
+        if not adc_path.exists():
+            row["adc"].to_filename(str(adc_path))
+
+        case_files: CaseFiles = {
+            "dwi": dwi_path,
+            "adc": adc_path,
+        }
+
+        # Handle lesion mask (mapped to ground_truth)
+        if "lesion_mask" in row and row["lesion_mask"] is not None:
+            mask_path = case_dir / f"{subject_id}_lesion-msk.nii.gz"
+            if not mask_path.exists():
+                row["lesion_mask"].to_filename(str(mask_path))
+            case_files["ground_truth"] = mask_path
+
+        return case_files
+
+    def cleanup(self) -> None:
+        if self._temp_dir and self._temp_dir.exists():
+            try:
+                shutil.rmtree(self._temp_dir)
+            except OSError as e:
+                logger.warning("Failed to cleanup temp directory %s: %s", self._temp_dir, e)
+        self._temp_dir = None
 
 
 # Default HuggingFace dataset ID
@@ -93,7 +197,14 @@ def load_isles_dataset(
         return build_local_dataset(Path(source))
 
     # HuggingFace mode
-    from stroke_deepisles_demo.data.adapter import build_huggingface_dataset
+    from datasets import load_dataset
 
-    dataset_id = source if source else DEFAULT_HF_DATASET
-    return build_huggingface_dataset(str(dataset_id))
+    dataset_id = str(source) if source else DEFAULT_HF_DATASET
+
+    # Load dataset, selecting only necessary columns to minimize decoding overhead
+    # We rely on neuroimaging-go-brrrr's Nifti feature for lazy loading if configured,
+    # but select_columns ensures we don't touch other modalities.
+    ds = load_dataset(dataset_id, split="train")
+    ds = ds.select_columns(["subject_id", "dwi", "adc", "lesion_mask"])
+
+    return HuggingFaceDatasetWrapper(ds, dataset_id)
