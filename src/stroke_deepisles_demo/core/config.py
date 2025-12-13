@@ -108,6 +108,8 @@ class Settings(BaseSettings):
     gradio_server_name: str = "0.0.0.0"
     gradio_server_port: int = 7860
     gradio_share: bool = False
+    # Show full Python tracebacks in Gradio UI (security: disable in production)
+    gradio_show_error: bool = False
 
     @computed_field  # type: ignore[prop-decorator]
     @property

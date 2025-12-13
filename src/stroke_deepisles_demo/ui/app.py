@@ -53,10 +53,30 @@ def initialize_case_selector() -> gr.Dropdown:
 
 
 def _cleanup_previous_results(previous_results_dir: str | None) -> None:
-    """Clean up previous results directory (per-session, thread-safe)."""
+    """Clean up previous results directory (per-session, thread-safe).
+
+    Security: Validates path is under allowed results root to prevent
+    arbitrary file deletion via manipulated Gradio state.
+    """
     if previous_results_dir is None:
         return
-    prev_path = Path(previous_results_dir)
+
+    from stroke_deepisles_demo.core.config import get_settings
+
+    prev_path = Path(previous_results_dir).resolve()
+    allowed_root = get_settings().results_dir.resolve()
+
+    # Security: Ensure path is under allowed root (prevent path traversal)
+    try:
+        prev_path.relative_to(allowed_root)
+    except ValueError:
+        logger.warning(
+            "Refusing to cleanup path outside allowed root: %s (root: %s)",
+            prev_path,
+            allowed_root,
+        )
+        return
+
     if prev_path.exists():
         try:
             shutil.rmtree(prev_path)
@@ -285,5 +305,5 @@ if __name__ == "__main__":
         share=settings.gradio_share,
         theme=gr.themes.Soft(),
         css="footer {visibility: hidden}",
-        show_error=True,  # Show full Python tracebacks in UI for debugging
+        show_error=settings.gradio_show_error,  # Default False for security
     )
