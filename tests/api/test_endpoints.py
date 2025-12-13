@@ -84,31 +84,37 @@ class TestPostSegment:
 
     def test_creates_job_and_returns_202(self, client: TestClient) -> None:
         """POST /api/segment creates a job and returns 202 Accepted."""
-        response = client.post(
-            "/api/segment",
-            json={"case_id": "sub-stroke0001", "fast_mode": True},
-        )
+        with patch("stroke_deepisles_demo.api.routes.list_case_ids") as mock_list:
+            mock_list.return_value = ["sub-stroke0001", "sub-stroke0002"]
 
-        assert response.status_code == 202
-        data = response.json()
-        assert "jobId" in data
-        assert data["status"] == "pending"
-        assert "message" in data
+            response = client.post(
+                "/api/segment",
+                json={"case_id": "sub-stroke0001", "fast_mode": True},
+            )
+
+            assert response.status_code == 202
+            data = response.json()
+            assert "jobId" in data
+            assert data["status"] == "pending"
+            assert "message" in data
 
     def test_returns_job_id_for_polling(self, client: TestClient) -> None:
         """POST /api/segment returns a job ID that can be used for polling."""
-        response = client.post(
-            "/api/segment",
-            json={"case_id": "sub-stroke0001", "fast_mode": True},
-        )
+        with patch("stroke_deepisles_demo.api.routes.list_case_ids") as mock_list:
+            mock_list.return_value = ["sub-stroke0001", "sub-stroke0002"]
 
-        job_id = response.json()["jobId"]
-        assert job_id is not None
-        assert len(job_id) > 0
+            response = client.post(
+                "/api/segment",
+                json={"case_id": "sub-stroke0001", "fast_mode": True},
+            )
 
-        # Job should be retrievable via GET /api/jobs/{id}
-        status_response = client.get(f"/api/jobs/{job_id}")
-        assert status_response.status_code == 200
+            job_id = response.json()["jobId"]
+            assert job_id is not None
+            assert len(job_id) > 0
+
+            # Job should be retrievable via GET /api/jobs/{id}
+            status_response = client.get(f"/api/jobs/{job_id}")
+            assert status_response.status_code == 200
 
     def test_returns_422_on_missing_case_id(self, client: TestClient) -> None:
         """POST /api/segment returns 422 when case_id is missing."""
