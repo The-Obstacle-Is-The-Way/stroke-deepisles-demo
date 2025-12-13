@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 import shutil
 import tempfile
 from dataclasses import dataclass, field
@@ -10,6 +11,10 @@ from typing import TYPE_CHECKING, Protocol, Self
 
 from stroke_deepisles_demo.core.logging import get_logger
 from stroke_deepisles_demo.core.types import CaseFiles  # noqa: TC001
+
+# Security: Regex for valid ISLES24 subject IDs (defense-in-depth)
+# Expected format: sub-strokeXXXX (e.g., sub-stroke0001)
+_SAFE_SUBJECT_ID_PATTERN = re.compile(r"^sub-stroke\d{4}$")
 
 if TYPE_CHECKING:
     from datasets import Dataset as HFDataset
@@ -102,6 +107,12 @@ class HuggingFaceDatasetWrapper:
 
         row = self.dataset[idx]
         subject_id = row["subject_id"]
+
+        # Security: Validate subject_id before using in path (defense-in-depth)
+        if not _SAFE_SUBJECT_ID_PATTERN.match(subject_id):
+            raise ValueError(
+                f"Invalid subject_id format: {subject_id!r}. Expected format: sub-strokeXXXX"
+            )
 
         # Prepare temp dir
         if self._temp_dir is None:
