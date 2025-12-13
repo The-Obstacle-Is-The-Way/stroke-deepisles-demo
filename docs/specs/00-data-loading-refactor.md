@@ -31,7 +31,7 @@ The workaround was created due to:
 
 ## Current Architecture (WRONG)
 
-```
+```text
 stroke-deepisles-demo
         │
         ├── data/adapter.py (379 lines)
@@ -96,7 +96,7 @@ shutil.copy2(case_files["dwi"], dwi_dest)  # Expects Path!
 
 ## Target Architecture (CORRECT)
 
-```
+```text
 stroke-deepisles-demo
         │
         └── data/loader.py
