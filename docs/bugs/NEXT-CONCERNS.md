@@ -44,7 +44,7 @@
 
 ## Test Results
 
-```
+```text
 157 passed, 7 deselected in 12.73s
 ruff check: All checks passed!
 ruff format: 27 files already formatted

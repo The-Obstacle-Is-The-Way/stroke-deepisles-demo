@@ -216,8 +216,13 @@ def _run_via_docker(
             prediction_path,
             expected_path,
         )
-        shutil.copy2(prediction_path, expected_path)
-        prediction_path = expected_path
+        try:
+            shutil.copy2(prediction_path, expected_path)
+            prediction_path = expected_path
+        except OSError as e:
+            raise DeepISLESError(
+                f"Failed to copy prediction from {prediction_path} to {expected_path}: {e}"
+            ) from e
 
     elapsed = time.time() - start_time
 
@@ -292,7 +297,8 @@ def run_deepisles_on_folder(
         output_dir: Where to write results (default: input_dir/results)
         fast: If True, use single-model mode (faster, slightly less accurate)
         gpu: If True, use GPU acceleration (only affects Docker mode)
-        timeout: Maximum seconds to wait for inference
+        timeout: Maximum seconds to wait for inference (default: 1800, i.e. 30 min).
+            Docker mode accepts None for no timeout; direct mode converts None to 1800.
 
     Returns:
         DeepISLESResult with path to prediction mask
