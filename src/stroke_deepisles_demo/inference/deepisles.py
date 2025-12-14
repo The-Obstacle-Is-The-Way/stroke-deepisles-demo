@@ -12,6 +12,7 @@ See:
 
 from __future__ import annotations
 
+import shutil
 import time
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
@@ -204,6 +205,19 @@ def _run_via_docker(
 
     # Find the prediction mask
     prediction_path = find_prediction_mask(output_dir)
+
+    # BUG-FIX: Ensure prediction is at expected URL location
+    # DeepISLES may write to a results/ subdirectory, but the API URL contract
+    # expects files directly in output_dir. Copy to expected location if needed.
+    if prediction_path.parent != output_dir and prediction_path.exists():
+        expected_path = output_dir / prediction_path.name
+        logger.debug(
+            "Copying prediction from %s to %s (URL path fix)",
+            prediction_path,
+            expected_path,
+        )
+        shutil.copy2(prediction_path, expected_path)
+        prediction_path = expected_path
 
     elapsed = time.time() - start_time
 
