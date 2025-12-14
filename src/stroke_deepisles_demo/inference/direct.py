@@ -3,7 +3,7 @@
 This module provides subprocess-based invocation of DeepISLES when running
 on HF Spaces. We use subprocess because:
 - DeepISLES runs in a conda env with Python 3.8
-- Our Gradio app requires Python 3.10+ for modern dependencies
+- Our FastAPI backend requires Python 3.11+ for modern dependencies
 - The two environments are incompatible, so we bridge via subprocess
 
 Usage:

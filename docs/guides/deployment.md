@@ -49,10 +49,12 @@ The Dockerfile:
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `HF_SPACES` | `1` | Auto-set by HF; triggers direct invocation mode |
-| `DEEPISLES_DIRECT_INVOCATION` | `1` | Forces subprocess mode (no Docker-in-Docker) |
+| `HF_SPACES` | `1` | Set by Dockerfile; triggers direct invocation mode |
+| `DEEPISLES_DIRECT_INVOCATION` | `1` | Set by Dockerfile; forces subprocess mode |
 | `STROKE_DEMO_FRONTEND_ORIGINS` | `[]` | JSON array of CORS-allowed origins |
 | `HF_TOKEN` | (none) | For gated datasets |
+
+Note: HuggingFace sets `SPACE_ID` automatically, but our detection uses `HF_SPACES` which we set explicitly in the Dockerfile for clarity.
 
 ## Frontend: HuggingFace Spaces (Static SDK)
 
@@ -78,7 +80,7 @@ The Dockerfile:
 ### Backend Only
 ```bash
 docker pull isleschallenge/deepisles
-uv sync
+uv sync --extra api
 uv run uvicorn stroke_deepisles_demo.api.main:app --reload --port 7860
 ```
 

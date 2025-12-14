@@ -23,6 +23,7 @@ vi.mock("@niivue/niivue", () => ({
 }));
 
 describe("NiiVueViewer", () => {
+  // Note: URLs are simplified for component testing (actual API uses /files/{jobId}/{caseId}/)
   const defaultProps = {
     backgroundUrl: "http://localhost:7860/files/dwi.nii.gz",
   };

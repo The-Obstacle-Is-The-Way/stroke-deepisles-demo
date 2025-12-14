@@ -16,8 +16,8 @@ Get started with stroke-deepisles-demo in 5 minutes.
 git clone https://github.com/The-Obstacle-Is-The-Way/stroke-deepisles-demo.git
 cd stroke-deepisles-demo
 
-# Install Python dependencies
-uv sync
+# Install Python dependencies (includes FastAPI for backend)
+uv sync --extra api
 ```
 
 ## Pull DeepISLES Docker Image
@@ -68,6 +68,9 @@ print(f"Prediction: {result.prediction_mask}")
 The original Gradio interface is still available for backwards compatibility:
 
 ```bash
+# Install Gradio extra (not included by default)
+uv sync --extra gradio
+
 uv run python -m stroke_deepisles_demo.ui.app
 # Open http://localhost:7860
 ```
