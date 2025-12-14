@@ -1,38 +1,76 @@
-# Next Concerns - Critical Architecture Debt
+# Next Concerns - Config Audit & Fixes Complete
 
-**Status:** VALIDATED - All claims verified from first principles
-**Priority:** P0/P1 - Production reproducibility and config integrity at risk
-
----
-
-## PART 1: CONFIG DRIFT (BUG-009) - RESOLVED
-
-### Status
-- **Consolidated:** `api/config.py` deleted.
-- **SSOT:** `core/config.py` now holds all API settings.
-- **Env Vars:** `Dockerfile` updated to use `STROKE_DEMO_*` prefix.
-- **Validation:** Tests pass, env var overrides work.
+**Date:** 2025-12-13
+**Branch:** `fix/remaining-audit-issues`
+**Status:** IMPLEMENTED - Ready for review
 
 ---
 
-## PART 2: DEPENDENCY PINNING (BUG-012) - RESOLVED
+## Summary of Changes
 
-### Status
-- **Base Image:** Pinned to `sha256:848c9eceb67dbc585bcb37f093389d142caeaa98878bd31039af04ef297a5af4`.
-- **Lock File:** Dockerfile now uses `uv sync --frozen` to respect `uv.lock`.
-- **Path:** Dockerfile adds `.venv/bin` to `PATH` for correct execution.
-- **Dependency Migration:** Migrated from hard-forked `datasets` to maintained `neuroimaging-go-brrrr` extension (v0.2.1) + standard `datasets` library. Validated end-to-end in Docker.
-- **Validation:** Docker build succeeds, runtime verifies settings load and modules importable.
+### P1 Fixes (Safety Critical)
+
+| Issue | Fix | File |
+|-------|-----|------|
+| max_concurrent_jobs=10 unsafe | Changed default to 1 | `config.py:97-98` |
+| Timeout not passed to direct invocation | Added timeout parameter | `deepisles.py:222-223, 318` |
+
+### Slop Removed (Never Actually Needed)
+
+| Setting | Reason | Status |
+|---------|--------|--------|
+| `hf_cache_dir` | Duplicates `HF_HOME` (already set in Dockerfile) | **REMOVED** |
+| `temp_dir` | Duplicates `TMPDIR` (Python native) | **REMOVED** |
+| `deepisles_repo_path` | No valid use case (direct mode only in container) | **REMOVED** |
+| `DEEPISLES_PATH` env var | Unused in direct.py | **REMOVED** from Dockerfile |
+
+### P2 Fixes
+
+| Issue | Fix | File |
+|-------|-----|------|
+| Concurrency check after expensive validation | Added pre-check before list_case_ids() | `routes.py:95-101` |
+| Direct invocation logs verbose at INFO | Changed to DEBUG | `direct.py:200-206` |
+| FastAPI doesn't apply log settings | Added setup_logging() at startup | `main.py:47-48` |
+
+### P3/P4 Cleanup
+
+| Issue | Fix | File |
+|-------|-----|------|
+| Package description mentions Gradio | Updated to React SPA + FastAPI | `__init__.py:1` |
+| HEAD comment wrong (should be OPTIONS) | Fixed comment | `main.py:112` |
+| Configuration docs outdated | Completely rewritten | `docs/guides/configuration.md` |
 
 ---
 
-## PART 3: FRONTEND CONFIG - NO ACTION NEEDED
+## Test Results
 
-### Status
-- Keeping current build-time `.env.production` approach.
-- No immediate need for runtime variables via `window.huggingface.variables`.
+```text
+157 passed, 7 deselected in 12.73s
+ruff check: All checks passed!
+ruff format: 27 files already formatted
+mypy: Success: no issues found in 27 source files
+```
 
 ---
 
-**Validated:** 2025-12-12
-**Status:** COMPLETED
+## Files Changed
+
+1. `src/stroke_deepisles_demo/core/config.py` - Removed slop, fixed max_concurrent_jobs
+2. `src/stroke_deepisles_demo/inference/deepisles.py` - Pass timeout to direct invocation
+3. `src/stroke_deepisles_demo/inference/direct.py` - DEBUG logging for verbose output
+4. `src/stroke_deepisles_demo/api/routes.py` - Pre-check concurrency before validation
+5. `src/stroke_deepisles_demo/api/main.py` - setup_logging() at startup, fix OPTIONS comment
+6. `src/stroke_deepisles_demo/__init__.py` - Updated package description
+7. `Dockerfile` - Removed unused DEEPISLES_PATH env var
+8. `docs/guides/configuration.md` - Complete rewrite with current settings
+
+---
+
+## What's Left (P4 - Optional)
+
+These are exported in public API, so removing could be breaking change. Left as-is:
+- `DatasetInfo` class (defined but never instantiated)
+- `create_staging_directory` (has tests, is a utility function)
+
+These are minor doc issues, not affecting functionality:
+- Broken references to archived spec docs in some files

@@ -74,8 +74,8 @@ This project provides a complete end-to-end workflow:
 git clone https://github.com/The-Obstacle-Is-The-Way/stroke-deepisles-demo.git
 cd stroke-deepisles-demo
 
-# Install dependencies
-uv sync
+# Install dependencies (includes FastAPI backend)
+uv sync --extra api
 ```
 
 ### Running the Demo
@@ -85,11 +85,15 @@ uv sync
     docker pull isleschallenge/deepisles
     ```
 
-2.  **Launch the UI**:
+2.  **Launch the Web UI** (React + FastAPI):
     ```bash
-    uv run python -m stroke_deepisles_demo.ui.app
+    # Terminal 1: Start backend
+    uv run uvicorn stroke_deepisles_demo.api.main:app --reload --port 7860
+
+    # Terminal 2: Start frontend
+    cd frontend && npm install && npm run dev
     ```
-    Open [http://localhost:7860](http://localhost:7860) in your browser.
+    Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 3.  **Run via CLI**:
     ```bash
@@ -98,6 +102,12 @@ uv sync
 
     # Run segmentation on a specific case
     uv run stroke-demo run --case sub-stroke0001
+    ```
+
+4.  **Legacy Gradio UI** (optional):
+    ```bash
+    uv sync --extra gradio
+    uv run python -m stroke_deepisles_demo.ui.app
     ```
 
 ## Documentation

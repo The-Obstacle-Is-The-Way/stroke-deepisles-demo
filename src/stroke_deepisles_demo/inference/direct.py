@@ -3,7 +3,7 @@
 This module provides subprocess-based invocation of DeepISLES when running
 on HF Spaces. We use subprocess because:
 - DeepISLES runs in a conda env with Python 3.8
-- Our Gradio app requires Python 3.10+ for modern dependencies
+- Our FastAPI backend requires Python 3.11+ for modern dependencies
 - The two environments are incompatible, so we bridge via subprocess
 
 Usage:
@@ -155,7 +155,8 @@ def run_deepisles_direct(
     # Create output directory
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    logger.info(
+    # Log paths at DEBUG to avoid exposing potentially sensitive path info at INFO
+    logger.debug(
         "Running DeepISLES via subprocess: dwi=%s, adc=%s, flair=%s, fast=%s",
         dwi_path,
         adc_path,
@@ -186,7 +187,7 @@ def run_deepisles_direct(
     if fast:
         cmd.append("--fast")
 
-    logger.info("Subprocess command: %s", " ".join(cmd))
+    logger.debug("Subprocess command: %s", " ".join(cmd))
 
     try:
         result = subprocess.run(
@@ -197,11 +198,13 @@ def run_deepisles_direct(
             cwd="/app",  # Run from DeepISLES directory
         )
 
-        # Log output
+        # Log verbose output at DEBUG to avoid log explosion
+        # DeepISLES produces extensive stdout/stderr that would overwhelm INFO logs
         if result.stdout:
-            logger.info("DeepISLES stdout:\n%s", result.stdout)
+            logger.debug("DeepISLES stdout:\n%s", result.stdout)
         if result.stderr:
-            logger.warning("DeepISLES stderr:\n%s", result.stderr)
+            # Log stderr at DEBUG unless it's a failure (handled below)
+            logger.debug("DeepISLES stderr:\n%s", result.stderr)
 
         # Check for failure
         if result.returncode != 0:

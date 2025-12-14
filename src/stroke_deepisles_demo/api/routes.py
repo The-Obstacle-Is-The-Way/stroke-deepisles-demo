@@ -92,7 +92,15 @@ def create_segment_job(
         store = get_job_store()
         settings = get_settings()
 
-        # Validate case_id exists before creating job
+        # Pre-check concurrency limit before expensive validation
+        # This is a cheap check; the actual limit is enforced atomically below
+        if store.get_active_job_count() >= settings.max_concurrent_jobs:
+            raise HTTPException(
+                status_code=503,
+                detail="Server busy: too many active jobs. Please try again later.",
+            )
+
+        # Validate case_id exists (only after passing concurrency pre-check)
         valid_cases = list_case_ids()
         if body.case_id not in valid_cases:
             raise HTTPException(
@@ -105,6 +113,7 @@ def create_segment_job(
         backend_url = get_backend_base_url(request)
 
         # Atomic concurrency limit + job creation (prevents TOCTOU race)
+        # The pre-check above is just an optimization; this is the authoritative check
         job = store.create_job_if_under_limit(
             job_id, body.case_id, body.fast_mode, settings.max_concurrent_jobs
         )

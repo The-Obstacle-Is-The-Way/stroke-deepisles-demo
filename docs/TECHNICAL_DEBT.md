@@ -1,12 +1,17 @@
 # Technical Debt and Known Issues
 
-> **Last Audit**: December 2025 (Revision 6)
+> **Last Audit**: December 2025 (Revision 7)
 > **Auditor**: Claude Code + External Senior Review
-> **Status**: P0 BLOCKER - NiiVue/WebGL integration broken on HF Spaces
+> **Status**: ✅ All P0/P1/P2 issues resolved
 
 ## Summary
 
-**CRITICAL ISSUE**: The NiiVue 3D viewer does not work on HuggingFace Spaces due to Gradio architecture limitations. See Issue #24.
+All critical issues have been resolved. The former P0 blocker (NiiVue/WebGL on HF Spaces)
+was bypassed by migrating to a **React SPA + FastAPI** architecture, which is now the
+primary deployment target.
+
+> **Note**: The sections below document the **historical Gradio-based approach** and its
+> resolution. They are preserved for context but describe legacy architecture.
 
 | Severity | Count | Description | Status |
 |----------|-------|-------------|--------|
@@ -90,6 +95,9 @@ See: `docs/specs/19-perf-base64-to-file-urls.md`
 
 ## Conclusion
 
-The codebase is **production-ready for all features EXCEPT the Interactive 3D Viewer (NiiVue)**. All other technical debt items are resolved.
+The codebase is **production-ready**. The P0 blocker was resolved by migrating to React + FastAPI:
 
-**Next step:** Implement Gradio Custom Component per spec #28 to fix the P0 blocker.
+- **Primary UI**: React SPA with NiiVue (works correctly on HF Spaces)
+- **Legacy UI**: Gradio (preserved for backwards compatibility, NiiVue broken on HF Spaces)
+
+The Gradio Custom Component approach (spec #28) was superseded by the React migration.

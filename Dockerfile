@@ -59,10 +59,6 @@ RUN uv pip install --no-deps -e .
 ENV HF_SPACES=1
 ENV DEEPISLES_DIRECT_INVOCATION=1
 
-# Point to DeepISLES location for direct invocation
-# DeepISLES code is at /app in the base image
-ENV DEEPISLES_PATH=/app
-
 # Ensure HuggingFace cache uses our writable directory
 ENV HF_HOME=/home/user/demo/cache
 

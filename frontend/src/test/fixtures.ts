@@ -11,8 +11,9 @@ export const mockCasesResponse: CasesResponse = {
 };
 
 export const mockSegmentationResult: SegmentationResult = {
-  dwiUrl: "http://localhost:7860/files/dwi.nii.gz",
-  predictionUrl: "http://localhost:7860/files/prediction.nii.gz",
+  // URLs match actual API contract: /files/{jobId}/{caseId}/{filename}
+  dwiUrl: "http://localhost:7860/files/test-job-123/sub-stroke0001/dwi.nii.gz",
+  predictionUrl: "http://localhost:7860/files/test-job-123/sub-stroke0001/prediction.nii.gz",
   metrics: {
     caseId: "sub-stroke0001",
     diceScore: 0.847,

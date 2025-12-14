@@ -12,6 +12,7 @@ See:
 
 from __future__ import annotations
 
+import shutil
 import time
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
@@ -205,6 +206,24 @@ def _run_via_docker(
     # Find the prediction mask
     prediction_path = find_prediction_mask(output_dir)
 
+    # BUG-FIX: Ensure prediction is at expected URL location
+    # DeepISLES may write to a results/ subdirectory, but the API URL contract
+    # expects files directly in output_dir. Copy to expected location if needed.
+    if prediction_path.parent != output_dir and prediction_path.exists():
+        expected_path = output_dir / prediction_path.name
+        logger.debug(
+            "Copying prediction from %s to %s (URL path fix)",
+            prediction_path,
+            expected_path,
+        )
+        try:
+            shutil.copy2(prediction_path, expected_path)
+            prediction_path = expected_path
+        except OSError as e:
+            raise DeepISLESError(
+                f"Failed to copy prediction from {prediction_path} to {expected_path}: {e}"
+            ) from e
+
     elapsed = time.time() - start_time
 
     return DeepISLESResult(
@@ -220,6 +239,7 @@ def _run_via_direct_invocation(
     *,
     flair_path: Path | None,
     fast: bool,
+    timeout: float,
 ) -> DeepISLESResult:
     """
     Run DeepISLES via direct Python invocation.
@@ -234,9 +254,10 @@ def _run_via_direct_invocation(
     adc_path = input_dir / "adc.nii.gz"
 
     logger.info(
-        "Running DeepISLES via direct invocation: input=%s, fast=%s",
+        "Running DeepISLES via direct invocation: input=%s, fast=%s, timeout=%s",
         input_dir,
         fast,
+        timeout,
     )
 
     result = run_deepisles_direct(
@@ -245,6 +266,7 @@ def _run_via_direct_invocation(
         output_dir=output_dir,
         flair_path=flair_path,
         fast=fast,
+        timeout=timeout,
     )
 
     return DeepISLESResult(
@@ -275,7 +297,8 @@ def run_deepisles_on_folder(
         output_dir: Where to write results (default: input_dir/results)
         fast: If True, use single-model mode (faster, slightly less accurate)
         gpu: If True, use GPU acceleration (only affects Docker mode)
-        timeout: Maximum seconds to wait for inference (only affects Docker mode)
+        timeout: Maximum seconds to wait for inference (default: 1800, i.e. 30 min).
+            Docker mode accepts None for no timeout; direct mode converts None to 1800.
 
     Returns:
         DeepISLESResult with path to prediction mask
@@ -312,6 +335,7 @@ def run_deepisles_on_folder(
             output_dir=output_dir,
             flair_path=flair_path,
             fast=fast,
+            timeout=timeout if timeout is not None else 1800,
         )
     else:
         logger.info("Using Docker-based DeepISLES invocation")

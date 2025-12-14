@@ -1,39 +1,125 @@
 # Deployment
 
-The demo is designed to be deployed on Hugging Face Spaces.
+The demo consists of two components deployed to Hugging Face Spaces:
+1. **Backend (FastAPI)**: Docker SDK Space running DeepISLES inference
+2. **Frontend (React SPA)**: Static SDK Space hosting the viewer UI
 
-## Hugging Face Spaces
+## Architecture
 
-1.  **Create a Space**: Go to [huggingface.co/spaces](https://huggingface.co/spaces) and create a new Space.
-    *   **SDK**: Docker (Recommended for custom dependencies) or Gradio
-    *   **Hardware**: GPU is recommended for DeepISLES inference.
+```
+┌──────────────────────────┐     ┌──────────────────────────┐
+│  Frontend HF Space       │     │  Backend HF Space        │
+│  (Static SDK)            │────▶│  (Docker SDK + GPU)      │
+│  React + NiiVue          │     │  FastAPI + DeepISLES     │
+└──────────────────────────┘     └──────────────────────────┘
+```
 
-2.  **Configure Dockerfile (if using Docker SDK)**:
-    Ensure the Dockerfile installs Python 3.11, uv, and pulls the DeepISLES image (or handles it appropriately, though Spaces might restrict running Docker-in-Docker).
+## Backend: HuggingFace Spaces (Docker SDK)
 
-    *Note*: Since DeepISLES runs as a Docker container, running it inside a HF Space (which is a container) requires Docker-in-Docker (DinD) or a compatible runtime. If DinD is not supported, you might need to adapt the inference to run directly in the python environment if possible (DeepISLES source code integration instead of Docker wrapper), but this project wraps the Docker image.
+### Prerequisites
+- HuggingFace account
+- Space with GPU allocation (T4-small minimum for inference)
 
-    **Standard Deployment (Gradio SDK)**:
-    The project includes `app.py` at the root for standard Gradio deployment. However, checking `requirements.txt` or `pyproject.toml` is needed.
+### Steps
 
-    For standard Gradio Spaces, you need to ensure `docker` command is available if you stick to the current architecture. Most HF Spaces do not support running `docker run`.
+1. **Create a Docker SDK Space**:
+   - Go to [huggingface.co/spaces](https://huggingface.co/spaces)
+   - SDK: **Docker** (required for custom dependencies)
+   - Hardware: **T4-small** or better (DeepISLES requires GPU)
 
-    **Alternative**: Use a VM (AWS/GCP/Azure) with Docker installed.
+2. **Push your code**:
+   ```bash
+   git remote add hf https://huggingface.co/spaces/YOUR_ORG/YOUR_SPACE
+   git push hf main
+   ```
 
-## Local Deployment
+3. **Configure Secrets** (Settings → Secrets):
+   - `HF_TOKEN`: Read-only token for gated datasets (optional)
+   - `STROKE_DEMO_FRONTEND_ORIGINS`: JSON array of allowed frontend origins
 
-1.  **Build/Pull**:
-    ```bash
-    docker pull isleschallenge/deepisles
-    ```
+### How It Works
 
-2.  **Run App**:
-    ```bash
-    uv run python -m stroke_deepisles_demo.ui.app
-    ```
+The Dockerfile:
+- Uses `isleschallenge/deepisles` as base (includes nnU-Net, SEALS, weights)
+- Installs demo package in `/home/user/demo` (avoids overwriting DeepISLES at `/app`)
+- Runs FastAPI on port 7860 (HF Spaces default)
+- Uses **direct invocation** (subprocess to conda env) instead of Docker-in-Docker
 
-## Environment Variables
+### Environment Variables
 
-Configure the deployment using environment variables (Secrets in HF Spaces):
--   `STROKE_DEMO_HF_TOKEN`: Read-only token for accessing datasets if private.
--   `STROKE_DEMO_DEEPISLES_USE_GPU`: Set to `false` if deploying on CPU-only instance.
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `HF_SPACES` | `1` | Set by Dockerfile; triggers direct invocation mode |
+| `DEEPISLES_DIRECT_INVOCATION` | `1` | Set by Dockerfile; forces subprocess mode |
+| `STROKE_DEMO_FRONTEND_ORIGINS` | `[]` | JSON array of CORS-allowed origins |
+| `HF_TOKEN` | (none) | For gated datasets |
+
+Note: HuggingFace sets `SPACE_ID` automatically, but our detection uses `HF_SPACES` which we set explicitly in the Dockerfile for clarity.
+
+## Frontend: HuggingFace Spaces (Static SDK)
+
+### Steps
+
+1. **Create a Static SDK Space**:
+   - SDK: **Static**
+   - No hardware needed (static files only)
+
+2. **Build and deploy**:
+   ```bash
+   cd frontend
+   npm install
+   VITE_API_URL=https://your-backend.hf.space npm run build
+   # Copy dist/* to your Static Space
+   ```
+
+3. **Configure API URL**:
+   Set `VITE_API_URL` at build time to point to your backend Space.
+
+## Local Development
+
+### Backend Only
+```bash
+docker pull isleschallenge/deepisles
+uv sync --extra api
+uv run uvicorn stroke_deepisles_demo.api.main:app --reload --port 7860
+```
+
+### Frontend Only
+```bash
+cd frontend
+npm install
+VITE_API_URL=http://localhost:7860 npm run dev
+```
+
+### Full Stack
+```bash
+# Terminal 1: Backend
+uv run uvicorn stroke_deepisles_demo.api.main:app --reload --port 7860
+
+# Terminal 2: Frontend
+cd frontend && npm run dev
+```
+
+## Legacy: Gradio UI
+
+The project includes a legacy Gradio interface at `app.py`:
+```bash
+uv run python -m stroke_deepisles_demo.ui.app
+```
+
+This is provided for backwards compatibility but is not the primary deployment target.
+The Gradio UI connects directly to DeepISLES without the job queue.
+
+## Troubleshooting
+
+### "GPU not available" warning
+- Ensure your Space has GPU hardware allocated (T4-small minimum)
+- Check Space settings → Hardware
+
+### CORS errors in browser
+- Set `STROKE_DEMO_FRONTEND_ORIGINS` to include your frontend URL
+- Format: `'["https://your-frontend.hf.space"]'`
+
+### Inference timeouts
+- Default timeout is 30 minutes (`STROKE_DEMO_DEEPISLES_TIMEOUT_SECONDS`)
+- T4-small handles most cases; larger volumes may need more GPU memory
