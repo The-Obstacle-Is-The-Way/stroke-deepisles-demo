@@ -31,11 +31,14 @@ def get_case(case_id: str | int) -> CaseFiles:
         return dataset.get_case(case_id)
 
 
-def list_case_ids() -> list[str]:
+def list_case_ids(source: str | None = None) -> list[str]:
     """List all available case IDs.
+
+    Args:
+        source: HuggingFace dataset ID or local path. If None, uses default from settings.
 
     Uses context manager to ensure HuggingFace temp files are cleaned up.
     This prevents unbounded disk usage from accumulating temp NIfTI files.
     """
-    with load_isles_dataset() as dataset:
+    with load_isles_dataset(source=source) as dataset:
         return dataset.list_case_ids()

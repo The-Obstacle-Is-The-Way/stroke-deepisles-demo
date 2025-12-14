@@ -20,7 +20,7 @@ def main(argv: list[str] | None = None) -> int:
 
     # List command
     list_parser = subparsers.add_parser("list", help="List available cases")
-    list_parser.add_argument("--dataset", default=None, help="HF dataset ID (not used yet)")
+    list_parser.add_argument("--dataset", default=None, help="HF dataset ID or local path")
 
     # Run command
     run_parser = subparsers.add_parser("run", help="Run segmentation")
@@ -44,10 +44,10 @@ def main(argv: list[str] | None = None) -> int:
     return 0
 
 
-def cmd_list(args: argparse.Namespace) -> int:  # noqa: ARG001
+def cmd_list(args: argparse.Namespace) -> int:
     """Handle 'list' command."""
     try:
-        case_ids = list_case_ids()
+        case_ids = list_case_ids(source=args.dataset)
         print(f"Found {len(case_ids)} cases:")
         for i, cid in enumerate(case_ids):
             print(f"[{i}] {cid}")

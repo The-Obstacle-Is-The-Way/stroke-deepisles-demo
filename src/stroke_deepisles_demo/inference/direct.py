@@ -155,7 +155,8 @@ def run_deepisles_direct(
     # Create output directory
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    logger.info(
+    # Log paths at DEBUG to avoid exposing potentially sensitive path info at INFO
+    logger.debug(
         "Running DeepISLES via subprocess: dwi=%s, adc=%s, flair=%s, fast=%s",
         dwi_path,
         adc_path,
@@ -186,7 +187,7 @@ def run_deepisles_direct(
     if fast:
         cmd.append("--fast")
 
-    logger.info("Subprocess command: %s", " ".join(cmd))
+    logger.debug("Subprocess command: %s", " ".join(cmd))
 
     try:
         result = subprocess.run(
