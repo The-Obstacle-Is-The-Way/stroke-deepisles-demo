@@ -8,6 +8,11 @@
 
 ## Problem Statement
 
+> **Update (2025-12-15):** HF Spaces requires avoiding eager full-dataset downloads.
+> The implementation now uses a pinned ISLES24 manifest (`src/stroke_deepisles_demo/data/isles24_manifest.py`)
+> for `/api/cases`, and loads a single case via `datasets.load_dataset(..., data_files=...)` (one Parquet shard)
+> instead of `load_dataset(..., split="train")`.
+
 `stroke-deepisles-demo` has a hand-rolled data loading workaround that:
 
 1. **Bypasses `datasets.load_dataset()`** - Uses `HfFileSystem + pyarrow` directly

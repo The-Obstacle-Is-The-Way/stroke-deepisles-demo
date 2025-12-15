@@ -2,23 +2,18 @@
 
 from __future__ import annotations
 
-import os
 from typing import TYPE_CHECKING
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from stroke_deepisles_demo.data.adapter import LocalDataset
-from stroke_deepisles_demo.data.loader import HuggingFaceDatasetWrapper, load_isles_dataset
+from stroke_deepisles_demo.data.loader import (
+    HuggingFaceDatasetWrapper,
+    Isles24HuggingFaceDataset,
+    load_isles_dataset,
+)
 
 if TYPE_CHECKING:
     from pathlib import Path
-
-# Skip tests that download large datasets in CI (limited disk space)
-SKIP_IN_CI = pytest.mark.skipif(
-    os.environ.get("CI") == "true",
-    reason="Skips large HuggingFace downloads in CI (disk space)",
-)
 
 
 def test_load_from_local_returns_local_dataset(synthetic_isles_dir: Path) -> None:
@@ -51,15 +46,12 @@ def test_load_hf_calls_load_dataset() -> None:
         assert mock_load.call_args[0][0] == "my/dataset"
 
 
-@pytest.mark.integration
-@SKIP_IN_CI
 def test_load_from_huggingface_returns_hf_dataset() -> None:
-    """Test that loading from HuggingFace returns a HuggingFaceDatasetWrapper.
+    """Test that loading from HuggingFace returns an Isles24HuggingFaceDataset.
 
-    Note: Skipped in CI due to large download size (~GB) and limited disk space.
-    Run locally with: pytest -m integration tests/data/test_loader.py
+    This should not trigger a full dataset download: the default dataset uses a
+    pinned manifest for case IDs and per-case shard loading.
     """
     with load_isles_dataset() as dataset:  # Default is HuggingFace mode
-        assert isinstance(dataset, HuggingFaceDatasetWrapper)
-        # We can't guarantee length if we don't mock, but we can check type
-        # Real test might fail if network issue or auth issue
+        assert isinstance(dataset, Isles24HuggingFaceDataset)
+        assert len(dataset.list_case_ids()) == len(dataset)

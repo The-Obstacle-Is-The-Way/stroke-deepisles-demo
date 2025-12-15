@@ -11,6 +11,12 @@ from typing import TYPE_CHECKING, Protocol, Self
 
 from stroke_deepisles_demo.core.logging import get_logger
 from stroke_deepisles_demo.core.types import CaseFiles  # noqa: TC001
+from stroke_deepisles_demo.data.isles24_manifest import (
+    ISLES24_DATASET_ID,
+    ISLES24_DATASET_REVISION,
+    ISLES24_TRAIN_CASE_IDS,
+    isles24_train_data_file,
+)
 
 # Security: Regex for valid ISLES24 subject IDs (defense-in-depth)
 # Expected format: sub-strokeXXXX (e.g., sub-stroke0001)
@@ -154,6 +160,113 @@ class HuggingFaceDatasetWrapper:
         self._temp_dir = None
 
 
+@dataclass
+class Isles24HuggingFaceDataset:
+    """ISLES24 dataset access optimized for HF Spaces.
+
+    Key behavior:
+    - `list_case_ids()` returns from a pinned manifest (no dataset download).
+    - `get_case()` loads exactly one Parquet shard via `data_files=...` (no 27GB eager download).
+
+    This class exists because `datasets.load_dataset(dataset_id, split="train")` can
+    trigger an eager full-dataset download/prepare on cold starts, which is not viable
+    for API endpoints like `/api/cases` on Hugging Face Spaces.
+    """
+
+    dataset_id: str = ISLES24_DATASET_ID
+    token: str | None = None
+    revision: str = ISLES24_DATASET_REVISION
+    _temp_dir: Path | None = field(default=None, repr=False)
+
+    def __len__(self) -> int:
+        return len(ISLES24_TRAIN_CASE_IDS)
+
+    def __enter__(self) -> Self:
+        return self
+
+    def __exit__(self, *args: object) -> None:
+        self.cleanup()
+
+    def list_case_ids(self) -> list[str]:
+        return list(ISLES24_TRAIN_CASE_IDS)
+
+    def get_case(self, case_id: str | int) -> CaseFiles:
+        """Load files for a single ISLES24 case.
+
+        Args:
+            case_id: Case identifier (e.g., "sub-stroke0102") or 0-based integer index.
+        """
+        from datasets import load_dataset
+
+        if isinstance(case_id, int):
+            if case_id < 0 or case_id >= len(ISLES24_TRAIN_CASE_IDS):
+                raise IndexError(f"Case index {case_id} out of range")
+            resolved_case_id = ISLES24_TRAIN_CASE_IDS[case_id]
+        else:
+            resolved_case_id = case_id
+
+        # Security: Validate subject_id before using in path (defense-in-depth)
+        if not _SAFE_SUBJECT_ID_PATTERN.match(resolved_case_id):
+            raise ValueError(
+                f"Invalid subject_id format: {resolved_case_id!r}. Expected format: sub-strokeXXXX"
+            )
+
+        # Load exactly one shard (1 case per parquet file in this dataset)
+        data_file = isles24_train_data_file(resolved_case_id)
+        ds = load_dataset(
+            self.dataset_id,
+            data_files={"train": data_file},
+            split="train",
+            token=self.token,
+            revision=self.revision,
+        )
+        ds = ds.select_columns(["subject_id", "dwi", "adc", "lesion_mask"])
+        if len(ds) != 1:
+            raise RuntimeError(f"Expected 1 row for {resolved_case_id}, got {len(ds)}")
+
+        row = ds[0]
+        subject_id = row["subject_id"]
+        if subject_id != resolved_case_id:
+            raise RuntimeError(
+                f"Unexpected subject_id {subject_id!r} in {data_file} (expected {resolved_case_id!r})"
+            )
+
+        if self._temp_dir is None:
+            self._temp_dir = Path(tempfile.mkdtemp(prefix="isles24_hf_wrapper_"))
+
+        case_dir = self._temp_dir / subject_id
+        case_dir.mkdir(exist_ok=True)
+
+        dwi_path = case_dir / f"{subject_id}_dwi.nii.gz"
+        adc_path = case_dir / f"{subject_id}_adc.nii.gz"
+
+        if not dwi_path.exists():
+            row["dwi"].to_filename(str(dwi_path))
+        if not adc_path.exists():
+            row["adc"].to_filename(str(adc_path))
+
+        case_files: CaseFiles = {
+            "dwi": dwi_path,
+            "adc": adc_path,
+        }
+
+        if row.get("lesion_mask") is not None:
+            mask_path = case_dir / f"{subject_id}_lesion-msk.nii.gz"
+            if not mask_path.exists():
+                row["lesion_mask"].to_filename(str(mask_path))
+            case_files["ground_truth"] = mask_path
+
+        return case_files
+
+    def cleanup(self) -> None:
+        if self._temp_dir and self._temp_dir.exists():
+            try:
+                shutil.rmtree(self._temp_dir)
+            except OSError as e:
+                logger.warning("Failed to cleanup temp directory %s: %s", self._temp_dir, e)
+        self._temp_dir = None
+
+
 def load_isles_dataset(
     source: str | Path | None = None,
     *,
@@ -216,6 +329,9 @@ def load_isles_dataset(
     # Use settings defaults if not specified
     dataset_id = str(source) if source else settings.hf_dataset_id
     hf_token = token if token is not None else settings.hf_token
+
+    if dataset_id == ISLES24_DATASET_ID:
+        return Isles24HuggingFaceDataset(dataset_id=dataset_id, token=hf_token)
 
     # Load dataset, selecting only necessary columns to minimize decoding overhead
     # We rely on neuroimaging-go-brrrr's Nifti feature for lazy loading if configured,
