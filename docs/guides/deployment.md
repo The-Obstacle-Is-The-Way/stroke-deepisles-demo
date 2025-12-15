@@ -58,22 +58,56 @@ Note: HuggingFace sets `SPACE_ID` automatically, but our detection uses `HF_SPAC
 
 ## Frontend: HuggingFace Spaces (Static SDK)
 
+> **⚠️ IMPORTANT:** Do NOT push the full repo to the frontend Space. Only push the
+> built `dist/` files. The frontend Space uses `sdk: static`, not `sdk: docker`.
+
 ### Steps
 
 1. **Create a Static SDK Space**:
    - SDK: **Static**
    - No hardware needed (static files only)
 
-2. **Build and deploy**:
+2. **Build the frontend**:
    ```bash
    cd frontend
    npm install
-   VITE_API_URL=https://your-backend.hf.space npm run build
-   # Copy dist/* to your Static Space
+   npm run build  # Uses .env.production for VITE_API_URL
    ```
 
-3. **Configure API URL**:
-   Set `VITE_API_URL` at build time to point to your backend Space.
+3. **Deploy to HF Space** (from a temp directory):
+   ```bash
+   # Create deployment directory
+   cd /tmp && rm -rf hf-frontend && mkdir hf-frontend && cd hf-frontend
+   git init
+
+   # Copy built files
+   cp -r /path/to/stroke-deepisles-demo/frontend/dist/* .
+
+   # Create README with Static SDK metadata
+   cat > README.md << 'EOF'
+   ---
+   title: Stroke Viewer Frontend
+   emoji: "🧠"
+   colorFrom: blue
+   colorTo: purple
+   sdk: static
+   pinned: false
+   ---
+   # Stroke Viewer Frontend
+   React SPA for DeepISLES stroke segmentation.
+   EOF
+
+   # Push to HF Space
+   git add -A && git commit -m "deploy: static frontend"
+   git remote add hf https://huggingface.co/spaces/YOUR_ORG/YOUR_FRONTEND_SPACE
+   git push hf main --force
+   ```
+
+4. **Configure API URL**:
+   Edit `frontend/.env.production` before building to set the backend URL:
+   ```
+   VITE_API_URL=https://your-backend.hf.space
+   ```
 
 ## Local Development
 
