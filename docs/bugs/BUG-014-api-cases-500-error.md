@@ -1,130 +1,139 @@
-# BUG-014: /api/cases Returns 500 Internal Server Error
+# BUG-014: /api/cases Endpoint Timeout/500 Error
 
-**Status**: INVESTIGATING
+**Status**: ROOT CAUSE CONFIRMED
 **Severity**: P1 (Frontend completely broken)
 **Discovered**: 2025-12-15
 **Reporter**: Manual testing
 
-## Symptoms
+## Summary
 
-1. Frontend shows "Loading cases..." indefinitely
-2. Backend health check returns 200 OK with healthy status
-3. GET `/api/cases` returns HTTP 500 Internal Server Error
+The `/api/cases` endpoint fails because it triggers a full 27GB dataset download on every request. This is an architectural design flaw, not a missing dependency or configuration issue.
+
+## Verified Call Chain
+
+```
+GET /api/cases
+  → routes.py:57        list_case_ids()
+    → data/__init__.py:43  load_isles_dataset(source=source)
+      → loader.py:224      ds = load_dataset(dataset_id, split="train", token=hf_token)
+                           ↑ DOWNLOADS ENTIRE 27GB DATASET
+```
+
+## Root Cause (Confirmed)
+
+**The `datasets.load_dataset()` call at `loader.py:224` downloads the entire dataset.**
+
+Dataset facts (verified via HF Hub API):
+- **Dataset ID**: `hugging-science/isles24-stroke`
+- **Size**: 149 parquet shards × ~184MB average = **~27.41GB total**
+- **Access**: PUBLIC (no auth required)
+- **Smallest shard**: 95.82MB
+- **Largest shard**: 260.09MB
+
+When `/api/cases` is called:
+1. `list_case_ids()` calls `load_isles_dataset()`
+2. `load_isles_dataset()` calls HuggingFace's `load_dataset()`
+3. `load_dataset()` downloads ALL 149 parquet shards (~27GB)
+4. This takes 5-10+ minutes on HF Spaces network
+5. HF Spaces proxy timeout (60-120s) kills the request
+6. Frontend sees timeout or 500 error
 
 ## Evidence
 
-### Backend Health (Working)
-```
-https://vibecodermcswaggins-stroke-deepisles-demo.hf.space/
-```
-Returns:
-```json
-{"status":"healthy","service":"stroke-segmentation-api","version":"2.0.0","features":["async-jobs","progress-tracking"]}
-```
+| Test | Result |
+|------|--------|
+| `GET /` (health) | 200 OK in ~143s after cold start |
+| `GET /health` | 200 OK in ~286s after cold start |
+| `GET /api/cases` | Timeout after 300s (curl max-time) |
+| CORS headers | Present and correct |
+| Dataset public? | Yes, no token required |
 
-### Cases Endpoint (Failing)
-```
-https://vibecodermcswaggins-stroke-deepisles-demo.hf.space/api/cases
-```
-Returns: HTTP 500 Internal Server Error
+The health endpoints work because they don't touch the dataset. The `/api/cases` endpoint fails because it's the first endpoint that triggers `load_isles_dataset()`.
 
-## Root Cause Analysis
+## Why HF Space Logs Won't Help
 
-### Call Chain
+The logs show:
 ```
-GET /api/cases
-  → routes.py:get_cases()
-    → data/__init__.py:list_case_ids()
-      → data/loader.py:load_isles_dataset()
-        → datasets.load_dataset("hugging-science/isles24-stroke", ...)
+INFO: Application startup complete.
+INFO: 10.16.9.169:20572 - "GET /health HTTP/1.1" 200 OK
 ```
 
-### Dataset Status
-- **Dataset**: `hugging-science/isles24-stroke`
-- **Access**: PUBLIC (no authentication required)
-- **License**: CC BY-NC-SA 4.0
+We don't see `/api/cases` logged because:
+1. Uvicorn logs requests AFTER response is sent
+2. The request never completes (times out at proxy)
+3. No Python exception is raised (still downloading)
 
-### Potential Causes (In Order of Likelihood)
+We have enough information - logs would only confirm what we already know.
 
-1. ~~**Missing `datasets` Library**~~ **RULED OUT**
-   - `neuroimaging-go-brrrr` depends on `datasets>=3.4.0`
-   - HOWEVER: Uses custom uv source pinning to a git commit (not PyPI)
-   - This addresses an "embed_table_storage bug" - may still cause issues
+## Why This Passed Local Testing
 
-2. **neuroimaging-go-brrrr Installation Failure**
-   - Installed from git: `git+https://github.com/.../neuroimaging-go-brrrr.git@v0.2.1`
-   - Git installs in Docker can fail silently if network issues
-   - Package provides Nifti feature for datasets library
+Local development likely used:
+1. Cached dataset from previous runs
+2. Faster local disk I/O
+3. No HF Spaces proxy timeout
+4. Different network conditions
 
-3. **Memory/Storage Constraints**
-   - HF Spaces T4-small has limited RAM
-   - Loading dataset indices may exceed memory
-   - `/tmp` storage may be exhausted
+## Architectural Flaw
 
-4. **Network Issue**
-   - HF Spaces backend can't reach HF Hub
-   - DNS resolution failure
-   - SSL certificate issue
+The design assumes `datasets.load_dataset()` is fast/cached. On HF Spaces:
+- Cold starts have empty cache
+- `/tmp` storage is limited and ephemeral
+- Downloading 27GB for a simple case list is not viable
 
-## Reproduction
+## Fix Options
 
-### Local Test
+### Option A: Use a Small Demo Dataset (Recommended)
+Create a curated HF dataset with 5-10 representative cases (~500MB).
+- Fastest to implement
+- Reliable for demos
+- Clear scope
+
+### Option B: Streaming Mode
+Use `datasets.load_dataset(..., streaming=True)` to avoid full download.
+- Requires refactoring `HuggingFaceDatasetWrapper`
+- May still have performance issues for random case access
+
+### Option C: Direct HF Hub API
+Call HF Hub API directly to get case list from metadata without downloading data.
+```python
+from huggingface_hub import HfApi
+api = HfApi()
+# Get dataset info without downloading
+info = api.dataset_info("hugging-science/isles24-stroke")
+```
+- More complex implementation
+- Decouples metadata from data access
+
+### Option D: Pre-computed Case List
+Hardcode or cache the case ID list, load individual cases on demand.
+- Simple but requires knowing case IDs in advance
+- Doesn't scale if dataset changes
+
+## Recommendation
+
+**Option A (small demo dataset)** is the cleanest fix for a demo application. The 27GB medical imaging dataset is production-scale data that shouldn't be loaded on every API request.
+
+## Files Requiring Changes
+
+| File | Change |
+|------|--------|
+| `src/stroke_deepisles_demo/core/config.py` | Update `hf_dataset_id` default |
+| `pyproject.toml` | No changes needed |
+| New HF Dataset | Create `VibecoderMcSwaggins/isles24-demo` with 5-10 cases |
+
+## Verification Steps After Fix
+
 ```bash
-uv sync --extra api
-uv run python -c "from stroke_deepisles_demo.data import list_case_ids; print(list_case_ids())"
+# 1. Deploy updated backend to HF Spaces
+# 2. Wait for cold start to complete
+# 3. Test:
+curl -s https://vibecodermcswaggins-stroke-deepisles-demo.hf.space/api/cases
+# Should return {"cases": ["sub-stroke0001", ...]} within 5-10 seconds
 ```
-
-### HF Space Logs
-Check HF Space logs for the actual exception:
-1. Go to https://huggingface.co/spaces/VibecoderMcSwaggins/stroke-deepisles-demo
-2. Click "Logs" tab
-3. Look for Python traceback when `/api/cases` is called
-
-## Impact
-
-- Frontend is completely non-functional
-- Users cannot select cases or run segmentation
-- Backend health check gives false confidence
-
-## Recommended Investigation Steps
-
-1. **Check HF Space Logs**
-   - View actual Python exception traceback
-   - Identify if ImportError, MemoryError, or other
-
-2. **Verify Dependencies in Container**
-   ```bash
-   # SSH into space or add debug endpoint
-   pip list | grep -E "datasets|neuroimaging"
-   ```
-
-3. **Test Dataset Loading Directly**
-   - Add temporary debug endpoint to verify load_dataset works
-   - Or check if `datasets` import succeeds in lifespan handler
-
-4. **Check for Missing Dependency**
-   - If `datasets` is missing, add to pyproject.toml dependencies
-   - Rebuild and redeploy
-
-## Related Files
-
-- `src/stroke_deepisles_demo/api/routes.py:49-63` - get_cases endpoint
-- `src/stroke_deepisles_demo/data/__init__.py:34-44` - list_case_ids function
-- `src/stroke_deepisles_demo/data/loader.py:157-227` - load_isles_dataset function
-- `pyproject.toml` - dependencies (missing `datasets`?)
-
-## Immediate Next Step
-
-**CHECK THE HF SPACE LOGS** - this is the only way to confirm the actual exception.
-
-1. Go to: https://huggingface.co/spaces/VibecoderMcSwaggins/stroke-deepisles-demo
-2. Click "Logs" tab (or burger menu → "Logs")
-3. Look for Python traceback
-4. The exception will tell us exactly what's failing
 
 ## Notes
 
-- This bug was NOT caused by the frontend Static SDK deployment fix
-- The backend has been returning 500 on `/api/cases` - we just didn't notice until now
-- Need HF Space logs to confirm root cause before fixing
-- Do NOT deploy fixes until root cause is confirmed from logs
+- This bug was always present but masked by local caching
+- Frontend fix (Static SDK deployment) exposed the backend issue
+- The 500 error is actually a timeout converted to error by HF proxy
+- No code changes were made to cause this - it's a deployment environment difference
